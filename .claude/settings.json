@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(flutter create:*)",
+      "Bash(flutter pub:*)",
+      "Bash(flutter build:*)",
+      "Bash(flutter test:*)",
+      "Bash(brew install:*)",
+      "Bash(brew services:*)",
+      "Bash(ollama pull:*)",
+      "Bash(ollama list:*)",
+      "Bash(ls /Users/aashishbijukchhe/Documents/anti/pTrack/*.md /Users/aashishbijukchhe/Documents/anti/pTrack/.github)"
+    ],
+    "additionalDirectories": [
+      "/Users/aashishbijukchhe/Documents/anti/pTrack/lib/models"
+    ]
+  }
+}
