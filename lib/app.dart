@@ -35,7 +35,7 @@ class _LunaAppState extends State<LunaApp> {
         }
 
         return MaterialApp.router(
-          title: 'Open Period & Cycle Tracker',
+          title: 'Luna: Open Period & Cycle Tracker',
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
             useMaterial3: true,

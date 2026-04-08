@@ -1,6 +1,6 @@
 {
-    "name": "Open Period & Cycle Tracker",
-    "short_name": "Open Period & Cycle Tracker",
+    "name": "Luna: Open Period & Cycle Tracker",
+    "short_name": "Luna: Open Period & Cycle Tracker",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#ffffff",

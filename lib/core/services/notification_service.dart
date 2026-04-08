@@ -73,6 +73,7 @@ class NotificationService {
     required int hour,
     required int minute,
   }) async {
+    await initialize();
     await _notificationsPlugin.cancel(0); // Cancel existing if any
 
     final now = tz.TZDateTime.now(tz.local);
@@ -115,6 +116,7 @@ class NotificationService {
   }
 
   Future<void> schedulePredictionAlert(DateTime predictedDate) async {
+    await initialize();
     await _notificationsPlugin.cancel(1);
 
     // Schedule 2 days before
@@ -148,6 +150,7 @@ class NotificationService {
   }
 
   Future<void> scheduleLateAlert(DateTime predictedDate) async {
+    await initialize();
     await _notificationsPlugin.cancel(2); // Cancel existing if any
 
     // Schedule 1 day after expected date

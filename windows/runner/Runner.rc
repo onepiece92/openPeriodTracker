@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.brandbuilder" "\0"
-            VALUE "FileDescription", "Open Period & Cycle Tracker" "\0"
+            VALUE "FileDescription", "Luna: Open Period & Cycle Tracker" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
             VALUE "InternalName", "luna_period_tracker" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2026 com.brandbuilder. All rights reserved." "\0"
             VALUE "OriginalFilename", "luna_period_tracker.exe" "\0"
-            VALUE "ProductName", "Open Period & Cycle Tracker" "\0"
+            VALUE "ProductName", "Luna: Open Period & Cycle Tracker" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END
