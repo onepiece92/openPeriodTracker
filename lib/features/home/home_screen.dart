@@ -1,32 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/providers/settings_provider.dart';
 import '../../core/providers/period_provider.dart';
+import '../../core/providers/daily_log_provider.dart';
+import '../../core/services/share_service.dart';
 import '../../core/widgets/phase_card.dart';
 import 'birthday_overlay.dart';
-import '../calendar/calendar_view.dart';
-import '../logging/log_bottom_sheet.dart';
-import 'doctor_view.dart';
-import '../insights/insights_view.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final Widget child;
+
+  const HomeScreen({super.key, required this.child});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _activeTab = 0;
   bool _birthdayShown = false;
   bool _showBirthday = false;
+  bool _dismissedWarning = false;
 
   @override
   Widget build(BuildContext context) {
     final periodProvider = context.watch<PeriodProvider>();
     final settingsProvider = context.watch<SettingsProvider>();
+    final dailyLogProvider = context.watch<DailyLogProvider>();
 
     // Keep period provider in sync with settings
     periodProvider.updateSettings(
@@ -52,165 +54,180 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Stack(
         children: [
           Container(
-            decoration: const BoxDecoration(gradient: AppColors.backgroundGradient),
+            decoration: const BoxDecoration(
+              gradient: AppColors.backgroundGradient,
+            ),
             child: SafeArea(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 16),
-                // Header
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                    if (periodProvider.daysUntilNextPeriod != null &&
+                        periodProvider.daysUntilNextPeriod! < 0 &&
+                        !_dismissedWarning)
+                      Container(
+                        margin: const EdgeInsets.only(top: 16),
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: Colors.redAccent.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.redAccent.withValues(alpha: 0.3)),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.warning_amber_rounded, color: Colors.redAccent),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                'Hi ${settingsProvider.displayName}, your period is delayed by ${periodProvider.daysUntilNextPeriod!.abs()} days.',
+                                style: AppTextStyles.body.copyWith(
+                                  color: Colors.redAccent,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.close, color: Colors.redAccent),
+                              onPressed: () => setState(() => _dismissedWarning = true),
+                            ),
+                          ],
+                        ),
+                      ),
+                    const SizedBox(height: 16),
+                    // Header
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('Luna', style: AppTextStyles.appTitle),
-                        Text(
-                          'Hi, ${settingsProvider.displayName}',
-                          style: AppTextStyles.body.copyWith(color: AppColors.textLight),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Luna', style: AppTextStyles.appTitle),
+                            Text(
+                              'Hi, ${settingsProvider.displayName}',
+                              style: AppTextStyles.body.copyWith(
+                                color: AppColors.textLight,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Text(
+                                  DateFormat('MMM d').format(DateTime.now()),
+                                  style: AppTextStyles.mediumNumber.copyWith(
+                                    fontSize: 18,
+                                  ),
+                                ),
+                                Text(
+                                  DateFormat('EEEE').format(DateTime.now()),
+                                  style: AppTextStyles.small.copyWith(
+                                    color: AppColors.textLight,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(width: 8),
+                            IconButton(
+                              onPressed: () {
+                                ShareService.shareStatus(
+                                  periodProvider,
+                                  dailyLogProvider,
+                                );
+                              },
+                              icon: const Icon(
+                                Icons.ios_share_rounded,
+                                color: AppColors.textPrimary,
+                              ),
+                              tooltip: 'Share Status',
+                            ),
+                          ],
                         ),
                       ],
                     ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(
-                          DateFormat('MMM d').format(DateTime.now()),
-                          style: AppTextStyles.mediumNumber.copyWith(fontSize: 18),
-                        ),
-                        Text(
-                          DateFormat('EEEE').format(DateTime.now()),
-                          style: AppTextStyles.small.copyWith(color: AppColors.textLight),
-                        ),
-                      ],
+                    const SizedBox(height: 20),
+
+                    // Phase card
+                    PhaseCard(
+                      phase: phase,
+                      currentDay: cycleDay,
+                      cycleLength: avgCycle,
                     ),
+                    const SizedBox(height: 16),
+
+                    // Phase timeline strip
+                    _PhaseTimeline(
+                      currentDay: cycleDay,
+                      cycleLength: avgCycle,
+                      periodLength: periodProvider.averagePeriodLength,
+                      phase: phase,
+                      daysUntilNextPeriod: periodProvider.daysUntilNextPeriod,
+                      isInFertileWindow: periodProvider.isInFertileWindow,
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Tab switcher
+                    Builder(
+                      builder: (context) {
+                        final String location = GoRouterState.of(
+                          context,
+                        ).uri.path;
+                        return Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.3),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Row(
+                            children: [
+                              _TabButton(
+                                label: '📅 Calendar',
+                                isActive: location == '/home',
+                                onTap: () => context.go('/home'),
+                              ),
+                              _TabButton(
+                                label: '🩺 Doctor',
+                                isActive: location == '/home/doctor',
+                                onTap: () => context.go('/home/doctor'),
+                              ),
+                              _TabButton(
+                                label: '✨ Insights',
+                                isActive: location == '/home/insights',
+                                onTap: () => context.go('/home/insights'),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Tab content
+                    AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 250),
+                      child: widget.child,
+                    ),
+                    const SizedBox(height: 32),
                   ],
                 ),
-                const SizedBox(height: 20),
-
-                // Phase card
-                PhaseCard(
-                  phase: phase,
-                  currentDay: cycleDay,
-                  cycleLength: avgCycle,
-                ),
-                const SizedBox(height: 16),
-
-                // Phase timeline strip
-                _PhaseTimeline(
-                  currentDay: cycleDay,
-                  cycleLength: avgCycle,
-                  periodLength: periodProvider.averagePeriodLength,
-                  phase: phase,
-                  daysUntilNextPeriod: periodProvider.daysUntilNextPeriod,
-                  isInFertileWindow: periodProvider.isInFertileWindow,
-                ),
-                const SizedBox(height: 20),
-
-                // Tab switcher
-                Container(
-                  padding: const EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.3),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Row(
-                    children: [
-                      _TabButton(
-                        label: '📅 Calendar',
-                        isActive: _activeTab == 0,
-                        onTap: () => setState(() => _activeTab = 0),
-                      ),
-                      _TabButton(
-                        label: '🩺 Doctor',
-                        isActive: _activeTab == 1,
-                        onTap: () => setState(() => _activeTab = 1),
-                      ),
-                      _TabButton(
-                        label: '✨ Insights',
-                        isActive: _activeTab == 2,
-                        onTap: () => setState(() => _activeTab = 2),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                // Tab content
-                AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 250),
-                  child: _buildTabContent(),
-                ),
-                const SizedBox(height: 32),
-              ],
+              ),
             ),
           ),
-        ),
-      ),
 
-      // Log Today FAB
-      Positioned(
-        right: 20,
-        bottom: 20,
-        child: GestureDetector(
-          onTap: () {
-            final today = DateTime.now();
-            final ds = '${today.year.toString().padLeft(4, '0')}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}';
-            showModalBottomSheet(
-              context: context,
-              isScrollControlled: true,
-              useRootNavigator: true,
-              backgroundColor: Colors.transparent,
-              builder: (_) => LogBottomSheet(date: ds),
-            );
-          },
-          child: Container(
-            width: 56,
-            height: 56,
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(colors: [AppColors.luteal, AppColors.follicular]),
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.luteal.withValues(alpha: 0.4),
-                  blurRadius: 12,
-                  offset: const Offset(0, 4),
-                ),
-              ],
+          // Birthday overlay
+          if (_showBirthday)
+            BirthdayOverlay(
+              name: settingsProvider.displayName,
+              age: settingsProvider.userAge ?? 0,
+              onDismiss: () => setState(() => _showBirthday = false),
             ),
-            child: const Icon(Icons.add, color: Colors.white, size: 28),
-          ),
-        ),
-      ),
-
-      // Birthday overlay
-      if (_showBirthday)
-        BirthdayOverlay(
-          name: settingsProvider.displayName,
-          age: settingsProvider.userAge ?? 0,
-          onDismiss: () => setState(() => _showBirthday = false),
-        ),
-      ],
+        ],
       ),
     );
   }
-
-  Widget _buildTabContent() {
-    switch (_activeTab) {
-      case 0:
-        return const CalendarView(key: ValueKey('calendar'));
-      case 1:
-        return const DoctorView(key: ValueKey('doctor'));
-      case 2:
-        return const InsightsView(key: ValueKey('insights'));
-      default:
-        return const SizedBox.shrink();
-    }
-  }
-
 }
 
 class _PhaseTimeline extends StatelessWidget {
@@ -263,14 +280,20 @@ class _PhaseTimeline extends StatelessWidget {
               if (daysUntilNextPeriod != null)
                 _InfoChip(
                   icon: Icons.water_drop,
-                  label: '$daysUntilNextPeriod d to period',
-                  color: AppColors.menstrual,
+                  label: daysUntilNextPeriod! < 0
+                      ? '${daysUntilNextPeriod!.abs()} d late'
+                      : '$daysUntilNextPeriod d to period',
+                  color: daysUntilNextPeriod! < 0
+                      ? Colors.redAccent
+                      : AppColors.menstrual,
                 ),
               const SizedBox(width: 8),
               _InfoChip(
                 icon: Icons.favorite,
                 label: isInFertileWindow ? 'Fertile' : 'Not fertile',
-                color: isInFertileWindow ? AppColors.ovulation : AppColors.textMuted,
+                color: isInFertileWindow
+                    ? AppColors.ovulation
+                    : AppColors.textMuted,
               ),
             ],
           ),
@@ -281,8 +304,10 @@ class _PhaseTimeline extends StatelessWidget {
             height: 14,
             child: LayoutBuilder(
               builder: (context, constraints) {
-                final indicatorLeft = (progress * constraints.maxWidth)
-                    .clamp(0.0, constraints.maxWidth - 6);
+                final indicatorLeft = (progress * constraints.maxWidth).clamp(
+                  0.0,
+                  constraints.maxWidth - 6,
+                );
                 return Stack(
                   clipBehavior: Clip.none,
                   children: [
@@ -291,10 +316,22 @@ class _PhaseTimeline extends StatelessWidget {
                       borderRadius: BorderRadius.circular(6),
                       child: Row(
                         children: [
-                          _segment(menstrualFrac, AppColors.menstrual.withValues(alpha: 0.35)),
-                          _segment(follicularFrac, AppColors.follicular.withValues(alpha: 0.35)),
-                          _segment(ovulationFrac, AppColors.ovulation.withValues(alpha: 0.35)),
-                          _segment(lutealFrac, AppColors.luteal.withValues(alpha: 0.35)),
+                          _segment(
+                            menstrualFrac,
+                            AppColors.menstrual.withValues(alpha: 0.35),
+                          ),
+                          _segment(
+                            follicularFrac,
+                            AppColors.follicular.withValues(alpha: 0.35),
+                          ),
+                          _segment(
+                            ovulationFrac,
+                            AppColors.ovulation.withValues(alpha: 0.35),
+                          ),
+                          _segment(
+                            lutealFrac,
+                            AppColors.luteal.withValues(alpha: 0.35),
+                          ),
                         ],
                       ),
                     ),
@@ -310,7 +347,9 @@ class _PhaseTimeline extends StatelessWidget {
                           borderRadius: BorderRadius.circular(3),
                           boxShadow: [
                             BoxShadow(
-                              color: AppColors.phaseColor(phase).withValues(alpha: 0.5),
+                              color: AppColors.phaseColor(
+                                phase,
+                              ).withValues(alpha: 0.5),
                               blurRadius: 6,
                               spreadRadius: 1,
                             ),
@@ -349,9 +388,7 @@ class _PhaseTimeline extends StatelessWidget {
   Widget _phaseLabel(double fraction, String emoji, Color color) {
     return Expanded(
       flex: (fraction * 100).round().clamp(1, 100),
-      child: Center(
-        child: Text(emoji, style: const TextStyle(fontSize: 10)),
-      ),
+      child: Center(child: Text(emoji, style: const TextStyle(fontSize: 10))),
     );
   }
 }
@@ -361,7 +398,11 @@ class _InfoChip extends StatelessWidget {
   final String label;
   final Color color;
 
-  const _InfoChip({required this.icon, required this.label, required this.color});
+  const _InfoChip({
+    required this.icon,
+    required this.label,
+    required this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -413,7 +454,11 @@ class _TabButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(14),
             boxShadow: isActive
                 ? const [
-                    BoxShadow(color: Color(0x0FA08CB0), blurRadius: 8, offset: Offset(0, 2)),
+                    BoxShadow(
+                      color: Color(0x0FA08CB0),
+                      blurRadius: 8,
+                      offset: Offset(0, 2),
+                    ),
                   ]
                 : null,
           ),

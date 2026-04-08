@@ -17,7 +17,8 @@ class DoctorView extends StatelessWidget {
     final logs = logProvider.allLogs;
 
     // Aggregate medical checklist data across all logs
-    final allMedical = <String, Map<String, int>>{}; // question key → {option → count}
+    final allMedical =
+        <String, Map<String, int>>{}; // question key → {option → count}
     int daysWithMedical = 0;
 
     for (final log in logs.values) {
@@ -25,7 +26,8 @@ class DoctorView extends StatelessWidget {
       daysWithMedical++;
       for (final entry in log.medicalLog.entries) {
         allMedical.putIfAbsent(entry.key, () => {});
-        allMedical[entry.key]![entry.value] = (allMedical[entry.key]![entry.value] ?? 0) + 1;
+        allMedical[entry.key]![entry.value] =
+            (allMedical[entry.key]![entry.value] ?? 0) + 1;
       }
     }
 
@@ -45,7 +47,9 @@ class DoctorView extends StatelessWidget {
             decoration: BoxDecoration(
               color: AppColors.follicularBg,
               borderRadius: BorderRadius.circular(18),
-              border: Border.all(color: AppColors.follicular.withValues(alpha: 0.2)),
+              border: Border.all(
+                color: AppColors.follicular.withValues(alpha: 0.2),
+              ),
             ),
             child: Row(
               children: [
@@ -57,7 +61,10 @@ class DoctorView extends StatelessWidget {
                     children: [
                       Text(
                         'Doctor\'s Analysis',
-                        style: AppTextStyles.button.copyWith(color: AppColors.textPrimary, fontSize: 14),
+                        style: AppTextStyles.button.copyWith(
+                          color: AppColors.textPrimary,
+                          fontSize: 14,
+                        ),
                       ),
                       const SizedBox(height: 2),
                       Text(
@@ -76,69 +83,102 @@ class DoctorView extends StatelessWidget {
           if (findings.isNotEmpty) ...[
             Text('FINDINGS', style: AppTextStyles.label),
             const SizedBox(height: 8),
-            ...findings.map((f) => Container(
-              width: double.infinity,
-              margin: const EdgeInsets.only(bottom: 8),
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: f.severity == 'warning'
-                      ? AppColors.menstrual.withValues(alpha: 0.2)
-                      : f.severity == 'note'
-                          ? const Color(0xFFD4A340).withValues(alpha: 0.2)
-                          : AppColors.ovulation.withValues(alpha: 0.2),
+            ...findings.map(
+              (f) => Container(
+                width: double.infinity,
+                margin: const EdgeInsets.only(bottom: 8),
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: f.severity == 'warning'
+                        ? AppColors.menstrual.withValues(alpha: 0.2)
+                        : f.severity == 'note'
+                        ? const Color(0xFFD4A340).withValues(alpha: 0.2)
+                        : AppColors.ovulation.withValues(alpha: 0.2),
+                  ),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Color(0x0FA08CB0),
+                      blurRadius: 8,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
                 ),
-                boxShadow: const [BoxShadow(color: Color(0x0FA08CB0), blurRadius: 8, offset: Offset(0, 2))],
-              ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(f.emoji, style: const TextStyle(fontSize: 18)),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(f.title, style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w700, fontSize: 12)),
-                            ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                              decoration: BoxDecoration(
-                                color: f.severity == 'warning'
-                                    ? AppColors.menstrual.withValues(alpha: 0.1)
-                                    : f.severity == 'note'
-                                        ? const Color(0xFFD4A340).withValues(alpha: 0.1)
-                                        : AppColors.ovulation.withValues(alpha: 0.1),
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: Text(
-                                f.severity == 'warning' ? 'Flag' : f.severity == 'note' ? 'Note' : 'Good',
-                                style: AppTextStyles.small.copyWith(
-                                  fontSize: 8,
-                                  fontWeight: FontWeight.w700,
-                                  color: f.severity == 'warning'
-                                      ? AppColors.menstrual
-                                      : f.severity == 'note'
-                                          ? const Color(0xFFD4A340)
-                                          : AppColors.ovulation,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(f.emoji, style: const TextStyle(fontSize: 18)),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  f.title,
+                                  style: AppTextStyles.body.copyWith(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 12,
+                                  ),
                                 ),
                               ),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 6,
+                                  vertical: 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: f.severity == 'warning'
+                                      ? AppColors.menstrual.withValues(
+                                          alpha: 0.1,
+                                        )
+                                      : f.severity == 'note'
+                                      ? const Color(
+                                          0xFFD4A340,
+                                        ).withValues(alpha: 0.1)
+                                      : AppColors.ovulation.withValues(
+                                          alpha: 0.1,
+                                        ),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: Text(
+                                  f.severity == 'warning'
+                                      ? 'Flag'
+                                      : f.severity == 'note'
+                                      ? 'Note'
+                                      : 'Good',
+                                  style: AppTextStyles.small.copyWith(
+                                    fontSize: 8,
+                                    fontWeight: FontWeight.w700,
+                                    color: f.severity == 'warning'
+                                        ? AppColors.menstrual
+                                        : f.severity == 'note'
+                                        ? const Color(0xFFD4A340)
+                                        : AppColors.ovulation,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            f.body,
+                            style: AppTextStyles.body.copyWith(
+                              fontSize: 11,
+                              height: 1.4,
                             ),
-                          ],
-                        ),
-                        const SizedBox(height: 4),
-                        Text(f.body, style: AppTextStyles.body.copyWith(fontSize: 11, height: 1.4)),
-                      ],
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            )),
+            ),
             const SizedBox(height: 12),
           ],
 
@@ -148,7 +188,8 @@ class DoctorView extends StatelessWidget {
           ...allMedical.entries.map((entry) {
             final key = entry.key;
             final counts = entry.value;
-            final sorted = counts.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
+            final sorted = counts.entries.toList()
+              ..sort((a, b) => b.value.compareTo(a.value));
             final total = sorted.fold<int>(0, (s, e) => s + e.value);
 
             return Container(
@@ -161,11 +202,17 @@ class DoctorView extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Text(_questionEmoji(key), style: const TextStyle(fontSize: 14)),
+                      Text(
+                        _questionEmoji(key),
+                        style: const TextStyle(fontSize: 14),
+                      ),
                       const SizedBox(width: 8),
                       Text(
                         _questionLabel(key),
-                        style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w700, fontSize: 12),
+                        style: AppTextStyles.body.copyWith(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 12,
+                        ),
                       ),
                     ],
                   ),
@@ -178,7 +225,10 @@ class DoctorView extends StatelessWidget {
                         children: [
                           SizedBox(
                             width: 80,
-                            child: Text(opt.key, style: AppTextStyles.small.copyWith(fontSize: 10)),
+                            child: Text(
+                              opt.key,
+                              style: AppTextStyles.small.copyWith(fontSize: 10),
+                            ),
                           ),
                           Expanded(
                             child: ClipRRect(
@@ -189,8 +239,12 @@ class DoctorView extends StatelessWidget {
                                 backgroundColor: AppColors.cardBorder,
                                 valueColor: AlwaysStoppedAnimation(
                                   _isWarning(key, opt.key)
-                                      ? AppColors.menstrual.withValues(alpha: 0.6)
-                                      : AppColors.follicular.withValues(alpha: 0.5),
+                                      ? AppColors.menstrual.withValues(
+                                          alpha: 0.6,
+                                        )
+                                      : AppColors.follicular.withValues(
+                                          alpha: 0.5,
+                                        ),
                                 ),
                               ),
                             ),
@@ -203,7 +257,9 @@ class DoctorView extends StatelessWidget {
                               style: AppTextStyles.small.copyWith(
                                 fontWeight: FontWeight.w700,
                                 fontSize: 9,
-                                color: _isWarning(key, opt.key) ? AppColors.menstrual : AppColors.textSecondary,
+                                color: _isWarning(key, opt.key)
+                                    ? AppColors.menstrual
+                                    : AppColors.textSecondary,
                               ),
                               textAlign: TextAlign.right,
                             ),
@@ -254,7 +310,10 @@ class DoctorView extends StatelessWidget {
     );
   }
 
-  List<_Finding> _analyzeFindings(Map<String, Map<String, int>> data, int totalDays) {
+  List<_Finding> _analyzeFindings(
+    Map<String, Map<String, int>> data,
+    int totalDays,
+  ) {
     final findings = <_Finding>[];
     if (totalDays < 2) return findings;
 
@@ -264,19 +323,24 @@ class DoctorView extends StatelessWidget {
       final severe = (pain['Severe'] ?? 0) + (pain['Unbearable'] ?? 0);
       final total = pain.values.fold<int>(0, (s, v) => s + v);
       if (severe > 0 && severe / total > 0.3) {
-        findings.add(_Finding(
-          emoji: '😣',
-          title: 'Frequent severe pain (${(severe / total * 100).round()}%)',
-          body: 'Severe/unbearable pain logged $severe out of $total times. This level of pain is not something you should just endure. Discuss with your doctor — could indicate endometriosis, fibroids, or adenomyosis.',
-          severity: 'warning',
-        ));
+        findings.add(
+          _Finding(
+            emoji: '😣',
+            title: 'Frequent severe pain (${(severe / total * 100).round()}%)',
+            body:
+                'Severe/unbearable pain logged $severe out of $total times. This level of pain is not something you should just endure. Discuss with your doctor — could indicate endometriosis, fibroids, or adenomyosis.',
+            severity: 'warning',
+          ),
+        );
       } else if (pain.containsKey('None') && pain['None']! > total * 0.7) {
-        findings.add(_Finding(
-          emoji: '✅',
-          title: 'Low pain levels',
-          body: 'Mostly pain-free — great sign. No pain management concerns.',
-          severity: 'good',
-        ));
+        findings.add(
+          _Finding(
+            emoji: '✅',
+            title: 'Low pain levels',
+            body: 'Mostly pain-free — great sign. No pain management concerns.',
+            severity: 'good',
+          ),
+        );
       }
     }
 
@@ -285,12 +349,15 @@ class DoctorView extends StatelessWidget {
     if (discharge != null) {
       final concerning = (discharge['Green'] ?? 0) + (discharge['Yellow'] ?? 0);
       if (concerning > 0) {
-        findings.add(_Finding(
-          emoji: '🔬',
-          title: 'Unusual discharge color noted',
-          body: 'Green or yellow discharge logged $concerning time(s). This can indicate an infection (bacterial vaginosis, STI, yeast). Worth a provider visit if accompanied by odor or itching.',
-          severity: 'warning',
-        ));
+        findings.add(
+          _Finding(
+            emoji: '🔬',
+            title: 'Unusual discharge color noted',
+            body:
+                'Green or yellow discharge logged $concerning time(s). This can indicate an infection (bacterial vaginosis, STI, yeast). Worth a provider visit if accompanied by odor or itching.',
+            severity: 'warning',
+          ),
+        );
       }
     }
 
@@ -300,12 +367,16 @@ class DoctorView extends StatelessWidget {
       final poor = (sleep['Poor'] ?? 0) + (sleep['Insomnia'] ?? 0);
       final total = sleep.values.fold<int>(0, (s, v) => s + v);
       if (poor > 0 && poor / total > 0.4) {
-        findings.add(_Finding(
-          emoji: '😴',
-          title: 'Sleep issues (${(poor / total * 100).round()}% of logged days)',
-          body: 'Poor sleep or insomnia is common in the luteal phase due to progesterone shifts. Try magnesium glycinate before bed, limit screens, and maintain a cool room temperature.',
-          severity: 'note',
-        ));
+        findings.add(
+          _Finding(
+            emoji: '😴',
+            title:
+                'Sleep issues (${(poor / total * 100).round()}% of logged days)',
+            body:
+                'Poor sleep or insomnia is common in the luteal phase due to progesterone shifts. Try magnesium glycinate before bed, limit screens, and maintain a cool room temperature.',
+            severity: 'note',
+          ),
+        );
       }
     }
 
@@ -315,12 +386,15 @@ class DoctorView extends StatelessWidget {
       final acne = skin['Acne'] ?? 0;
       final total = skin.values.fold<int>(0, (s, v) => s + v);
       if (acne > 0 && acne / total > 0.4) {
-        findings.add(_Finding(
-          emoji: '✨',
-          title: 'Hormonal acne pattern (${(acne / total * 100).round()}%)',
-          body: 'Acne logged frequently — likely hormonal, peaking in the luteal phase when androgens rise. Zinc supplements, reducing dairy, and topical retinoids may help. Persistent cystic acne warrants a dermatology referral.',
-          severity: 'note',
-        ));
+        findings.add(
+          _Finding(
+            emoji: '✨',
+            title: 'Hormonal acne pattern (${(acne / total * 100).round()}%)',
+            body:
+                'Acne logged frequently — likely hormonal, peaking in the luteal phase when androgens rise. Zinc supplements, reducing dairy, and topical retinoids may help. Persistent cystic acne warrants a dermatology referral.',
+            severity: 'note',
+          ),
+        );
       }
     }
 
@@ -328,20 +402,26 @@ class DoctorView extends StatelessWidget {
     final hair = data['hair'];
     if (hair != null) {
       if ((hair['Thinning'] ?? 0) > 0) {
-        findings.add(_Finding(
-          emoji: '💇‍♀️',
-          title: 'Hair thinning reported',
-          body: 'Hair thinning can signal thyroid issues, iron deficiency, or PCOS. Request a thyroid panel (TSH, T3, T4) and ferritin check at your next visit.',
-          severity: 'warning',
-        ));
+        findings.add(
+          _Finding(
+            emoji: '💇‍♀️',
+            title: 'Hair thinning reported',
+            body:
+                'Hair thinning can signal thyroid issues, iron deficiency, or PCOS. Request a thyroid panel (TSH, T3, T4) and ferritin check at your next visit.',
+            severity: 'warning',
+          ),
+        );
       }
       if ((hair['Excess body hair'] ?? 0) > 0) {
-        findings.add(_Finding(
-          emoji: '💇‍♀️',
-          title: 'Excess body hair reported',
-          body: 'Excess hair growth (hirsutism) may indicate elevated androgens, common in PCOS. Mention this to your provider — a hormonal panel can clarify.',
-          severity: 'warning',
-        ));
+        findings.add(
+          _Finding(
+            emoji: '💇‍♀️',
+            title: 'Excess body hair reported',
+            body:
+                'Excess hair growth (hirsutism) may indicate elevated androgens, common in PCOS. Mention this to your provider — a hormonal panel can clarify.',
+            severity: 'warning',
+          ),
+        );
       }
     }
 
@@ -351,12 +431,15 @@ class DoctorView extends StatelessWidget {
       final bloated = weight['Bloated'] ?? 0;
       final total = weight.values.fold<int>(0, (s, v) => s + v);
       if (bloated > 0 && bloated / total > 0.5) {
-        findings.add(_Finding(
-          emoji: '⚖️',
-          title: 'Frequent bloating (${(bloated / total * 100).round()}%)',
-          body: 'Bloating more than half the time suggests fluid retention or digestive sensitivity. Reduce sodium, increase potassium, and consider a food diary to identify triggers.',
-          severity: 'note',
-        ));
+        findings.add(
+          _Finding(
+            emoji: '⚖️',
+            title: 'Frequent bloating (${(bloated / total * 100).round()}%)',
+            body:
+                'Bloating more than half the time suggests fluid retention or digestive sensitivity. Reduce sodium, increase potassium, and consider a food diary to identify triggers.',
+            severity: 'note',
+          ),
+        );
       }
     }
 
@@ -364,12 +447,15 @@ class DoctorView extends StatelessWidget {
     final breast = data['breast'];
     if (breast != null) {
       if ((breast['Lumpy'] ?? 0) > 0) {
-        findings.add(_Finding(
-          emoji: '🩱',
-          title: 'Breast lumps reported',
-          body: 'Any breast lump should be evaluated by a healthcare provider. Most are benign fibrocystic changes, but clinical examination is important to rule out other causes.',
-          severity: 'warning',
-        ));
+        findings.add(
+          _Finding(
+            emoji: '🩱',
+            title: 'Breast lumps reported',
+            body:
+                'Any breast lump should be evaluated by a healthcare provider. Most are benign fibrocystic changes, but clinical examination is important to rule out other causes.',
+            severity: 'warning',
+          ),
+        );
       }
     }
 
@@ -379,12 +465,15 @@ class DoctorView extends StatelessWidget {
       final low = (energy['Low'] ?? 0) + (energy['Exhausted'] ?? 0);
       final total = energy.values.fold<int>(0, (s, v) => s + v);
       if (low > 0 && low / total > 0.5) {
-        findings.add(_Finding(
-          emoji: '⚡',
-          title: 'Persistent low energy (${(low / total * 100).round()}%)',
-          body: 'Low energy over half your logged days may point to iron deficiency, thyroid dysfunction, or vitamin D insufficiency. A basic blood panel can identify the cause.',
-          severity: 'note',
-        ));
+        findings.add(
+          _Finding(
+            emoji: '⚡',
+            title: 'Persistent low energy (${(low / total * 100).round()}%)',
+            body:
+                'Low energy over half your logged days may point to iron deficiency, thyroid dysfunction, or vitamin D insufficiency. A basic blood panel can identify the cause.',
+            severity: 'note',
+          ),
+        );
       }
     }
 
@@ -395,23 +484,29 @@ class DoctorView extends StatelessWidget {
         final total = libido.values.fold<int>(0, (s, v) => s + v);
         final nonePct = ((libido['None']! / total) * 100).round();
         if (nonePct > 30) {
-          findings.add(_Finding(
-            emoji: '💕',
-            title: 'Low/absent libido ($nonePct%)',
-            body: 'Persistently low libido can relate to hormonal imbalance, stress, medication side effects, or mental health. It\'s a valid health concern — discuss openly with your provider.',
-            severity: 'note',
-          ));
+          findings.add(
+            _Finding(
+              emoji: '💕',
+              title: 'Low/absent libido ($nonePct%)',
+              body:
+                  'Persistently low libido can relate to hormonal imbalance, stress, medication side effects, or mental health. It\'s a valid health concern — discuss openly with your provider.',
+              severity: 'note',
+            ),
+          );
         }
       }
     }
 
     if (findings.isEmpty) {
-      findings.add(_Finding(
-        emoji: '🎉',
-        title: 'No red flags detected',
-        body: 'Your medical checklist data looks reassuring. Keep logging to build a more complete picture over time.',
-        severity: 'good',
-      ));
+      findings.add(
+        _Finding(
+          emoji: '🎉',
+          title: 'No red flags detected',
+          body:
+              'Your medical checklist data looks reassuring. Keep logging to build a more complete picture over time.',
+          severity: 'good',
+        ),
+      );
     }
 
     return findings;
@@ -419,19 +514,33 @@ class DoctorView extends StatelessWidget {
 
   String _questionEmoji(String key) {
     const map = {
-      'pain_level': '😣', 'discharge_color': '🔬', 'discharge_consistency': '💧',
-      'weight': '⚖️', 'skin': '✨', 'hair': '💇‍♀️', 'sleep': '😴',
-      'libido': '💕', 'digestion': '🫃', 'breast': '🩱', 'energy': '⚡',
+      'pain_level': '😣',
+      'discharge_color': '🔬',
+      'discharge_consistency': '💧',
+      'weight': '⚖️',
+      'skin': '✨',
+      'hair': '💇‍♀️',
+      'sleep': '😴',
+      'libido': '💕',
+      'digestion': '🫃',
+      'breast': '🩱',
+      'energy': '⚡',
     };
     return map[key] ?? '📋';
   }
 
   String _questionLabel(String key) {
     const map = {
-      'pain_level': 'Pain Level', 'discharge_color': 'Discharge Color',
-      'discharge_consistency': 'Discharge Type', 'weight': 'Weight Change',
-      'skin': 'Skin Condition', 'hair': 'Hair Changes', 'sleep': 'Sleep Quality',
-      'libido': 'Libido', 'digestion': 'Digestion', 'breast': 'Breast Changes',
+      'pain_level': 'Pain Level',
+      'discharge_color': 'Discharge Color',
+      'discharge_consistency': 'Discharge Type',
+      'weight': 'Weight Change',
+      'skin': 'Skin Condition',
+      'hair': 'Hair Changes',
+      'sleep': 'Sleep Quality',
+      'libido': 'Libido',
+      'digestion': 'Digestion',
+      'breast': 'Breast Changes',
       'energy': 'Energy Level',
     };
     return map[key] ?? key;
@@ -508,9 +617,12 @@ class _DoctorPromptCardState extends State<_DoctorPromptCard> {
     for (final entry in widget.allMedical.entries) {
       final key = entry.key;
       final counts = entry.value;
-      final sorted = counts.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
+      final sorted = counts.entries.toList()
+        ..sort((a, b) => b.value.compareTo(a.value));
       final total = sorted.fold<int>(0, (s, e) => s + e.value);
-      final line = sorted.map((e) => '${e.key}: ${(e.value / total * 100).round()}%').join(', ');
+      final line = sorted
+          .map((e) => '${e.key}: ${(e.value / total * 100).round()}%')
+          .join(', ');
       medicalSummary.writeln('- ${_label(key)}: $line ($total responses)');
     }
 
@@ -521,11 +633,12 @@ class _DoctorPromptCardState extends State<_DoctorPromptCard> {
         symptomCounts[s] = (symptomCounts[s] ?? 0) + 1;
       }
     }
-    final topSymptoms = (symptomCounts.entries.toList()
-          ..sort((a, b) => b.value.compareTo(a.value)))
-        .take(5)
-        .map((e) => '${e.key} (${e.value}x)')
-        .join(', ');
+    final topSymptoms =
+        (symptomCounts.entries.toList()
+              ..sort((a, b) => b.value.compareTo(a.value)))
+            .take(5)
+            .map((e) => '${e.key} (${e.value}x)')
+            .join(', ');
 
     // Flow
     int light = 0, medium = 0, heavy = 0;
@@ -578,10 +691,16 @@ Be thorough, reference my actual data points, and explain WHY each recommendatio
 
   String _label(String key) {
     const map = {
-      'pain_level': 'Pain Level', 'discharge_color': 'Discharge Color',
-      'discharge_consistency': 'Discharge Type', 'weight': 'Weight',
-      'skin': 'Skin', 'hair': 'Hair', 'sleep': 'Sleep',
-      'libido': 'Libido', 'digestion': 'Digestion', 'breast': 'Breast',
+      'pain_level': 'Pain Level',
+      'discharge_color': 'Discharge Color',
+      'discharge_consistency': 'Discharge Type',
+      'weight': 'Weight',
+      'skin': 'Skin',
+      'hair': 'Hair',
+      'sleep': 'Sleep',
+      'libido': 'Libido',
+      'digestion': 'Digestion',
+      'breast': 'Breast',
       'energy': 'Energy',
     };
     return map[key] ?? key;
@@ -617,11 +736,16 @@ Be thorough, reference my actual data points, and explain WHY each recommendatio
                   children: [
                     Text(
                       'Get AI Doctor Analysis',
-                      style: AppTextStyles.button.copyWith(color: AppColors.textPrimary, fontSize: 14),
+                      style: AppTextStyles.button.copyWith(
+                        color: AppColors.textPrimary,
+                        fontSize: 14,
+                      ),
                     ),
                     Text(
                       'Copy to Gemini, ChatGPT, or Claude',
-                      style: AppTextStyles.small.copyWith(color: AppColors.textMuted),
+                      style: AppTextStyles.small.copyWith(
+                        color: AppColors.textMuted,
+                      ),
                     ),
                   ],
                 ),
@@ -636,7 +760,10 @@ Be thorough, reference my actual data points, and explain WHY each recommendatio
                 },
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
                     color: _copied ? AppColors.ovulation : AppColors.follicular,
                     borderRadius: BorderRadius.circular(12),
@@ -652,7 +779,10 @@ Be thorough, reference my actual data points, and explain WHY each recommendatio
                       const SizedBox(width: 4),
                       Text(
                         _copied ? 'Copied!' : 'Copy',
-                        style: AppTextStyles.small.copyWith(color: Colors.white, fontWeight: FontWeight.w700),
+                        style: AppTextStyles.small.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ],
                   ),
@@ -673,7 +803,9 @@ Be thorough, reference my actual data points, and explain WHY each recommendatio
                 const SizedBox(width: 4),
                 Text(
                   _expanded ? 'Hide prompt' : 'Preview prompt',
-                  style: AppTextStyles.small.copyWith(color: AppColors.textMuted),
+                  style: AppTextStyles.small.copyWith(
+                    color: AppColors.textMuted,
+                  ),
                 ),
               ],
             ),
@@ -690,7 +822,11 @@ Be thorough, reference my actual data points, and explain WHY each recommendatio
               ),
               child: Text(
                 prompt,
-                style: AppTextStyles.body.copyWith(fontSize: 10, height: 1.4, fontFamily: 'monospace'),
+                style: AppTextStyles.body.copyWith(
+                  fontSize: 10,
+                  height: 1.4,
+                  fontFamily: 'monospace',
+                ),
               ),
             ),
           ],

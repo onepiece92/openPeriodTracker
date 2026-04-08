@@ -17,7 +17,9 @@ class ShellScreen extends StatelessWidget {
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
           color: Colors.white,
-          border: Border(top: BorderSide(color: AppColors.cardBorder, width: 1)),
+          border: Border(
+            top: BorderSide(color: AppColors.cardBorder, width: 1),
+          ),
           boxShadow: [
             BoxShadow(
               color: Color(0x0FA08CB0),
@@ -35,25 +37,46 @@ class ShellScreen extends StatelessWidget {
                   icon: Icons.home_rounded,
                   label: 'Home',
                   isActive: navigationShell.currentIndex == 0,
-                  onTap: () => navigationShell.goBranch(0),
+                  onTap: () => navigationShell.goBranch(
+                    0,
+                    initialLocation: true,
+                  ),
                 ),
                 _NavItem(
                   icon: Icons.bar_chart_rounded,
                   label: 'Analytics',
                   isActive: navigationShell.currentIndex == 1,
-                  onTap: () => navigationShell.goBranch(1),
+                  onTap: () => navigationShell.goBranch(
+                    1,
+                    initialLocation: navigationShell.currentIndex == 1,
+                  ),
+                ),
+                _NavItem(
+                  icon: Icons.self_improvement_rounded,
+                  label: 'Yoga',
+                  isActive: navigationShell.currentIndex == 2,
+                  onTap: () => navigationShell.goBranch(
+                    2,
+                    initialLocation: navigationShell.currentIndex == 2,
+                  ),
                 ),
                 _NavItem(
                   icon: Icons.medical_information_rounded,
                   label: 'Diagnosis',
-                  isActive: navigationShell.currentIndex == 2,
-                  onTap: () => navigationShell.goBranch(2),
+                  isActive: navigationShell.currentIndex == 3,
+                  onTap: () => navigationShell.goBranch(
+                    3,
+                    initialLocation: navigationShell.currentIndex == 3,
+                  ),
                 ),
                 _NavItem(
                   icon: Icons.person_rounded,
                   label: 'Profile',
-                  isActive: navigationShell.currentIndex == 3,
-                  onTap: () => navigationShell.goBranch(3),
+                  isActive: navigationShell.currentIndex == 4,
+                  onTap: () => navigationShell.goBranch(
+                    4,
+                    initialLocation: navigationShell.currentIndex == 4,
+                  ),
                 ),
               ],
             ),

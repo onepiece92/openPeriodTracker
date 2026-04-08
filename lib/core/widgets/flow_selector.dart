@@ -79,7 +79,9 @@ class _FlowOption extends StatelessWidget {
                     child: Icon(
                       Icons.water_drop,
                       size: 16,
-                      color: isSelected ? AppColors.menstrual : AppColors.textMuted,
+                      color: isSelected
+                          ? AppColors.menstrual
+                          : AppColors.textMuted,
                     ),
                   ),
                 ),

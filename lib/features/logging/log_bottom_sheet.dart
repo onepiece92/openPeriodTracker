@@ -10,19 +10,41 @@ import '../../core/widgets/mood_selector.dart';
 import '../../core/widgets/symptom_chips.dart';
 import 'doctor_checklist.dart';
 
-class LogBottomSheet extends StatelessWidget {
+class LogBottomSheet extends StatefulWidget {
   final String date;
 
   const LogBottomSheet({super.key, required this.date});
+
+  @override
+  State<LogBottomSheet> createState() => _LogBottomSheetState();
+}
+
+class _LogBottomSheetState extends State<LogBottomSheet> {
+  late TextEditingController _notesController;
+  bool _isTogglingPeriod = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final logProvider = context.read<DailyLogProvider>();
+    final log = logProvider.getLog(widget.date);
+    _notesController = TextEditingController(text: log?.notes ?? '');
+  }
+
+  @override
+  void dispose() {
+    _notesController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final periodProvider = context.watch<PeriodProvider>();
     final settingsProvider = context.watch<SettingsProvider>();
     final logProvider = context.watch<DailyLogProvider>();
-    final log = logProvider.getLog(date);
-    final isPeriodDay = periodProvider.isDateInPeriod(date);
-    final parsedDate = DateTime.parse(date);
+    final log = logProvider.getLog(widget.date);
+    final isPeriodDay = periodProvider.isDateInPeriod(widget.date);
+    final parsedDate = DateTime.parse(widget.date);
     final suggestedDays = settingsProvider.periodLength;
 
     return Container(
@@ -63,23 +85,34 @@ class LogBottomSheet extends StatelessWidget {
                       Row(
                         children: [
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 2,
+                            ),
                             decoration: BoxDecoration(
-                              color: AppColors.phaseColor(periodProvider.getPhaseForDate(date)).withValues(alpha: 0.12),
+                              color: AppColors.phaseColor(
+                                periodProvider.getPhaseForDate(widget.date),
+                              ).withValues(alpha: 0.12),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
-                              'Day ${periodProvider.getCycleDayForDate(date)} of ${periodProvider.averageCycleLength}',
+                              'Day ${periodProvider.getCycleDayForDate(widget.date)} of ${periodProvider.averageCycleLength}',
                               style: AppTextStyles.small.copyWith(
-                                color: AppColors.phaseColor(periodProvider.getPhaseForDate(date)),
+                                color: AppColors.phaseColor(
+                                  periodProvider.getPhaseForDate(widget.date),
+                                ),
                                 fontWeight: FontWeight.w700,
                               ),
                             ),
                           ),
                           const SizedBox(width: 6),
                           Text(
-                            AppColors.phaseName(periodProvider.getPhaseForDate(date)),
-                            style: AppTextStyles.small.copyWith(color: AppColors.textMuted),
+                            AppColors.phaseName(
+                              periodProvider.getPhaseForDate(widget.date),
+                            ),
+                            style: AppTextStyles.small.copyWith(
+                              color: AppColors.textMuted,
+                            ),
                           ),
                         ],
                       ),
@@ -97,194 +130,196 @@ class LogBottomSheet extends StatelessWidget {
 
           // Scrollable content
           Expanded(
-            child: Stack(
-              children: [
-                SingleChildScrollView(
-                  padding: const EdgeInsets.only(left: 20, right: 20, bottom: 80),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Period day toggle
-                      GestureDetector(
-                        onTap: () => _togglePeriod(
-                          context, isPeriodDay, date, periodProvider,
-                          settingsProvider, logProvider,
-                        ),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Period day toggle
+                  GestureDetector(
+                    onTap: _isTogglingPeriod
+                        ? null
+                        : () => _togglePeriod(
+                            isPeriodDay,
+                            periodProvider,
+                            settingsProvider,
+                            logProvider,
+                          ),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      decoration: BoxDecoration(
+                        color: isPeriodDay ? AppColors.menstrual : Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: AppColors.menstrual),
+                      ),
+                      child: Center(
+                        child: _isTogglingPeriod
+                            ? const SizedBox(
+                                height: 18,
+                                width: 18,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: AppColors.menstrual,
+                                ),
+                              )
+                            : Text(
+                                isPeriodDay
+                                    ? '🩸 Remove Period Day'
+                                    : '🩸 Mark as Period Day',
+                                style: AppTextStyles.button.copyWith(
+                                  color: isPeriodDay
+                                      ? Colors.white
+                                      : AppColors.menstrual,
+                                ),
+                              ),
+                      ),
+                    ),
+                  ),
+
+                  // Suggest marking X days
+                  if (!isPeriodDay && suggestedDays > 1)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 10),
+                      child: GestureDetector(
+                        onTap: _isTogglingPeriod
+                            ? null
+                            : () async {
+                                setState(() => _isTogglingPeriod = true);
+                                await periodProvider.addPeriodRange(
+                                  widget.date,
+                                  suggestedDays,
+                                );
+                                if (mounted) {
+                                  setState(() => _isTogglingPeriod = false);
+                                }
+                              },
                         child: Container(
                           width: double.infinity,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 12,
+                            horizontal: 16,
+                          ),
                           decoration: BoxDecoration(
-                            color: isPeriodDay ? AppColors.menstrual : Colors.white,
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(color: AppColors.menstrual),
-                          ),
-                          child: Center(
-                            child: Text(
-                              isPeriodDay ? '🩸 Remove Period Day' : '🩸 Mark as Period Day',
-                              style: AppTextStyles.button.copyWith(
-                                color: isPeriodDay ? Colors.white : AppColors.menstrual,
-                              ),
+                            color: AppColors.menstrualBg,
+                            borderRadius: BorderRadius.circular(14),
+                            border: Border.all(
+                              color: AppColors.menstrual.withValues(alpha: 0.3),
                             ),
                           ),
-                        ),
-                      ),
-
-                      // Suggest marking X days
-                      if (!isPeriodDay && suggestedDays > 1)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 10),
-                          child: GestureDetector(
-                            onTap: () => periodProvider.addPeriodRange(date, suggestedDays),
-                            child: Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-                              decoration: BoxDecoration(
-                                color: AppColors.menstrualBg,
-                                borderRadius: BorderRadius.circular(14),
-                                border: Border.all(color: AppColors.menstrual.withValues(alpha: 0.3)),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(
+                                Icons.auto_fix_high,
+                                size: 16,
+                                color: AppColors.menstrual,
                               ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const Icon(Icons.auto_fix_high, size: 16, color: AppColors.menstrual),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    'Mark $suggestedDays days as period',
-                                    style: AppTextStyles.body.copyWith(
-                                      color: AppColors.menstrual,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
+                              const SizedBox(width: 8),
+                              Text(
+                                'Mark $suggestedDays days as period',
+                                style: AppTextStyles.body.copyWith(
+                                  color: AppColors.menstrual,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
-                            ),
+                            ],
                           ),
                         ),
-                      const SizedBox(height: 24),
-
-                      // Flow
-                      Text('FLOW', style: AppTextStyles.label),
-                      const SizedBox(height: 8),
-                      FlowSelector(
-                        selected: log?.flow,
-                        onChanged: (flow) {
-                          logProvider.updateLog(date, flow: flow, clearFlow: flow == null);
-                        },
                       ),
-                      const SizedBox(height: 24),
+                    ),
+                  const SizedBox(height: 24),
 
-                      // Mood
-                      Text('MOOD', style: AppTextStyles.label),
-                      const SizedBox(height: 8),
-                      MoodSelector(
-                        selected: log?.moods ?? [],
-                        onChanged: (moods) {
-                          logProvider.updateLog(date, moods: moods, clearMoods: moods.isEmpty);
-                        },
-                      ),
-                      const SizedBox(height: 24),
-
-                      // Symptoms
-                      Text('SYMPTOMS', style: AppTextStyles.label),
-                      const SizedBox(height: 8),
-                      SymptomChips(
-                        selected: log?.symptoms ?? [],
-                        onChanged: (symptoms) {
-                          logProvider.updateLog(date, symptoms: symptoms);
-                        },
-                      ),
-                      const SizedBox(height: 24),
-
-                      // Notes
-                      Text('NOTES', style: AppTextStyles.label),
-                      const SizedBox(height: 8),
-                      TextField(
-                        controller: TextEditingController(text: log?.notes ?? ''),
-                        maxLines: 3,
-                        style: AppTextStyles.body,
-                        decoration: InputDecoration(
-                          hintText: _getRotatingHint(parsedDate),
-                          hintStyle: AppTextStyles.body.copyWith(color: AppColors.textMuted),
-                          filled: true,
-                          fillColor: Colors.white,
-                          contentPadding: const EdgeInsets.all(14),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(14),
-                            borderSide: const BorderSide(color: AppColors.inputBorder),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(14),
-                            borderSide: const BorderSide(color: AppColors.inputBorder),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(14),
-                            borderSide: const BorderSide(color: AppColors.luteal),
-                          ),
-                        ),
-                        onChanged: (text) {
-                          logProvider.updateLog(date, notes: text);
-                        },
-                      ),
-                      const SizedBox(height: 24),
-
-                      // Doctor's checklist
-                      _DoctorSection(
-                        values: log?.medicalLog ?? {},
-                        onChanged: (medLog) {
-                          logProvider.updateLog(date, medicalLog: medLog);
-                        },
-                      ),
-                      const SizedBox(height: 32),
-                    ],
+                  // Flow
+                  Text('FLOW', style: AppTextStyles.label),
+                  const SizedBox(height: 8),
+                  FlowSelector(
+                    selected: log?.flow,
+                    onChanged: (flow) {
+                      logProvider.updateLog(
+                        widget.date,
+                        flow: flow,
+                        clearFlow: flow == null,
+                      );
+                    },
                   ),
-                ),
+                  const SizedBox(height: 24),
 
-                // // Sticky bottom period toggle button
-                // Positioned(
-                //   left: 20,
-                //   right: 20,
-                //   bottom: 16,
-                //   child: GestureDetector(
-                //     onTap: () => _togglePeriod(
-                //       context, isPeriodDay, date, periodProvider,
-                //       settingsProvider, logProvider,
-                //     ),
-                //     child: Container(
-                //       padding: const EdgeInsets.symmetric(vertical: 14),
-                //       decoration: BoxDecoration(
-                //         color: isPeriodDay ? Colors.white : AppColors.menstrual,
-                //         borderRadius: BorderRadius.circular(16),
-                //         border: Border.all(color: AppColors.menstrual),
-                //         boxShadow: [
-                //           BoxShadow(
-                //             color: AppColors.menstrual.withValues(alpha: 0.25),
-                //             blurRadius: 12,
-                //             offset: const Offset(0, -2),
-                //           ),
-                //         ],
-                //       ),
-                //       child: Row(
-                //         mainAxisAlignment: MainAxisAlignment.center,
-                //         children: [
-                //           Icon(
-                //             isPeriodDay ? Icons.remove_circle_outline : Icons.water_drop,
-                //             size: 18,
-                //             color: isPeriodDay ? AppColors.menstrual : Colors.white,
-                //           ),
-                //           const SizedBox(width: 8),
-                //           Text(
-                //             isPeriodDay ? 'Remove Period Day' : 'Mark as Period Day',
-                //             style: AppTextStyles.button.copyWith(
-                //               color: isPeriodDay ? AppColors.menstrual : Colors.white,
-                //               fontSize: 14,
-                //             ),
-                //           ),
-                //         ],
-                //       ),
-                //     ),
-                //   ),
-                // ),
-              ],
+                  // Mood
+                  Text('MOOD', style: AppTextStyles.label),
+                  const SizedBox(height: 8),
+                  MoodSelector(
+                    selected: log?.moods ?? [],
+                    onChanged: (moods) {
+                      logProvider.updateLog(
+                        widget.date,
+                        moods: moods,
+                        clearMoods: moods.isEmpty,
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Symptoms
+                  Text('SYMPTOMS', style: AppTextStyles.label),
+                  const SizedBox(height: 8),
+                  SymptomChips(
+                    selected: log?.symptoms ?? [],
+                    onChanged: (symptoms) {
+                      logProvider.updateLog(widget.date, symptoms: symptoms);
+                    },
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Notes
+                  Text('NOTES', style: AppTextStyles.label),
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: _notesController,
+                    maxLines: 3,
+                    style: AppTextStyles.body,
+                    decoration: InputDecoration(
+                      hintText: _getRotatingHint(parsedDate),
+                      hintStyle: AppTextStyles.body.copyWith(
+                        color: AppColors.textMuted,
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
+                      contentPadding: const EdgeInsets.all(14),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14),
+                        borderSide: const BorderSide(
+                          color: AppColors.inputBorder,
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14),
+                        borderSide: const BorderSide(
+                          color: AppColors.inputBorder,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14),
+                        borderSide: const BorderSide(color: AppColors.luteal),
+                      ),
+                    ),
+                    onChanged: (text) {
+                      logProvider.updateLog(widget.date, notes: text);
+                    },
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Doctor's checklist
+                  _DoctorSection(
+                    values: log?.medicalLog ?? {},
+                    onChanged: (medLog) {
+                      logProvider.updateLog(widget.date, medicalLog: medLog);
+                    },
+                  ),
+                  const SizedBox(height: 40),
+                ],
+              ),
             ),
           ),
         ],
@@ -292,26 +327,28 @@ class LogBottomSheet extends StatelessWidget {
     );
   }
 
-  void _togglePeriod(
-    BuildContext context,
+  Future<void> _togglePeriod(
     bool isPeriodDay,
-    String date,
     PeriodProvider periodProvider,
     SettingsProvider settingsProvider,
     DailyLogProvider logProvider,
-  ) {
+  ) async {
+    setState(() => _isTogglingPeriod = true);
     final wasNotPeriod = !isPeriodDay;
-    periodProvider.togglePeriodDay(date);
+    await periodProvider.togglePeriodDay(widget.date);
     if (wasNotPeriod) {
       final defFlow = settingsProvider.defaultFlow;
       final defMoods = settingsProvider.defaultMoods;
       if (defFlow != null || defMoods.isNotEmpty) {
-        logProvider.updateLog(
-          date,
+        await logProvider.updateLog(
+          widget.date,
           flow: defFlow,
           moods: defMoods.isNotEmpty ? defMoods : null,
         );
       }
+    }
+    if (mounted) {
+      setState(() => _isTogglingPeriod = false);
     }
   }
 
@@ -362,9 +399,7 @@ class _DoctorSectionState extends State<_DoctorSection> {
             width: double.infinity,
             padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 14),
             decoration: BoxDecoration(
-              color: answeredCount > 0
-                  ? AppColors.ovulationBg
-                  : Colors.white,
+              color: answeredCount > 0 ? AppColors.ovulationBg : Colors.white,
               borderRadius: BorderRadius.circular(14),
               border: Border.all(
                 color: answeredCount > 0
@@ -411,10 +446,7 @@ class _DoctorSectionState extends State<_DoctorSection> {
         ),
         if (_expanded) ...[
           const SizedBox(height: 12),
-          DoctorChecklist(
-            values: widget.values,
-            onChanged: widget.onChanged,
-          ),
+          DoctorChecklist(values: widget.values, onChanged: widget.onChanged),
         ],
       ],
     );

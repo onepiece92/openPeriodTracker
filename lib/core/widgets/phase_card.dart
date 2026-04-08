@@ -21,7 +21,9 @@ class PhaseCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.phaseBgColor(phase),
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: AppColors.phaseColor(phase).withValues(alpha: 0.2)),
+        border: Border.all(
+          color: AppColors.phaseColor(phase).withValues(alpha: 0.2),
+        ),
       ),
       child: Row(
         children: [
@@ -44,9 +46,7 @@ class PhaseCard extends StatelessWidget {
           ),
           Text(
             'Day $currentDay of $cycleLength',
-            style: AppTextStyles.body.copyWith(
-              color: AppColors.textSecondary,
-            ),
+            style: AppTextStyles.body.copyWith(color: AppColors.textSecondary),
           ),
         ],
       ),

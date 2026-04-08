@@ -16,7 +16,8 @@ class OnboardingScreen extends StatefulWidget {
 }
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
-  int _currentStep = 0; // 0 = welcome, 1 = date, 2 = cycle length, 3 = period length
+  int _currentStep =
+      0; // 0 = welcome, 1 = date, 2 = cycle length, 3 = period length
   DateTime? _lastPeriodDate;
   int _cycleLength = 28;
   int _periodLength = 5;
@@ -26,7 +27,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   Future<void> _skip() async {
-    if (_lastPeriodDate == null) return; // shouldn't happen — skip only shows after date picked
+    if (_lastPeriodDate == null)
+      return; // shouldn't happen — skip only shows after date picked
 
     final dateStr =
         '${_lastPeriodDate!.year.toString().padLeft(4, '0')}-${_lastPeriodDate!.month.toString().padLeft(2, '0')}-${_lastPeriodDate!.day.toString().padLeft(2, '0')}';
@@ -98,7 +100,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   child: GestureDetector(
                     onTap: _skip,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 8,
+                      ),
                       decoration: BoxDecoration(
                         color: Colors.white.withValues(alpha: 0.6),
                         borderRadius: BorderRadius.circular(12),
@@ -186,7 +191,10 @@ class _WelcomeStep extends StatelessWidget {
                 ),
                 elevation: 0,
               ),
-              child: Text('Get Started', style: AppTextStyles.button.copyWith(color: Colors.white)),
+              child: Text(
+                'Get Started',
+                style: AppTextStyles.button.copyWith(color: Colors.white),
+              ),
             ),
           ),
           const SizedBox(height: 48),

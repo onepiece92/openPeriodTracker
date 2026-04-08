@@ -47,7 +47,9 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
       }
 
       final position = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(accuracy: LocationAccuracy.low),
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.low,
+        ),
       );
       final placemarks = await placemarkFromCoordinates(
         position.latitude,
@@ -57,9 +59,10 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
       if (placemarks.isNotEmpty) {
         final place = placemarks.first;
         setState(() {
-          _location = [place.locality, place.country]
-              .where((s) => s != null && s.isNotEmpty)
-              .join(', ');
+          _location = [
+            place.locality,
+            place.country,
+          ].where((s) => s != null && s.isNotEmpty).join(', ');
           _region = _detectRegion(place.isoCountryCode ?? '');
         });
       }
@@ -75,11 +78,76 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
   String _detectRegion(String countryCode) {
     const southAsian = {'IN', 'PK', 'BD', 'LK', 'NP', 'BT', 'MV'};
     const eastAsian = {'CN', 'JP', 'KR', 'TW', 'MN'};
-    const southeastAsian = {'TH', 'VN', 'PH', 'ID', 'MY', 'SG', 'MM', 'KH', 'LA'};
-    const middleEastern = {'SA', 'AE', 'QA', 'KW', 'BH', 'OM', 'IR', 'IQ', 'JO', 'LB', 'TR'};
-    const african = {'NG', 'KE', 'GH', 'ZA', 'ET', 'TZ', 'UG', 'EG', 'MA', 'DZ'};
-    const latinAmerican = {'MX', 'BR', 'AR', 'CO', 'PE', 'CL', 'VE', 'EC', 'BO', 'PY'};
-    const european = {'GB', 'DE', 'FR', 'IT', 'ES', 'PT', 'NL', 'BE', 'SE', 'NO', 'DK', 'FI', 'PL', 'AT', 'CH', 'IE', 'GR', 'CZ', 'RO', 'HU'};
+    const southeastAsian = {
+      'TH',
+      'VN',
+      'PH',
+      'ID',
+      'MY',
+      'SG',
+      'MM',
+      'KH',
+      'LA',
+    };
+    const middleEastern = {
+      'SA',
+      'AE',
+      'QA',
+      'KW',
+      'BH',
+      'OM',
+      'IR',
+      'IQ',
+      'JO',
+      'LB',
+      'TR',
+    };
+    const african = {
+      'NG',
+      'KE',
+      'GH',
+      'ZA',
+      'ET',
+      'TZ',
+      'UG',
+      'EG',
+      'MA',
+      'DZ',
+    };
+    const latinAmerican = {
+      'MX',
+      'BR',
+      'AR',
+      'CO',
+      'PE',
+      'CL',
+      'VE',
+      'EC',
+      'BO',
+      'PY',
+    };
+    const european = {
+      'GB',
+      'DE',
+      'FR',
+      'IT',
+      'ES',
+      'PT',
+      'NL',
+      'BE',
+      'SE',
+      'NO',
+      'DK',
+      'FI',
+      'PL',
+      'AT',
+      'CH',
+      'IE',
+      'GR',
+      'CZ',
+      'RO',
+      'HU',
+    };
 
     final cc = countryCode.toUpperCase();
     if (southAsian.contains(cc)) return 'south_asian';
@@ -123,7 +191,9 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
                       const SizedBox(height: 4),
                       Text(
                         'Cycle health insights',
-                        style: AppTextStyles.body.copyWith(color: AppColors.textLight),
+                        style: AppTextStyles.body.copyWith(
+                          color: AppColors.textLight,
+                        ),
                       ),
                     ],
                   ),
@@ -132,11 +202,16 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
                 GestureDetector(
                   onTap: _loadingLocation ? null : _fetchLocation,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.follicularBg,
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: AppColors.follicular.withValues(alpha: 0.2)),
+                      border: Border.all(
+                        color: AppColors.follicular.withValues(alpha: 0.2),
+                      ),
                     ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -144,7 +219,9 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
                         Icon(
                           Icons.location_on,
                           size: 14,
-                          color: _loadingLocation ? AppColors.textMuted : AppColors.follicular,
+                          color: _loadingLocation
+                              ? AppColors.textMuted
+                              : AppColors.follicular,
                         ),
                         const SizedBox(width: 4),
                         _loadingLocation
@@ -153,11 +230,15 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
                                 height: 10,
                                 child: CircularProgressIndicator(
                                   strokeWidth: 1.5,
-                                  valueColor: AlwaysStoppedAnimation(AppColors.follicular),
+                                  valueColor: AlwaysStoppedAnimation(
+                                    AppColors.follicular,
+                                  ),
                                 ),
                               )
                             : Text(
-                                _location.isNotEmpty ? _location : 'Locating...',
+                                _location.isNotEmpty
+                                    ? _location
+                                    : 'Locating...',
                                 style: AppTextStyles.small.copyWith(
                                   color: AppColors.follicular,
                                   fontWeight: FontWeight.w600,
@@ -329,7 +410,9 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
               _DiagnosisCard(
                 icon: avgCycle >= 21 && avgCycle <= 35 ? '✅' : '⚠️',
                 title: 'Cycle Length',
-                status: avgCycle >= 21 && avgCycle <= 35 ? 'Normal' : 'Atypical',
+                status: avgCycle >= 21 && avgCycle <= 35
+                    ? 'Normal'
+                    : 'Atypical',
                 statusColor: avgCycle >= 21 && avgCycle <= 35
                     ? AppColors.ovulation
                     : AppColors.menstrual,
@@ -349,8 +432,8 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
                   status: cycleTrend == 'stable'
                       ? 'Stable'
                       : cycleTrend == 'lengthening'
-                          ? 'Lengthening'
-                          : 'Shortening',
+                      ? 'Lengthening'
+                      : 'Shortening',
                   statusColor: cycleTrend == 'stable'
                       ? AppColors.ovulation
                       : const Color(0xFFD4A340),
@@ -376,7 +459,10 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
             if (totalFlowLogs > 0) ...[
               Text('FLOW ANALYSIS', style: AppTextStyles.label),
               const SizedBox(height: 8),
-              _FlowAnalysisCard(flowCounts: flowCounts, totalLogs: totalFlowLogs),
+              _FlowAnalysisCard(
+                flowCounts: flowCounts,
+                totalLogs: totalFlowLogs,
+              ),
               const SizedBox(height: 20),
             ],
 
@@ -436,7 +522,8 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
   Widget _buildPeriodDurationCard(List periods) {
     if (periods.isEmpty) return const SizedBox.shrink();
     final avgDuration =
-        periods.map((p) => p.durationDays as int).reduce((a, b) => a + b) / periods.length;
+        periods.map((p) => p.durationDays as int).reduce((a, b) => a + b) /
+        periods.length;
     final normal = avgDuration >= 2 && avgDuration <= 7;
     return _DiagnosisCard(
       icon: normal ? '✅' : '⚠️',
@@ -473,42 +560,57 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
     // Irregular cycles
     final variation = _getVariation(cycleLengths);
     if (variation > 7) {
-      suggestions.add(_DoctorSuggestion(
-        icon: '🔄',
-        text: 'Irregular cycles (${variation}d variation) — could indicate hormonal changes, PCOS, thyroid issues, or stress.',
-      ));
+      suggestions.add(
+        _DoctorSuggestion(
+          icon: '🔄',
+          text:
+              'Irregular cycles (${variation}d variation) — could indicate hormonal changes, PCOS, thyroid issues, or stress.',
+        ),
+      );
     }
 
     // Very short or long cycles
     if (avgCycle < 21) {
-      suggestions.add(_DoctorSuggestion(
-        icon: '⏱️',
-        text: 'Short cycles (<21 days) — may indicate anovulation or luteal phase deficiency.',
-      ));
+      suggestions.add(
+        _DoctorSuggestion(
+          icon: '⏱️',
+          text:
+              'Short cycles (<21 days) — may indicate anovulation or luteal phase deficiency.',
+        ),
+      );
     } else if (avgCycle > 35) {
-      suggestions.add(_DoctorSuggestion(
-        icon: '⏱️',
-        text: 'Long cycles (>35 days) — could be related to PCOS, stress, or thyroid function.',
-      ));
+      suggestions.add(
+        _DoctorSuggestion(
+          icon: '⏱️',
+          text:
+              'Long cycles (>35 days) — could be related to PCOS, stress, or thyroid function.',
+        ),
+      );
     }
 
     // Heavy flow dominance
     if (totalFlowLogs >= 3) {
       final heavyPct = (flowCounts['heavy']! / totalFlowLogs * 100).round();
       if (heavyPct >= 60) {
-        suggestions.add(_DoctorSuggestion(
-          icon: '💧',
-          text: 'Heavy flow logged $heavyPct% of the time — if you soak through pads/tampons hourly, discuss with your provider.',
-        ));
+        suggestions.add(
+          _DoctorSuggestion(
+            icon: '💧',
+            text:
+                'Heavy flow logged $heavyPct% of the time — if you soak through pads/tampons hourly, discuss with your provider.',
+          ),
+        );
       }
     }
 
     // Long periods
     if (avgPeriodDuration > 7) {
-      suggestions.add(_DoctorSuggestion(
-        icon: '📅',
-        text: 'Periods averaging ${avgPeriodDuration.round()} days — periods longer than 7 days may warrant evaluation.',
-      ));
+      suggestions.add(
+        _DoctorSuggestion(
+          icon: '📅',
+          text:
+              'Periods averaging ${avgPeriodDuration.round()} days — periods longer than 7 days may warrant evaluation.',
+        ),
+      );
     }
 
     // Frequent severe symptoms
@@ -517,10 +619,13 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
         ? cycleLengths.reduce((a, b) => a + b)
         : 0;
     if (crampCount > 0 && totalLogs > 0 && crampCount / totalLogs > 0.5) {
-      suggestions.add(_DoctorSuggestion(
-        icon: '🩹',
-        text: 'Frequent cramps — logged in over half your cycle days. Severe menstrual pain may indicate endometriosis or fibroids.',
-      ));
+      suggestions.add(
+        _DoctorSuggestion(
+          icon: '🩹',
+          text:
+              'Frequent cramps — logged in over half your cycle days. Severe menstrual pain may indicate endometriosis or fibroids.',
+        ),
+      );
     }
 
     if (suggestions.isEmpty) {
@@ -551,7 +656,11 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: AppColors.menstrual.withValues(alpha: 0.2)),
         boxShadow: const [
-          BoxShadow(color: Color(0x0FA08CB0), blurRadius: 12, offset: Offset(0, 2)),
+          BoxShadow(
+            color: Color(0x0FA08CB0),
+            blurRadius: 12,
+            offset: Offset(0, 2),
+          ),
         ],
       ),
       child: Column(
@@ -571,22 +680,24 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
             ],
           ),
           const SizedBox(height: 12),
-          ...suggestions.map((s) => Padding(
-                padding: const EdgeInsets.only(bottom: 10),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(s.icon, style: const TextStyle(fontSize: 16)),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        s.text,
-                        style: AppTextStyles.body.copyWith(height: 1.4),
-                      ),
+          ...suggestions.map(
+            (s) => Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(s.icon, style: const TextStyle(fontSize: 16)),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      s.text,
+                      style: AppTextStyles.body.copyWith(height: 1.4),
                     ),
-                  ],
-                ),
-              )),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -772,7 +883,10 @@ class _HealthScoreCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 2,
+                  ),
                   decoration: BoxDecoration(
                     color: _scoreColor.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(8),
@@ -840,7 +954,10 @@ class _DiagnosisCard extends StatelessWidget {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   color: statusColor.withValues(alpha: 0.12),
                   borderRadius: BorderRadius.circular(10),
@@ -908,7 +1025,9 @@ class _SymptomAnalysisCard extends StatelessWidget {
                         value: pct,
                         minHeight: 8,
                         backgroundColor: AppColors.cardBorder,
-                        valueColor: const AlwaysStoppedAnimation(Color(0xFF5BA4A4)),
+                        valueColor: const AlwaysStoppedAnimation(
+                          Color(0xFF5BA4A4),
+                        ),
                       ),
                     ),
                   ),
@@ -984,9 +1103,7 @@ class _MoodAnalysisCard extends StatelessWidget {
                   final pct = entry.value / totalLogs;
                   return Expanded(
                     flex: (pct * 100).round().clamp(1, 100),
-                    child: Container(
-                      color: _moodColor(entry.key),
-                    ),
+                    child: Container(color: _moodColor(entry.key)),
                   );
                 }).toList(),
               ),
@@ -1149,7 +1266,9 @@ class _FlowBar extends StatelessWidget {
               child: Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(3),
-                  color: AppColors.menstrual.withValues(alpha: 0.3 + (drops * 0.23)),
+                  color: AppColors.menstrual.withValues(
+                    alpha: 0.3 + (drops * 0.23),
+                  ),
                 ),
               ),
             ),
@@ -1159,7 +1278,11 @@ class _FlowBar extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: List.generate(
               drops,
-              (_) => const Icon(Icons.water_drop, size: 10, color: AppColors.menstrual),
+              (_) => const Icon(
+                Icons.water_drop,
+                size: 10,
+                color: AppColors.menstrual,
+              ),
             ),
           ),
           const SizedBox(height: 2),
@@ -1183,7 +1306,11 @@ class _TabPill extends StatelessWidget {
   final bool isActive;
   final VoidCallback onTap;
 
-  const _TabPill({required this.label, required this.isActive, required this.onTap});
+  const _TabPill({
+    required this.label,
+    required this.isActive,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -1197,7 +1324,13 @@ class _TabPill extends StatelessWidget {
             color: isActive ? Colors.white : Colors.transparent,
             borderRadius: BorderRadius.circular(12),
             boxShadow: isActive
-                ? const [BoxShadow(color: Color(0x0FA08CB0), blurRadius: 8, offset: Offset(0, 2))]
+                ? const [
+                    BoxShadow(
+                      color: Color(0x0FA08CB0),
+                      blurRadius: 8,
+                      offset: Offset(0, 2),
+                    ),
+                  ]
                 : null,
           ),
           child: Center(
@@ -1254,7 +1387,9 @@ class _DietTab extends StatelessWidget {
             decoration: BoxDecoration(
               color: AppColors.phaseBgColor(phase),
               borderRadius: BorderRadius.circular(18),
-              border: Border.all(color: AppColors.phaseColor(phase).withValues(alpha: 0.2)),
+              border: Border.all(
+                color: AppColors.phaseColor(phase).withValues(alpha: 0.2),
+              ),
             ),
             child: Row(
               children: [
@@ -1266,7 +1401,10 @@ class _DietTab extends StatelessWidget {
                     children: [
                       Text(
                         'Diet for ${AppColors.phaseName(phase)}',
-                        style: AppTextStyles.button.copyWith(color: AppColors.textPrimary, fontSize: 14),
+                        style: AppTextStyles.button.copyWith(
+                          color: AppColors.textPrimary,
+                          fontSize: 14,
+                        ),
                       ),
                       const SizedBox(height: 2),
                       Text(
@@ -1283,7 +1421,10 @@ class _DietTab extends StatelessWidget {
 
           // Nutrient deficiency risks (from symptoms)
           if (deficiencyRisks.isNotEmpty) ...[
-            Text('NUTRIENT GAPS (FROM YOUR SYMPTOMS)', style: AppTextStyles.label),
+            Text(
+              'NUTRIENT GAPS (FROM YOUR SYMPTOMS)',
+              style: AppTextStyles.label,
+            ),
             const SizedBox(height: 8),
             Container(
               width: double.infinity,
@@ -1291,46 +1432,82 @@ class _DietTab extends StatelessWidget {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(18),
-                border: Border.all(color: const Color(0xFFD4A340).withValues(alpha: 0.2)),
-                boxShadow: const [BoxShadow(color: Color(0x0FA08CB0), blurRadius: 12, offset: Offset(0, 2))],
+                border: Border.all(
+                  color: const Color(0xFFD4A340).withValues(alpha: 0.2),
+                ),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color(0x0FA08CB0),
+                    blurRadius: 12,
+                    offset: Offset(0, 2),
+                  ),
+                ],
               ),
               child: Column(
-                children: deficiencyRisks.map((r) => Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(r['emoji']!, style: const TextStyle(fontSize: 18)),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Column(
+                children: deficiencyRisks
+                    .map(
+                      (r) => Padding(
+                        padding: const EdgeInsets.only(bottom: 10),
+                        child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Row(
-                              children: [
-                                Text(r['nutrient']!, style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w700, fontSize: 13)),
-                                const SizedBox(width: 6),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFFD4A340).withValues(alpha: 0.12),
-                                    borderRadius: BorderRadius.circular(6),
-                                  ),
-                                  child: Text(
-                                    'from: ${r['symptom']}',
-                                    style: AppTextStyles.small.copyWith(fontSize: 8, color: const Color(0xFFD4A340)),
-                                  ),
-                                ),
-                              ],
+                            Text(
+                              r['emoji']!,
+                              style: const TextStyle(fontSize: 18),
                             ),
-                            const SizedBox(height: 2),
-                            Text(r['fix']!, style: AppTextStyles.small.copyWith(color: AppColors.textSecondary)),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Text(
+                                        r['nutrient']!,
+                                        style: AppTextStyles.body.copyWith(
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: 13,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 6),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 6,
+                                          vertical: 1,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: const Color(
+                                            0xFFD4A340,
+                                          ).withValues(alpha: 0.12),
+                                          borderRadius: BorderRadius.circular(
+                                            6,
+                                          ),
+                                        ),
+                                        child: Text(
+                                          'from: ${r['symptom']}',
+                                          style: AppTextStyles.small.copyWith(
+                                            fontSize: 8,
+                                            color: const Color(0xFFD4A340),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    r['fix']!,
+                                    style: AppTextStyles.small.copyWith(
+                                      color: AppColors.textSecondary,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ],
                         ),
                       ),
-                    ],
-                  ),
-                )).toList(),
+                    )
+                    .toList(),
               ),
             ),
             const SizedBox(height: 20),
@@ -1351,9 +1528,24 @@ class _DietTab extends StatelessWidget {
                     height: 18,
                     child: Row(
                       children: [
-                        Expanded(flex: macros['carb']!, child: Container(color: AppColors.follicular.withValues(alpha: 0.5))),
-                        Expanded(flex: macros['protein']!, child: Container(color: AppColors.menstrual.withValues(alpha: 0.5))),
-                        Expanded(flex: macros['fat']!, child: Container(color: AppColors.luteal.withValues(alpha: 0.5))),
+                        Expanded(
+                          flex: macros['carb']!,
+                          child: Container(
+                            color: AppColors.follicular.withValues(alpha: 0.5),
+                          ),
+                        ),
+                        Expanded(
+                          flex: macros['protein']!,
+                          child: Container(
+                            color: AppColors.menstrual.withValues(alpha: 0.5),
+                          ),
+                        ),
+                        Expanded(
+                          flex: macros['fat']!,
+                          child: Container(
+                            color: AppColors.luteal.withValues(alpha: 0.5),
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -1362,8 +1554,16 @@ class _DietTab extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    _macroLabel('🍞 Carbs', macros['carb']!, AppColors.follicular),
-                    _macroLabel('🥩 Protein', macros['protein']!, AppColors.menstrual),
+                    _macroLabel(
+                      '🍞 Carbs',
+                      macros['carb']!,
+                      AppColors.follicular,
+                    ),
+                    _macroLabel(
+                      '🥩 Protein',
+                      macros['protein']!,
+                      AppColors.menstrual,
+                    ),
                     _macroLabel('🥑 Fat', macros['fat']!, AppColors.luteal),
                   ],
                 ),
@@ -1387,9 +1587,21 @@ class _DietTab extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(hydration['amount']!, style: AppTextStyles.button.copyWith(color: AppColors.follicular, fontSize: 16)),
+                      Text(
+                        hydration['amount']!,
+                        style: AppTextStyles.button.copyWith(
+                          color: AppColors.follicular,
+                          fontSize: 16,
+                        ),
+                      ),
                       const SizedBox(height: 2),
-                      Text(hydration['tip']!, style: AppTextStyles.body.copyWith(fontSize: 12, height: 1.3)),
+                      Text(
+                        hydration['tip']!,
+                        style: AppTextStyles.body.copyWith(
+                          fontSize: 12,
+                          height: 1.3,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -1406,19 +1618,38 @@ class _DietTab extends StatelessWidget {
             padding: const EdgeInsets.all(14),
             decoration: AppDecorations.card,
             child: Column(
-              children: supplements.map((s) => Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Row(
-                  children: [
-                    Text(s['emoji']!, style: const TextStyle(fontSize: 16)),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(s['name']!, style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w600, fontSize: 12)),
+              children: supplements
+                  .map(
+                    (s) => Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Row(
+                        children: [
+                          Text(
+                            s['emoji']!,
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              s['name']!,
+                              style: AppTextStyles.body.copyWith(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                          Text(
+                            s['dose']!,
+                            style: AppTextStyles.small.copyWith(
+                              color: AppColors.follicular,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                    Text(s['dose']!, style: AppTextStyles.small.copyWith(color: AppColors.follicular, fontWeight: FontWeight.w700)),
-                  ],
-                ),
-              )).toList(),
+                  )
+                  .toList(),
             ),
           ),
           const SizedBox(height: 16),
@@ -1426,12 +1657,14 @@ class _DietTab extends StatelessWidget {
           // Key Vitamins & Minerals
           Text('KEY VITAMINS & MINERALS', style: AppTextStyles.label),
           const SizedBox(height: 8),
-          ...(diet['vitamins'] as List<Map<String, String>>).map((v) => _NutrientCard(
-                emoji: v['emoji']!,
-                name: v['name']!,
-                benefit: v['benefit']!,
-                sources: v['sources']!,
-              )),
+          ...(diet['vitamins'] as List<Map<String, String>>).map(
+            (v) => _NutrientCard(
+              emoji: v['emoji']!,
+              name: v['name']!,
+              benefit: v['benefit']!,
+              sources: v['sources']!,
+            ),
+          ),
           const SizedBox(height: 16),
 
           // Recommended Foods
@@ -1444,28 +1677,47 @@ class _DietTab extends StatelessWidget {
             child: Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: (diet['foods'] as List<Map<String, String>>).map((f) => Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: AppColors.phaseBgColor(phase),
-                      borderRadius: BorderRadius.circular(12),
+              children: (diet['foods'] as List<Map<String, String>>)
+                  .map(
+                    (f) => Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.phaseBgColor(phase),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            f['emoji']!,
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            f['name']!,
+                            style: AppTextStyles.body.copyWith(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(f['emoji']!, style: const TextStyle(fontSize: 16)),
-                        const SizedBox(width: 6),
-                        Text(f['name']!, style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w600, fontSize: 12)),
-                      ],
-                    ),
-                  )).toList(),
+                  )
+                  .toList(),
             ),
           ),
           const SizedBox(height: 16),
 
           // Local/Regional foods
           if (region.isNotEmpty && region != 'global') ...[
-            Text('LOCAL PICKS${location.isNotEmpty ? ' — $location' : ''}', style: AppTextStyles.label),
+            Text(
+              'LOCAL PICKS${location.isNotEmpty ? ' — $location' : ''}',
+              style: AppTextStyles.label,
+            ),
             const SizedBox(height: 8),
             Container(
               width: double.infinity,
@@ -1473,8 +1725,16 @@ class _DietTab extends StatelessWidget {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(18),
-                border: Border.all(color: AppColors.ovulation.withValues(alpha: 0.2)),
-                boxShadow: const [BoxShadow(color: Color(0x0FA08CB0), blurRadius: 12, offset: Offset(0, 2))],
+                border: Border.all(
+                  color: AppColors.ovulation.withValues(alpha: 0.2),
+                ),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color(0x0FA08CB0),
+                    blurRadius: 12,
+                    offset: Offset(0, 2),
+                  ),
+                ],
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -1483,29 +1743,51 @@ class _DietTab extends StatelessWidget {
                     children: [
                       const Text('🌍', style: TextStyle(fontSize: 20)),
                       const SizedBox(width: 8),
-                      Text('Regional recommendations', style: AppTextStyles.button.copyWith(fontSize: 13, color: AppColors.textPrimary)),
+                      Text(
+                        'Regional recommendations',
+                        style: AppTextStyles.button.copyWith(
+                          fontSize: 13,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 12),
-                  ...(diet['local'] as List<Map<String, String>>).map((l) => Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(l['emoji']!, style: const TextStyle(fontSize: 18)),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(l['name']!, style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w600, fontSize: 13)),
-                                  Text(l['why']!, style: AppTextStyles.small.copyWith(color: AppColors.textSecondary)),
-                                ],
-                              ),
+                  ...(diet['local'] as List<Map<String, String>>).map(
+                    (l) => Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            l['emoji']!,
+                            style: const TextStyle(fontSize: 18),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  l['name']!,
+                                  style: AppTextStyles.body.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                                Text(
+                                  l['why']!,
+                                  style: AppTextStyles.small.copyWith(
+                                    color: AppColors.textSecondary,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                      )),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -1521,21 +1803,36 @@ class _DietTab extends StatelessWidget {
             decoration: BoxDecoration(
               color: AppColors.menstrualBg,
               borderRadius: BorderRadius.circular(18),
-              border: Border.all(color: AppColors.menstrual.withValues(alpha: 0.15)),
+              border: Border.all(
+                color: AppColors.menstrual.withValues(alpha: 0.15),
+              ),
             ),
             child: Column(
-              children: (diet['avoid'] as List<Map<String, String>>).map((a) => Padding(
-                    padding: const EdgeInsets.only(bottom: 6),
-                    child: Row(
-                      children: [
-                        Text(a['emoji']!, style: const TextStyle(fontSize: 14)),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text('${a['name']} — ${a['reason']}', style: AppTextStyles.body.copyWith(fontSize: 12, color: AppColors.menstrual)),
-                        ),
-                      ],
+              children: (diet['avoid'] as List<Map<String, String>>)
+                  .map(
+                    (a) => Padding(
+                      padding: const EdgeInsets.only(bottom: 6),
+                      child: Row(
+                        children: [
+                          Text(
+                            a['emoji']!,
+                            style: const TextStyle(fontSize: 14),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              '${a['name']} — ${a['reason']}',
+                              style: AppTextStyles.body.copyWith(
+                                fontSize: 12,
+                                color: AppColors.menstrual,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  )).toList(),
+                  )
+                  .toList(),
             ),
           ),
           const SizedBox(height: 20),
@@ -1559,7 +1856,13 @@ class _DietTab extends StatelessWidget {
   Widget _macroLabel(String label, int pct, Color color) {
     return Column(
       children: [
-        Text('$pct%', style: AppTextStyles.mediumNumber.copyWith(fontSize: 16, color: color)),
+        Text(
+          '$pct%',
+          style: AppTextStyles.mediumNumber.copyWith(
+            fontSize: 16,
+            color: color,
+          ),
+        ),
         Text(label, style: AppTextStyles.small.copyWith(fontSize: 9)),
       ],
     );
@@ -1576,14 +1879,46 @@ class _DietTab extends StatelessWidget {
 
     final risks = <Map<String, String>>[];
     final mapping = {
-      'Cramps': {'emoji': '🟤', 'nutrient': 'Magnesium', 'fix': 'Dark chocolate, pumpkin seeds, spinach, almonds'},
-      'Fatigue': {'emoji': '🔴', 'nutrient': 'Iron + B12', 'fix': 'Red meat, lentils, eggs, fortified cereals'},
-      'Headache': {'emoji': '💧', 'nutrient': 'Hydration + Magnesium', 'fix': 'Water, coconut water, bananas, nuts'},
-      'Bloating': {'emoji': '🟢', 'nutrient': 'Potassium + Probiotics', 'fix': 'Bananas, yogurt, ginger tea, fermented foods'},
-      'Acne': {'emoji': '🟡', 'nutrient': 'Zinc + Omega-3', 'fix': 'Pumpkin seeds, salmon, walnuts, zinc supplements'},
-      'Nausea': {'emoji': '🫚', 'nutrient': 'B6 + Ginger', 'fix': 'Ginger tea, chickpeas, potatoes, small frequent meals'},
-      'Back pain': {'emoji': '🟠', 'nutrient': 'Calcium + Vitamin D', 'fix': 'Dairy, sardines, sunlight, leafy greens'},
-      'Breast tenderness': {'emoji': '🔵', 'nutrient': 'Vitamin E + B6', 'fix': 'Sunflower seeds, avocado, sweet potatoes'},
+      'Cramps': {
+        'emoji': '🟤',
+        'nutrient': 'Magnesium',
+        'fix': 'Dark chocolate, pumpkin seeds, spinach, almonds',
+      },
+      'Fatigue': {
+        'emoji': '🔴',
+        'nutrient': 'Iron + B12',
+        'fix': 'Red meat, lentils, eggs, fortified cereals',
+      },
+      'Headache': {
+        'emoji': '💧',
+        'nutrient': 'Hydration + Magnesium',
+        'fix': 'Water, coconut water, bananas, nuts',
+      },
+      'Bloating': {
+        'emoji': '🟢',
+        'nutrient': 'Potassium + Probiotics',
+        'fix': 'Bananas, yogurt, ginger tea, fermented foods',
+      },
+      'Acne': {
+        'emoji': '🟡',
+        'nutrient': 'Zinc + Omega-3',
+        'fix': 'Pumpkin seeds, salmon, walnuts, zinc supplements',
+      },
+      'Nausea': {
+        'emoji': '🫚',
+        'nutrient': 'B6 + Ginger',
+        'fix': 'Ginger tea, chickpeas, potatoes, small frequent meals',
+      },
+      'Back pain': {
+        'emoji': '🟠',
+        'nutrient': 'Calcium + Vitamin D',
+        'fix': 'Dairy, sardines, sunlight, leafy greens',
+      },
+      'Breast tenderness': {
+        'emoji': '🔵',
+        'nutrient': 'Vitamin E + B6',
+        'fix': 'Sunflower seeds, avocado, sweet potatoes',
+      },
     };
 
     for (final entry in symptomCounts.entries) {
@@ -1597,52 +1932,74 @@ class _DietTab extends StatelessWidget {
   }
 
   static const Map<CyclePhase, Map<String, int>> _macrosByPhase = {
-    CyclePhase.menstrual:  {'carb': 45, 'protein': 30, 'fat': 25},
+    CyclePhase.menstrual: {'carb': 45, 'protein': 30, 'fat': 25},
     CyclePhase.follicular: {'carb': 40, 'protein': 30, 'fat': 30},
-    CyclePhase.ovulation:  {'carb': 35, 'protein': 35, 'fat': 30},
-    CyclePhase.luteal:     {'carb': 50, 'protein': 25, 'fat': 25},
+    CyclePhase.ovulation: {'carb': 35, 'protein': 35, 'fat': 30},
+    CyclePhase.luteal: {'carb': 50, 'protein': 25, 'fat': 25},
   };
 
   static const Map<CyclePhase, Map<String, String>> _hydrationByPhase = {
-    CyclePhase.menstrual:  {'amount': '2.5–3L / day', 'tip': 'You lose extra fluids during your period. Add electrolytes or coconut water. Warm herbal teas count too.'},
-    CyclePhase.follicular: {'amount': '2–2.5L / day', 'tip': 'Standard hydration. Add lemon or cucumber for flavor. Green tea is a great mid-morning boost.'},
-    CyclePhase.ovulation:  {'amount': '2.5L / day', 'tip': 'Estrogen peaks — your body runs warmer. Stay ahead of thirst. Watermelon and cucumber are hydrating snacks.'},
-    CyclePhase.luteal:     {'amount': '2.5–3L / day', 'tip': 'Progesterone causes water retention. Counterintuitively, drinking more water helps reduce bloating.'},
+    CyclePhase.menstrual: {
+      'amount': '2.5–3L / day',
+      'tip':
+          'You lose extra fluids during your period. Add electrolytes or coconut water. Warm herbal teas count too.',
+    },
+    CyclePhase.follicular: {
+      'amount': '2–2.5L / day',
+      'tip':
+          'Standard hydration. Add lemon or cucumber for flavor. Green tea is a great mid-morning boost.',
+    },
+    CyclePhase.ovulation: {
+      'amount': '2.5L / day',
+      'tip':
+          'Estrogen peaks — your body runs warmer. Stay ahead of thirst. Watermelon and cucumber are hydrating snacks.',
+    },
+    CyclePhase.luteal: {
+      'amount': '2.5–3L / day',
+      'tip':
+          'Progesterone causes water retention. Counterintuitively, drinking more water helps reduce bloating.',
+    },
   };
 
-  static const Map<CyclePhase, List<Map<String, String>>> _supplementsByPhase = {
-    CyclePhase.menstrual: [
-      {'emoji': '🔴', 'name': 'Iron (ferrous bisglycinate)', 'dose': '18–25mg'},
-      {'emoji': '🟤', 'name': 'Magnesium glycinate', 'dose': '200–400mg'},
-      {'emoji': '🟡', 'name': 'Vitamin C', 'dose': '500mg'},
-      {'emoji': '🟠', 'name': 'Omega-3 fish oil', 'dose': '1000mg'},
-    ],
-    CyclePhase.follicular: [
-      {'emoji': '🟢', 'name': 'B-Complex', 'dose': '1 tablet'},
-      {'emoji': '🟡', 'name': 'Vitamin E', 'dose': '200IU'},
-      {'emoji': '🔵', 'name': 'Probiotic', 'dose': '10B CFU'},
-      {'emoji': '🟠', 'name': 'Vitamin D3', 'dose': '2000IU'},
-    ],
-    CyclePhase.ovulation: [
-      {'emoji': '🟢', 'name': 'Folate / Folic acid', 'dose': '400mcg'},
-      {'emoji': '🔴', 'name': 'NAC (N-Acetyl Cysteine)', 'dose': '600mg'},
-      {'emoji': '🟡', 'name': 'Vitamin C', 'dose': '500mg'},
-      {'emoji': '🔵', 'name': 'CoQ10', 'dose': '100mg'},
-    ],
-    CyclePhase.luteal: [
-      {'emoji': '🟤', 'name': 'Magnesium glycinate', 'dose': '300–400mg'},
-      {'emoji': '🟡', 'name': 'Vitamin B6', 'dose': '50mg'},
-      {'emoji': '🟠', 'name': 'Calcium', 'dose': '500mg'},
-      {'emoji': '🔵', 'name': 'L-Theanine', 'dose': '200mg'},
-    ],
-  };
+  static const Map<CyclePhase, List<Map<String, String>>> _supplementsByPhase =
+      {
+        CyclePhase.menstrual: [
+          {
+            'emoji': '🔴',
+            'name': 'Iron (ferrous bisglycinate)',
+            'dose': '18–25mg',
+          },
+          {'emoji': '🟤', 'name': 'Magnesium glycinate', 'dose': '200–400mg'},
+          {'emoji': '🟡', 'name': 'Vitamin C', 'dose': '500mg'},
+          {'emoji': '🟠', 'name': 'Omega-3 fish oil', 'dose': '1000mg'},
+        ],
+        CyclePhase.follicular: [
+          {'emoji': '🟢', 'name': 'B-Complex', 'dose': '1 tablet'},
+          {'emoji': '🟡', 'name': 'Vitamin E', 'dose': '200IU'},
+          {'emoji': '🔵', 'name': 'Probiotic', 'dose': '10B CFU'},
+          {'emoji': '🟠', 'name': 'Vitamin D3', 'dose': '2000IU'},
+        ],
+        CyclePhase.ovulation: [
+          {'emoji': '🟢', 'name': 'Folate / Folic acid', 'dose': '400mcg'},
+          {'emoji': '🔴', 'name': 'NAC (N-Acetyl Cysteine)', 'dose': '600mg'},
+          {'emoji': '🟡', 'name': 'Vitamin C', 'dose': '500mg'},
+          {'emoji': '🔵', 'name': 'CoQ10', 'dose': '100mg'},
+        ],
+        CyclePhase.luteal: [
+          {'emoji': '🟤', 'name': 'Magnesium glycinate', 'dose': '300–400mg'},
+          {'emoji': '🟡', 'name': 'Vitamin B6', 'dose': '50mg'},
+          {'emoji': '🟠', 'name': 'Calcium', 'dose': '500mg'},
+          {'emoji': '🔵', 'name': 'L-Theanine', 'dose': '200mg'},
+        ],
+      };
 
   Map<String, dynamic> _getDietData(CyclePhase phase, String region) {
     // Phase-specific base recommendations
     final phaseData = _phaseNutrition[phase]!;
 
     // Region-specific local foods
-    final localFoods = _regionalFoods[region]?[phase] ?? _regionalFoods['global']![phase]!;
+    final localFoods =
+        _regionalFoods[region]?[phase] ?? _regionalFoods['global']![phase]!;
 
     return {
       'summary': phaseData['summary'],
@@ -1655,13 +2012,39 @@ class _DietTab extends StatelessWidget {
 
   static final Map<CyclePhase, Map<String, dynamic>> _phaseNutrition = {
     CyclePhase.menstrual: {
-      'summary': 'Focus on replenishing iron and reducing inflammation. Warm, nourishing foods support recovery.',
+      'summary':
+          'Focus on replenishing iron and reducing inflammation. Warm, nourishing foods support recovery.',
       'vitamins': [
-        {'emoji': '🔴', 'name': 'Iron', 'benefit': 'Replaces blood loss, prevents fatigue', 'sources': 'Red meat, lentils, spinach, tofu'},
-        {'emoji': '🟡', 'name': 'Vitamin C', 'benefit': 'Boosts iron absorption', 'sources': 'Citrus fruits, bell peppers, broccoli'},
-        {'emoji': '🟤', 'name': 'Magnesium', 'benefit': 'Reduces cramps and muscle tension', 'sources': 'Dark chocolate, almonds, bananas'},
-        {'emoji': '🟠', 'name': 'Omega-3', 'benefit': 'Anti-inflammatory, eases pain', 'sources': 'Salmon, walnuts, flaxseeds'},
-        {'emoji': '🔵', 'name': 'Zinc', 'benefit': 'Supports immune function', 'sources': 'Pumpkin seeds, chickpeas, cashews'},
+        {
+          'emoji': '🔴',
+          'name': 'Iron',
+          'benefit': 'Replaces blood loss, prevents fatigue',
+          'sources': 'Red meat, lentils, spinach, tofu',
+        },
+        {
+          'emoji': '🟡',
+          'name': 'Vitamin C',
+          'benefit': 'Boosts iron absorption',
+          'sources': 'Citrus fruits, bell peppers, broccoli',
+        },
+        {
+          'emoji': '🟤',
+          'name': 'Magnesium',
+          'benefit': 'Reduces cramps and muscle tension',
+          'sources': 'Dark chocolate, almonds, bananas',
+        },
+        {
+          'emoji': '🟠',
+          'name': 'Omega-3',
+          'benefit': 'Anti-inflammatory, eases pain',
+          'sources': 'Salmon, walnuts, flaxseeds',
+        },
+        {
+          'emoji': '🔵',
+          'name': 'Zinc',
+          'benefit': 'Supports immune function',
+          'sources': 'Pumpkin seeds, chickpeas, cashews',
+        },
       ],
       'foods': [
         {'emoji': '🥩', 'name': 'Lean red meat'},
@@ -1675,19 +2058,56 @@ class _DietTab extends StatelessWidget {
         {'emoji': '🍌', 'name': 'Bananas'},
       ],
       'avoid': [
-        {'emoji': '☕', 'name': 'Excess caffeine', 'reason': 'worsens cramps and bloating'},
-        {'emoji': '🧂', 'name': 'High-sodium foods', 'reason': 'increases water retention'},
-        {'emoji': '🍷', 'name': 'Alcohol', 'reason': 'dehydrates and increases inflammation'},
-        {'emoji': '🍬', 'name': 'Refined sugar', 'reason': 'spikes blood sugar, worsens mood swings'},
+        {
+          'emoji': '☕',
+          'name': 'Excess caffeine',
+          'reason': 'worsens cramps and bloating',
+        },
+        {
+          'emoji': '🧂',
+          'name': 'High-sodium foods',
+          'reason': 'increases water retention',
+        },
+        {
+          'emoji': '🍷',
+          'name': 'Alcohol',
+          'reason': 'dehydrates and increases inflammation',
+        },
+        {
+          'emoji': '🍬',
+          'name': 'Refined sugar',
+          'reason': 'spikes blood sugar, worsens mood swings',
+        },
       ],
     },
     CyclePhase.follicular: {
-      'summary': 'Energy is rising. Fuel with lean proteins and fermented foods to support estrogen metabolism.',
+      'summary':
+          'Energy is rising. Fuel with lean proteins and fermented foods to support estrogen metabolism.',
       'vitamins': [
-        {'emoji': '🟢', 'name': 'B Vitamins', 'benefit': 'Energy production and hormone balance', 'sources': 'Eggs, leafy greens, whole grains'},
-        {'emoji': '🟡', 'name': 'Vitamin E', 'benefit': 'Supports follicle development', 'sources': 'Sunflower seeds, avocado, almonds'},
-        {'emoji': '🔵', 'name': 'Probiotics', 'benefit': 'Gut health aids estrogen processing', 'sources': 'Yogurt, kimchi, sauerkraut'},
-        {'emoji': '🟠', 'name': 'Vitamin D', 'benefit': 'Hormone regulation and mood', 'sources': 'Sunlight, fatty fish, fortified foods'},
+        {
+          'emoji': '🟢',
+          'name': 'B Vitamins',
+          'benefit': 'Energy production and hormone balance',
+          'sources': 'Eggs, leafy greens, whole grains',
+        },
+        {
+          'emoji': '🟡',
+          'name': 'Vitamin E',
+          'benefit': 'Supports follicle development',
+          'sources': 'Sunflower seeds, avocado, almonds',
+        },
+        {
+          'emoji': '🔵',
+          'name': 'Probiotics',
+          'benefit': 'Gut health aids estrogen processing',
+          'sources': 'Yogurt, kimchi, sauerkraut',
+        },
+        {
+          'emoji': '🟠',
+          'name': 'Vitamin D',
+          'benefit': 'Hormone regulation and mood',
+          'sources': 'Sunlight, fatty fish, fortified foods',
+        },
       ],
       'foods': [
         {'emoji': '🥚', 'name': 'Eggs'},
@@ -1700,17 +2120,46 @@ class _DietTab extends StatelessWidget {
         {'emoji': '🫐', 'name': 'Berries'},
       ],
       'avoid': [
-        {'emoji': '🍔', 'name': 'Heavy fried foods', 'reason': 'slows digestion when body wants lightness'},
-        {'emoji': '🥤', 'name': 'Sugary drinks', 'reason': 'disrupts blood sugar balance'},
+        {
+          'emoji': '🍔',
+          'name': 'Heavy fried foods',
+          'reason': 'slows digestion when body wants lightness',
+        },
+        {
+          'emoji': '🥤',
+          'name': 'Sugary drinks',
+          'reason': 'disrupts blood sugar balance',
+        },
       ],
     },
     CyclePhase.ovulation: {
-      'summary': 'Peak energy and fertility. Support with antioxidants and liver-friendly foods for estrogen clearance.',
+      'summary':
+          'Peak energy and fertility. Support with antioxidants and liver-friendly foods for estrogen clearance.',
       'vitamins': [
-        {'emoji': '🔴', 'name': 'Antioxidants', 'benefit': 'Protect egg quality', 'sources': 'Berries, green tea, dark leafy greens'},
-        {'emoji': '🟢', 'name': 'Folate', 'benefit': 'Cell division and fertility support', 'sources': 'Asparagus, lentils, leafy greens'},
-        {'emoji': '🟡', 'name': 'Glutathione', 'benefit': 'Liver detox, estrogen clearance', 'sources': 'Cruciferous vegetables, garlic'},
-        {'emoji': '🟤', 'name': 'Fiber', 'benefit': 'Removes excess estrogen', 'sources': 'Whole grains, vegetables, fruits'},
+        {
+          'emoji': '🔴',
+          'name': 'Antioxidants',
+          'benefit': 'Protect egg quality',
+          'sources': 'Berries, green tea, dark leafy greens',
+        },
+        {
+          'emoji': '🟢',
+          'name': 'Folate',
+          'benefit': 'Cell division and fertility support',
+          'sources': 'Asparagus, lentils, leafy greens',
+        },
+        {
+          'emoji': '🟡',
+          'name': 'Glutathione',
+          'benefit': 'Liver detox, estrogen clearance',
+          'sources': 'Cruciferous vegetables, garlic',
+        },
+        {
+          'emoji': '🟤',
+          'name': 'Fiber',
+          'benefit': 'Removes excess estrogen',
+          'sources': 'Whole grains, vegetables, fruits',
+        },
       ],
       'foods': [
         {'emoji': '🫑', 'name': 'Bell peppers'},
@@ -1723,19 +2172,57 @@ class _DietTab extends StatelessWidget {
         {'emoji': '🍵', 'name': 'Green tea'},
       ],
       'avoid': [
-        {'emoji': '🍕', 'name': 'Processed foods', 'reason': 'inflammation during peak hormones'},
-        {'emoji': '🥛', 'name': 'Excess dairy', 'reason': 'can increase estrogen load'},
-        {'emoji': '☕', 'name': 'Too much caffeine', 'reason': 'may affect ovulation'},
+        {
+          'emoji': '🍕',
+          'name': 'Processed foods',
+          'reason': 'inflammation during peak hormones',
+        },
+        {
+          'emoji': '🥛',
+          'name': 'Excess dairy',
+          'reason': 'can increase estrogen load',
+        },
+        {
+          'emoji': '☕',
+          'name': 'Too much caffeine',
+          'reason': 'may affect ovulation',
+        },
       ],
     },
     CyclePhase.luteal: {
-      'summary': 'Progesterone rises, cravings hit. Stabilize blood sugar with complex carbs and magnesium.',
+      'summary':
+          'Progesterone rises, cravings hit. Stabilize blood sugar with complex carbs and magnesium.',
       'vitamins': [
-        {'emoji': '🟤', 'name': 'Magnesium', 'benefit': 'Reduces PMS, calms anxiety', 'sources': 'Pumpkin seeds, dark chocolate, spinach'},
-        {'emoji': '🟡', 'name': 'Vitamin B6', 'benefit': 'Supports progesterone, reduces bloating', 'sources': 'Chickpeas, potatoes, turkey'},
-        {'emoji': '🟠', 'name': 'Calcium', 'benefit': 'Reduces mood swings and cramps', 'sources': 'Yogurt, kale, sesame seeds'},
-        {'emoji': '🔵', 'name': 'Tryptophan', 'benefit': 'Serotonin precursor, improves mood', 'sources': 'Turkey, oats, pumpkin seeds'},
-        {'emoji': '🔴', 'name': 'Chromium', 'benefit': 'Stabilizes blood sugar, curbs cravings', 'sources': 'Broccoli, whole grains, green beans'},
+        {
+          'emoji': '🟤',
+          'name': 'Magnesium',
+          'benefit': 'Reduces PMS, calms anxiety',
+          'sources': 'Pumpkin seeds, dark chocolate, spinach',
+        },
+        {
+          'emoji': '🟡',
+          'name': 'Vitamin B6',
+          'benefit': 'Supports progesterone, reduces bloating',
+          'sources': 'Chickpeas, potatoes, turkey',
+        },
+        {
+          'emoji': '🟠',
+          'name': 'Calcium',
+          'benefit': 'Reduces mood swings and cramps',
+          'sources': 'Yogurt, kale, sesame seeds',
+        },
+        {
+          'emoji': '🔵',
+          'name': 'Tryptophan',
+          'benefit': 'Serotonin precursor, improves mood',
+          'sources': 'Turkey, oats, pumpkin seeds',
+        },
+        {
+          'emoji': '🔴',
+          'name': 'Chromium',
+          'benefit': 'Stabilizes blood sugar, curbs cravings',
+          'sources': 'Broccoli, whole grains, green beans',
+        },
       ],
       'foods': [
         {'emoji': '🍠', 'name': 'Sweet potato'},
@@ -1748,199 +2235,580 @@ class _DietTab extends StatelessWidget {
         {'emoji': '🥬', 'name': 'Kale'},
       ],
       'avoid': [
-        {'emoji': '🧂', 'name': 'Salty snacks', 'reason': 'worsens bloating and water retention'},
-        {'emoji': '🍬', 'name': 'Refined sugar', 'reason': 'blood sugar spikes worsen PMS'},
-        {'emoji': '🍷', 'name': 'Alcohol', 'reason': 'disrupts sleep and worsens mood'},
-        {'emoji': '☕', 'name': 'Caffeine', 'reason': 'increases anxiety and breast tenderness'},
+        {
+          'emoji': '🧂',
+          'name': 'Salty snacks',
+          'reason': 'worsens bloating and water retention',
+        },
+        {
+          'emoji': '🍬',
+          'name': 'Refined sugar',
+          'reason': 'blood sugar spikes worsen PMS',
+        },
+        {
+          'emoji': '🍷',
+          'name': 'Alcohol',
+          'reason': 'disrupts sleep and worsens mood',
+        },
+        {
+          'emoji': '☕',
+          'name': 'Caffeine',
+          'reason': 'increases anxiety and breast tenderness',
+        },
       ],
     },
   };
 
-  static final Map<String, Map<CyclePhase, List<Map<String, String>>>> _regionalFoods = {
+  static final Map<String, Map<CyclePhase, List<Map<String, String>>>>
+  _regionalFoods = {
     'south_asian': {
       CyclePhase.menstrual: [
-        {'emoji': '🍛', 'name': 'Dal (lentil soup)', 'why': 'Iron-rich, warming, easy to digest'},
-        {'emoji': '🫚', 'name': 'Haldi doodh (turmeric milk)', 'why': 'Anti-inflammatory, reduces cramps'},
+        {
+          'emoji': '🍛',
+          'name': 'Dal (lentil soup)',
+          'why': 'Iron-rich, warming, easy to digest',
+        },
+        {
+          'emoji': '🫚',
+          'name': 'Haldi doodh (turmeric milk)',
+          'why': 'Anti-inflammatory, reduces cramps',
+        },
         {'emoji': '🥬', 'name': 'Palak paneer', 'why': 'Iron + calcium combo'},
-        {'emoji': '🍚', 'name': 'Khichdi', 'why': 'Gentle on digestion, comforting'},
-        {'emoji': '🌿', 'name': 'Ajwain water', 'why': 'Traditional remedy for period pain'},
+        {
+          'emoji': '🍚',
+          'name': 'Khichdi',
+          'why': 'Gentle on digestion, comforting',
+        },
+        {
+          'emoji': '🌿',
+          'name': 'Ajwain water',
+          'why': 'Traditional remedy for period pain',
+        },
       ],
       CyclePhase.follicular: [
-        {'emoji': '🥗', 'name': 'Sprouted moong salad', 'why': 'Protein + folate for rising energy'},
-        {'emoji': '🍳', 'name': 'Egg bhurji', 'why': 'B vitamins and lean protein'},
-        {'emoji': '🫐', 'name': 'Lassi with fruit', 'why': 'Probiotics + vitamins'},
-        {'emoji': '🥒', 'name': 'Raita', 'why': 'Cooling probiotic, aids digestion'},
+        {
+          'emoji': '🥗',
+          'name': 'Sprouted moong salad',
+          'why': 'Protein + folate for rising energy',
+        },
+        {
+          'emoji': '🍳',
+          'name': 'Egg bhurji',
+          'why': 'B vitamins and lean protein',
+        },
+        {
+          'emoji': '🫐',
+          'name': 'Lassi with fruit',
+          'why': 'Probiotics + vitamins',
+        },
+        {
+          'emoji': '🥒',
+          'name': 'Raita',
+          'why': 'Cooling probiotic, aids digestion',
+        },
       ],
       CyclePhase.ovulation: [
-        {'emoji': '🥭', 'name': 'Seasonal fruits (mango, papaya)', 'why': 'Antioxidant-rich, supports fertility'},
-        {'emoji': '🧄', 'name': 'Garlic chutney', 'why': 'Natural detox, liver support'},
-        {'emoji': '🥕', 'name': 'Gajar ka juice', 'why': 'Beta-carotene for egg quality'},
+        {
+          'emoji': '🥭',
+          'name': 'Seasonal fruits (mango, papaya)',
+          'why': 'Antioxidant-rich, supports fertility',
+        },
+        {
+          'emoji': '🧄',
+          'name': 'Garlic chutney',
+          'why': 'Natural detox, liver support',
+        },
+        {
+          'emoji': '🥕',
+          'name': 'Gajar ka juice',
+          'why': 'Beta-carotene for egg quality',
+        },
       ],
       CyclePhase.luteal: [
-        {'emoji': '🍠', 'name': 'Shakarkandi chaat', 'why': 'Complex carbs stabilize blood sugar'},
-        {'emoji': '🍫', 'name': 'Til ladoo (sesame)', 'why': 'Calcium + magnesium for PMS'},
-        {'emoji': '🍵', 'name': 'Ashwagandha milk', 'why': 'Adaptogenic, calms anxiety'},
-        {'emoji': '🎃', 'name': 'Kaddu sabzi (pumpkin)', 'why': 'Magnesium-rich, reduces bloating'},
+        {
+          'emoji': '🍠',
+          'name': 'Shakarkandi chaat',
+          'why': 'Complex carbs stabilize blood sugar',
+        },
+        {
+          'emoji': '🍫',
+          'name': 'Til ladoo (sesame)',
+          'why': 'Calcium + magnesium for PMS',
+        },
+        {
+          'emoji': '🍵',
+          'name': 'Ashwagandha milk',
+          'why': 'Adaptogenic, calms anxiety',
+        },
+        {
+          'emoji': '🎃',
+          'name': 'Kaddu sabzi (pumpkin)',
+          'why': 'Magnesium-rich, reduces bloating',
+        },
       ],
     },
     'east_asian': {
       CyclePhase.menstrual: [
-        {'emoji': '🍜', 'name': 'Bone broth / miso soup', 'why': 'Warming, mineral-rich, restorative'},
-        {'emoji': '🫚', 'name': 'Ginger & jujube tea', 'why': 'Traditional blood circulation remedy'},
-        {'emoji': '🐟', 'name': 'Steamed fish', 'why': 'Omega-3 for inflammation'},
+        {
+          'emoji': '🍜',
+          'name': 'Bone broth / miso soup',
+          'why': 'Warming, mineral-rich, restorative',
+        },
+        {
+          'emoji': '🫚',
+          'name': 'Ginger & jujube tea',
+          'why': 'Traditional blood circulation remedy',
+        },
+        {
+          'emoji': '🐟',
+          'name': 'Steamed fish',
+          'why': 'Omega-3 for inflammation',
+        },
       ],
       CyclePhase.follicular: [
-        {'emoji': '🥢', 'name': 'Natto / fermented soy', 'why': 'Probiotics + plant protein'},
-        {'emoji': '🥬', 'name': 'Bok choy stir-fry', 'why': 'Folate and vitamin C'},
-        {'emoji': '🍵', 'name': 'Green tea', 'why': 'Antioxidants, gentle energy'},
+        {
+          'emoji': '🥢',
+          'name': 'Natto / fermented soy',
+          'why': 'Probiotics + plant protein',
+        },
+        {
+          'emoji': '🥬',
+          'name': 'Bok choy stir-fry',
+          'why': 'Folate and vitamin C',
+        },
+        {
+          'emoji': '🍵',
+          'name': 'Green tea',
+          'why': 'Antioxidants, gentle energy',
+        },
       ],
       CyclePhase.ovulation: [
-        {'emoji': '🥒', 'name': 'Seaweed salad', 'why': 'Iodine + minerals for hormones'},
+        {
+          'emoji': '🥒',
+          'name': 'Seaweed salad',
+          'why': 'Iodine + minerals for hormones',
+        },
         {'emoji': '🫘', 'name': 'Edamame', 'why': 'Folate and plant protein'},
-        {'emoji': '🍊', 'name': 'Citrus fruits', 'why': 'Vitamin C for estrogen clearance'},
+        {
+          'emoji': '🍊',
+          'name': 'Citrus fruits',
+          'why': 'Vitamin C for estrogen clearance',
+        },
       ],
       CyclePhase.luteal: [
-        {'emoji': '🍚', 'name': 'Congee / rice porridge', 'why': 'Comforting, easy to digest'},
-        {'emoji': '🌰', 'name': 'Black sesame dessert', 'why': 'Calcium + iron for PMS'},
-        {'emoji': '🍠', 'name': 'Roasted sweet potato', 'why': 'Complex carbs curb cravings'},
+        {
+          'emoji': '🍚',
+          'name': 'Congee / rice porridge',
+          'why': 'Comforting, easy to digest',
+        },
+        {
+          'emoji': '🌰',
+          'name': 'Black sesame dessert',
+          'why': 'Calcium + iron for PMS',
+        },
+        {
+          'emoji': '🍠',
+          'name': 'Roasted sweet potato',
+          'why': 'Complex carbs curb cravings',
+        },
       ],
     },
     'western': {
       CyclePhase.menstrual: [
-        {'emoji': '🥩', 'name': 'Grass-fed beef stew', 'why': 'Iron and zinc replenishment'},
-        {'emoji': '🍫', 'name': 'Dark chocolate (70%+)', 'why': 'Magnesium for cramp relief'},
-        {'emoji': '🥣', 'name': 'Warm oatmeal with berries', 'why': 'Fiber + antioxidants'},
+        {
+          'emoji': '🥩',
+          'name': 'Grass-fed beef stew',
+          'why': 'Iron and zinc replenishment',
+        },
+        {
+          'emoji': '🍫',
+          'name': 'Dark chocolate (70%+)',
+          'why': 'Magnesium for cramp relief',
+        },
+        {
+          'emoji': '🥣',
+          'name': 'Warm oatmeal with berries',
+          'why': 'Fiber + antioxidants',
+        },
       ],
       CyclePhase.follicular: [
-        {'emoji': '🥑', 'name': 'Avocado toast with eggs', 'why': 'Healthy fats + B vitamins'},
-        {'emoji': '🫐', 'name': 'Smoothie bowl', 'why': 'Probiotics + fruit energy'},
-        {'emoji': '🥗', 'name': 'Quinoa salad', 'why': 'Complete protein + iron'},
+        {
+          'emoji': '🥑',
+          'name': 'Avocado toast with eggs',
+          'why': 'Healthy fats + B vitamins',
+        },
+        {
+          'emoji': '🫐',
+          'name': 'Smoothie bowl',
+          'why': 'Probiotics + fruit energy',
+        },
+        {
+          'emoji': '🥗',
+          'name': 'Quinoa salad',
+          'why': 'Complete protein + iron',
+        },
       ],
       CyclePhase.ovulation: [
         {'emoji': '🐟', 'name': 'Grilled salmon', 'why': 'Omega-3 + vitamin D'},
-        {'emoji': '🥦', 'name': 'Roasted cruciferous veggies', 'why': 'Liver detox support'},
-        {'emoji': '🫐', 'name': 'Mixed berry bowl', 'why': 'Antioxidant powerhouse'},
+        {
+          'emoji': '🥦',
+          'name': 'Roasted cruciferous veggies',
+          'why': 'Liver detox support',
+        },
+        {
+          'emoji': '🫐',
+          'name': 'Mixed berry bowl',
+          'why': 'Antioxidant powerhouse',
+        },
       ],
       CyclePhase.luteal: [
-        {'emoji': '🍠', 'name': 'Baked sweet potato', 'why': 'Complex carb comfort'},
-        {'emoji': '🦃', 'name': 'Turkey & whole grain wrap', 'why': 'Tryptophan for serotonin'},
+        {
+          'emoji': '🍠',
+          'name': 'Baked sweet potato',
+          'why': 'Complex carb comfort',
+        },
+        {
+          'emoji': '🦃',
+          'name': 'Turkey & whole grain wrap',
+          'why': 'Tryptophan for serotonin',
+        },
         {'emoji': '🥜', 'name': 'Trail mix', 'why': 'Magnesium + healthy fats'},
       ],
     },
     'middle_eastern': {
       CyclePhase.menstrual: [
-        {'emoji': '🍲', 'name': 'Lentil shorba', 'why': 'Iron-rich, warming comfort food'},
-        {'emoji': '🫚', 'name': 'Ginger & honey tea', 'why': 'Anti-inflammatory, soothes cramps'},
-        {'emoji': '🥩', 'name': 'Lamb kofta', 'why': 'Iron and B12 replenishment'},
+        {
+          'emoji': '🍲',
+          'name': 'Lentil shorba',
+          'why': 'Iron-rich, warming comfort food',
+        },
+        {
+          'emoji': '🫚',
+          'name': 'Ginger & honey tea',
+          'why': 'Anti-inflammatory, soothes cramps',
+        },
+        {
+          'emoji': '🥩',
+          'name': 'Lamb kofta',
+          'why': 'Iron and B12 replenishment',
+        },
       ],
       CyclePhase.follicular: [
-        {'emoji': '🧆', 'name': 'Falafel with tahini', 'why': 'Plant protein + calcium'},
+        {
+          'emoji': '🧆',
+          'name': 'Falafel with tahini',
+          'why': 'Plant protein + calcium',
+        },
         {'emoji': '🥗', 'name': 'Tabbouleh', 'why': 'Fresh herbs + folate'},
-        {'emoji': '🫒', 'name': 'Olive oil & zaatar', 'why': 'Healthy fats + antioxidants'},
+        {
+          'emoji': '🫒',
+          'name': 'Olive oil & zaatar',
+          'why': 'Healthy fats + antioxidants',
+        },
       ],
       CyclePhase.ovulation: [
-        {'emoji': '🐟', 'name': 'Grilled fish with herbs', 'why': 'Omega-3 for fertility'},
-        {'emoji': '🥒', 'name': 'Fattoush salad', 'why': 'Raw veggies + antioxidants'},
-        {'emoji': '🍋', 'name': 'Lemon & mint water', 'why': 'Detox and hydration'},
+        {
+          'emoji': '🐟',
+          'name': 'Grilled fish with herbs',
+          'why': 'Omega-3 for fertility',
+        },
+        {
+          'emoji': '🥒',
+          'name': 'Fattoush salad',
+          'why': 'Raw veggies + antioxidants',
+        },
+        {
+          'emoji': '🍋',
+          'name': 'Lemon & mint water',
+          'why': 'Detox and hydration',
+        },
       ],
       CyclePhase.luteal: [
-        {'emoji': '🍚', 'name': 'Mujaddara (lentils & rice)', 'why': 'Complex carbs + iron'},
-        {'emoji': '🌰', 'name': 'Halva with pistachios', 'why': 'Sesame calcium + magnesium'},
-        {'emoji': '🍵', 'name': 'Chamomile tea', 'why': 'Calming, reduces PMS anxiety'},
+        {
+          'emoji': '🍚',
+          'name': 'Mujaddara (lentils & rice)',
+          'why': 'Complex carbs + iron',
+        },
+        {
+          'emoji': '🌰',
+          'name': 'Halva with pistachios',
+          'why': 'Sesame calcium + magnesium',
+        },
+        {
+          'emoji': '🍵',
+          'name': 'Chamomile tea',
+          'why': 'Calming, reduces PMS anxiety',
+        },
       ],
     },
     'african': {
       CyclePhase.menstrual: [
-        {'emoji': '🍲', 'name': 'Groundnut soup', 'why': 'Iron + protein, warming'},
-        {'emoji': '🥬', 'name': 'Jute leaves (ewedu)', 'why': 'High iron and folate'},
-        {'emoji': '🫚', 'name': 'Ginger & lemon', 'why': 'Anti-inflammatory remedy'},
+        {
+          'emoji': '🍲',
+          'name': 'Groundnut soup',
+          'why': 'Iron + protein, warming',
+        },
+        {
+          'emoji': '🥬',
+          'name': 'Jute leaves (ewedu)',
+          'why': 'High iron and folate',
+        },
+        {
+          'emoji': '🫚',
+          'name': 'Ginger & lemon',
+          'why': 'Anti-inflammatory remedy',
+        },
       ],
       CyclePhase.follicular: [
-        {'emoji': '🫘', 'name': 'Black-eyed peas', 'why': 'Folate + protein boost'},
-        {'emoji': '🥚', 'name': 'Eggs & plantain', 'why': 'B vitamins + potassium'},
-        {'emoji': '🥗', 'name': 'Fresh fruit salad', 'why': 'Vitamin C + energy'},
+        {
+          'emoji': '🫘',
+          'name': 'Black-eyed peas',
+          'why': 'Folate + protein boost',
+        },
+        {
+          'emoji': '🥚',
+          'name': 'Eggs & plantain',
+          'why': 'B vitamins + potassium',
+        },
+        {
+          'emoji': '🥗',
+          'name': 'Fresh fruit salad',
+          'why': 'Vitamin C + energy',
+        },
       ],
       CyclePhase.ovulation: [
-        {'emoji': '🐟', 'name': 'Grilled tilapia', 'why': 'Lean protein + omega-3'},
-        {'emoji': '🥕', 'name': 'Carrot & orange juice', 'why': 'Antioxidants for fertility'},
-        {'emoji': '🧄', 'name': 'Garlic stew', 'why': 'Liver support and detox'},
+        {
+          'emoji': '🐟',
+          'name': 'Grilled tilapia',
+          'why': 'Lean protein + omega-3',
+        },
+        {
+          'emoji': '🥕',
+          'name': 'Carrot & orange juice',
+          'why': 'Antioxidants for fertility',
+        },
+        {
+          'emoji': '🧄',
+          'name': 'Garlic stew',
+          'why': 'Liver support and detox',
+        },
       ],
       CyclePhase.luteal: [
-        {'emoji': '🍠', 'name': 'Yam pottage', 'why': 'Complex carbs ease cravings'},
+        {
+          'emoji': '🍠',
+          'name': 'Yam pottage',
+          'why': 'Complex carbs ease cravings',
+        },
         {'emoji': '🌰', 'name': 'Tiger nuts', 'why': 'Magnesium + fiber'},
-        {'emoji': '🍵', 'name': 'Hibiscus tea (zobo)', 'why': 'Rich in vitamin C, calming'},
+        {
+          'emoji': '🍵',
+          'name': 'Hibiscus tea (zobo)',
+          'why': 'Rich in vitamin C, calming',
+        },
       ],
     },
     'latin_american': {
       CyclePhase.menstrual: [
-        {'emoji': '🫘', 'name': 'Frijoles negros (black beans)', 'why': 'Iron + folate powerhouse'},
-        {'emoji': '🍲', 'name': 'Caldo de pollo', 'why': 'Warming, nourishing broth'},
+        {
+          'emoji': '🫘',
+          'name': 'Frijoles negros (black beans)',
+          'why': 'Iron + folate powerhouse',
+        },
+        {
+          'emoji': '🍲',
+          'name': 'Caldo de pollo',
+          'why': 'Warming, nourishing broth',
+        },
         {'emoji': '🍫', 'name': 'Cacao caliente', 'why': 'Magnesium + comfort'},
       ],
       CyclePhase.follicular: [
-        {'emoji': '🥑', 'name': 'Guacamole & veggies', 'why': 'Healthy fats + vitamin E'},
-        {'emoji': '🥭', 'name': 'Tropical fruit bowl', 'why': 'Vitamin C + natural energy'},
+        {
+          'emoji': '🥑',
+          'name': 'Guacamole & veggies',
+          'why': 'Healthy fats + vitamin E',
+        },
+        {
+          'emoji': '🥭',
+          'name': 'Tropical fruit bowl',
+          'why': 'Vitamin C + natural energy',
+        },
         {'emoji': '🌽', 'name': 'Elote', 'why': 'B vitamins + fiber'},
       ],
       CyclePhase.ovulation: [
-        {'emoji': '🐟', 'name': 'Ceviche', 'why': 'Omega-3 + citrus antioxidants'},
-        {'emoji': '🍅', 'name': 'Pico de gallo', 'why': 'Raw veggies + vitamin C'},
-        {'emoji': '🫘', 'name': 'Quinoa bowl', 'why': 'Complete protein + minerals'},
+        {
+          'emoji': '🐟',
+          'name': 'Ceviche',
+          'why': 'Omega-3 + citrus antioxidants',
+        },
+        {
+          'emoji': '🍅',
+          'name': 'Pico de gallo',
+          'why': 'Raw veggies + vitamin C',
+        },
+        {
+          'emoji': '🫘',
+          'name': 'Quinoa bowl',
+          'why': 'Complete protein + minerals',
+        },
       ],
       CyclePhase.luteal: [
-        {'emoji': '🍠', 'name': 'Camote (sweet potato)', 'why': 'Complex carbs for cravings'},
-        {'emoji': '🍌', 'name': 'Plátano maduro', 'why': 'Potassium + tryptophan'},
+        {
+          'emoji': '🍠',
+          'name': 'Camote (sweet potato)',
+          'why': 'Complex carbs for cravings',
+        },
+        {
+          'emoji': '🍌',
+          'name': 'Plátano maduro',
+          'why': 'Potassium + tryptophan',
+        },
         {'emoji': '🍵', 'name': 'Manzanilla tea', 'why': 'Chamomile calms PMS'},
       ],
     },
     'southeast_asian': {
       CyclePhase.menstrual: [
-        {'emoji': '🍜', 'name': 'Pho / bone broth soup', 'why': 'Warming, mineral-rich'},
-        {'emoji': '🫚', 'name': 'Ginger lemongrass tea', 'why': 'Anti-inflammatory, eases cramps'},
-        {'emoji': '🐟', 'name': 'Steamed fish with turmeric', 'why': 'Omega-3 + anti-inflammatory'},
+        {
+          'emoji': '🍜',
+          'name': 'Pho / bone broth soup',
+          'why': 'Warming, mineral-rich',
+        },
+        {
+          'emoji': '🫚',
+          'name': 'Ginger lemongrass tea',
+          'why': 'Anti-inflammatory, eases cramps',
+        },
+        {
+          'emoji': '🐟',
+          'name': 'Steamed fish with turmeric',
+          'why': 'Omega-3 + anti-inflammatory',
+        },
       ],
       CyclePhase.follicular: [
         {'emoji': '🥗', 'name': 'Papaya salad', 'why': 'Enzymes + vitamin C'},
-        {'emoji': '🫘', 'name': 'Tempeh', 'why': 'Fermented soy protein + probiotics'},
-        {'emoji': '🥥', 'name': 'Coconut water', 'why': 'Hydration + electrolytes'},
+        {
+          'emoji': '🫘',
+          'name': 'Tempeh',
+          'why': 'Fermented soy protein + probiotics',
+        },
+        {
+          'emoji': '🥥',
+          'name': 'Coconut water',
+          'why': 'Hydration + electrolytes',
+        },
       ],
       CyclePhase.ovulation: [
-        {'emoji': '🥒', 'name': 'Fresh spring rolls', 'why': 'Light, raw veggies + herbs'},
-        {'emoji': '🍊', 'name': 'Tropical fruits', 'why': 'Antioxidants at peak'},
-        {'emoji': '🧄', 'name': 'Stir-fried morning glory', 'why': 'Iron + garlic detox'},
+        {
+          'emoji': '🥒',
+          'name': 'Fresh spring rolls',
+          'why': 'Light, raw veggies + herbs',
+        },
+        {
+          'emoji': '🍊',
+          'name': 'Tropical fruits',
+          'why': 'Antioxidants at peak',
+        },
+        {
+          'emoji': '🧄',
+          'name': 'Stir-fried morning glory',
+          'why': 'Iron + garlic detox',
+        },
       ],
       CyclePhase.luteal: [
-        {'emoji': '🍚', 'name': 'Sticky rice with taro', 'why': 'Comforting complex carbs'},
-        {'emoji': '🌰', 'name': 'Coconut desserts', 'why': 'Healthy fats + satisfaction'},
-        {'emoji': '🍵', 'name': 'Pandan tea', 'why': 'Calming, traditional remedy'},
+        {
+          'emoji': '🍚',
+          'name': 'Sticky rice with taro',
+          'why': 'Comforting complex carbs',
+        },
+        {
+          'emoji': '🌰',
+          'name': 'Coconut desserts',
+          'why': 'Healthy fats + satisfaction',
+        },
+        {
+          'emoji': '🍵',
+          'name': 'Pandan tea',
+          'why': 'Calming, traditional remedy',
+        },
       ],
     },
     'european': {
       CyclePhase.menstrual: [
-        {'emoji': '🍲', 'name': 'Beef bourguignon / stew', 'why': 'Iron-rich comfort food'},
-        {'emoji': '🥬', 'name': 'Nettle tea', 'why': 'Traditional iron supplement'},
-        {'emoji': '🍫', 'name': 'Swiss dark chocolate', 'why': 'Magnesium for cramps'},
+        {
+          'emoji': '🍲',
+          'name': 'Beef bourguignon / stew',
+          'why': 'Iron-rich comfort food',
+        },
+        {
+          'emoji': '🥬',
+          'name': 'Nettle tea',
+          'why': 'Traditional iron supplement',
+        },
+        {
+          'emoji': '🍫',
+          'name': 'Swiss dark chocolate',
+          'why': 'Magnesium for cramps',
+        },
       ],
       CyclePhase.follicular: [
-        {'emoji': '🥚', 'name': 'Shakshuka / egg dishes', 'why': 'B vitamins + protein'},
-        {'emoji': '🫒', 'name': 'Mediterranean salad', 'why': 'Olive oil + fresh produce'},
-        {'emoji': '🧀', 'name': 'Yogurt with granola', 'why': 'Probiotics + fiber'},
+        {
+          'emoji': '🥚',
+          'name': 'Shakshuka / egg dishes',
+          'why': 'B vitamins + protein',
+        },
+        {
+          'emoji': '🫒',
+          'name': 'Mediterranean salad',
+          'why': 'Olive oil + fresh produce',
+        },
+        {
+          'emoji': '🧀',
+          'name': 'Yogurt with granola',
+          'why': 'Probiotics + fiber',
+        },
       ],
       CyclePhase.ovulation: [
         {'emoji': '🐟', 'name': 'Grilled sardines', 'why': 'Omega-3 + calcium'},
-        {'emoji': '🥦', 'name': 'Roasted vegetables', 'why': 'Fiber + cruciferous detox'},
-        {'emoji': '🍇', 'name': 'Fresh berries & grapes', 'why': 'Resveratrol + antioxidants'},
+        {
+          'emoji': '🥦',
+          'name': 'Roasted vegetables',
+          'why': 'Fiber + cruciferous detox',
+        },
+        {
+          'emoji': '🍇',
+          'name': 'Fresh berries & grapes',
+          'why': 'Resveratrol + antioxidants',
+        },
       ],
       CyclePhase.luteal: [
-        {'emoji': '🍠', 'name': 'Root vegetable mash', 'why': 'Complex carbs + comfort'},
-        {'emoji': '🥜', 'name': 'Nut butter on rye bread', 'why': 'Magnesium + slow carbs'},
-        {'emoji': '🍵', 'name': 'Chamomile or valerian tea', 'why': 'Sleep + PMS calm'},
+        {
+          'emoji': '🍠',
+          'name': 'Root vegetable mash',
+          'why': 'Complex carbs + comfort',
+        },
+        {
+          'emoji': '🥜',
+          'name': 'Nut butter on rye bread',
+          'why': 'Magnesium + slow carbs',
+        },
+        {
+          'emoji': '🍵',
+          'name': 'Chamomile or valerian tea',
+          'why': 'Sleep + PMS calm',
+        },
       ],
     },
     'global': {
       CyclePhase.menstrual: [
-        {'emoji': '🍲', 'name': 'Warm soups & stews', 'why': 'Comforting and nutrient-dense'},
-        {'emoji': '🫚', 'name': 'Ginger tea', 'why': 'Natural anti-inflammatory'},
+        {
+          'emoji': '🍲',
+          'name': 'Warm soups & stews',
+          'why': 'Comforting and nutrient-dense',
+        },
+        {
+          'emoji': '🫚',
+          'name': 'Ginger tea',
+          'why': 'Natural anti-inflammatory',
+        },
         {'emoji': '🍫', 'name': 'Dark chocolate', 'why': 'Magnesium boost'},
       ],
       CyclePhase.follicular: [
@@ -1954,8 +2822,16 @@ class _DietTab extends StatelessWidget {
         {'emoji': '🍵', 'name': 'Green tea', 'why': 'Gentle antioxidant boost'},
       ],
       CyclePhase.luteal: [
-        {'emoji': '🍠', 'name': 'Sweet potatoes', 'why': 'Complex carbs ease cravings'},
-        {'emoji': '🌰', 'name': 'Seeds & nuts', 'why': 'Magnesium + healthy fats'},
+        {
+          'emoji': '🍠',
+          'name': 'Sweet potatoes',
+          'why': 'Complex carbs ease cravings',
+        },
+        {
+          'emoji': '🌰',
+          'name': 'Seeds & nuts',
+          'why': 'Magnesium + healthy fats',
+        },
         {'emoji': '🍵', 'name': 'Herbal tea', 'why': 'Calming for PMS'},
       ],
     },
@@ -1999,11 +2875,12 @@ class _AiPromptCardState extends State<_AiPromptCard> {
         symptomCounts[s] = (symptomCounts[s] ?? 0) + 1;
       }
     }
-    final topSymptoms = (symptomCounts.entries.toList()
-          ..sort((a, b) => b.value.compareTo(a.value)))
-        .take(5)
-        .map((e) => '${e.key} (${e.value}x)')
-        .join(', ');
+    final topSymptoms =
+        (symptomCounts.entries.toList()
+              ..sort((a, b) => b.value.compareTo(a.value)))
+            .take(5)
+            .map((e) => '${e.key} (${e.value}x)')
+            .join(', ');
 
     // Mood counts
     final moodCounts = <String, int>{};
@@ -2012,11 +2889,12 @@ class _AiPromptCardState extends State<_AiPromptCard> {
         moodCounts[m] = (moodCounts[m] ?? 0) + 1;
       }
     }
-    final topMoods = (moodCounts.entries.toList()
-          ..sort((a, b) => b.value.compareTo(a.value)))
-        .take(5)
-        .map((e) => '${e.key} (${e.value}x)')
-        .join(', ');
+    final topMoods =
+        (moodCounts.entries.toList()
+              ..sort((a, b) => b.value.compareTo(a.value)))
+            .take(5)
+            .map((e) => '${e.key} (${e.value}x)')
+            .join(', ');
 
     // Flow
     int light = 0, medium = 0, heavy = 0;
@@ -2044,18 +2922,33 @@ class _AiPromptCardState extends State<_AiPromptCard> {
     }
     final medLines = StringBuffer();
     const medLabels = {
-      'pain_level': 'Pain', 'discharge_color': 'Discharge', 'skin': 'Skin',
-      'hair': 'Hair', 'sleep': 'Sleep', 'energy': 'Energy', 'weight': 'Weight',
+      'pain_level': 'Pain',
+      'discharge_color': 'Discharge',
+      'skin': 'Skin',
+      'hair': 'Hair',
+      'sleep': 'Sleep',
+      'energy': 'Energy',
+      'weight': 'Weight',
       'digestion': 'Digestion',
     };
     for (final entry in medAgg.entries) {
-      final sorted = entry.value.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
+      final sorted = entry.value.entries.toList()
+        ..sort((a, b) => b.value.compareTo(a.value));
       final total = sorted.fold<int>(0, (s, e) => s + e.value);
-      final line = sorted.map((e) => '${e.key}: ${(e.value / total * 100).round()}%').join(', ');
+      final line = sorted
+          .map((e) => '${e.key}: ${(e.value / total * 100).round()}%')
+          .join(', ');
       medLines.writeln('- ${medLabels[entry.key] ?? entry.key}: $line');
     }
 
-    return '''I'm tracking my menstrual cycle and need personalized diet and nutrition advice. Here is my data:
+    final String intro =
+        widget.location.isNotEmpty &&
+            widget.location != 'Location unavailable' &&
+            widget.location != 'Location denied'
+        ? "I live in ${widget.location}. I'm tracking my menstrual cycle and need personalized diet and nutrition advice using locally available, seasonal ingredients from my region. Here is my data:"
+        : "I'm tracking my menstrual cycle and need personalized diet and nutrition advice. Here is my data:";
+
+    return '''$intro
 
 CYCLE DATA:
 - Current phase: ${AppColors.phaseName(widget.phase)}
@@ -2078,10 +2971,8 @@ MEDICAL CHECKLIST ($medDays days):
 ${medLines.toString().trimRight().isNotEmpty ? medLines.toString().trimRight() : 'Not logged yet'}
 (Key data: sleep quality, pain levels, skin condition, digestion, energy — all affect nutritional needs)
 
-LOCATION: ${widget.location.isNotEmpty ? widget.location : 'Not available'}
-
 Please provide:
-1. A detailed 7-day meal plan tailored to my current cycle phase, using foods available in my region
+1. A detailed 7-day meal plan tailored to my current cycle phase, using foods native and readily available in my location.
 2. Specific vitamins and supplements I should take based on my symptom patterns
 3. Foods to avoid right now and why
 4. Hydration recommendations
@@ -2089,7 +2980,7 @@ Please provide:
 6. Snack ideas that address my most common symptoms
 7. Herbal teas or drinks that would help
 
-Keep recommendations practical and region-appropriate. Use specific food names, quantities where possible, and explain the "why" behind each suggestion.''';
+Keep recommendations practical. Use specific local food names from my region, quantities where possible, and explain the "why" behind each suggestion.''';
   }
 
   @override
@@ -2122,11 +3013,16 @@ Keep recommendations practical and region-appropriate. Use specific food names, 
                   children: [
                     Text(
                       'Get AI Diet Advice',
-                      style: AppTextStyles.button.copyWith(color: AppColors.textPrimary, fontSize: 14),
+                      style: AppTextStyles.button.copyWith(
+                        color: AppColors.textPrimary,
+                        fontSize: 14,
+                      ),
                     ),
                     Text(
                       'Copy this prompt to Gemini, ChatGPT, or Claude',
-                      style: AppTextStyles.small.copyWith(color: AppColors.textMuted),
+                      style: AppTextStyles.small.copyWith(
+                        color: AppColors.textMuted,
+                      ),
                     ),
                   ],
                 ),
@@ -2141,7 +3037,10 @@ Keep recommendations practical and region-appropriate. Use specific food names, 
                 },
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
                     color: _copied ? AppColors.ovulation : AppColors.luteal,
                     borderRadius: BorderRadius.circular(12),
@@ -2157,7 +3056,10 @@ Keep recommendations practical and region-appropriate. Use specific food names, 
                       const SizedBox(width: 4),
                       Text(
                         _copied ? 'Copied!' : 'Copy',
-                        style: AppTextStyles.small.copyWith(color: Colors.white, fontWeight: FontWeight.w700),
+                        style: AppTextStyles.small.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ],
                   ),
@@ -2178,7 +3080,9 @@ Keep recommendations practical and region-appropriate. Use specific food names, 
                 const SizedBox(width: 4),
                 Text(
                   _expanded ? 'Hide prompt preview' : 'Preview prompt',
-                  style: AppTextStyles.small.copyWith(color: AppColors.textMuted),
+                  style: AppTextStyles.small.copyWith(
+                    color: AppColors.textMuted,
+                  ),
                 ),
               ],
             ),
@@ -2195,7 +3099,11 @@ Keep recommendations practical and region-appropriate. Use specific food names, 
               ),
               child: Text(
                 prompt,
-                style: AppTextStyles.body.copyWith(fontSize: 10, height: 1.4, fontFamily: 'monospace'),
+                style: AppTextStyles.body.copyWith(
+                  fontSize: 10,
+                  height: 1.4,
+                  fontFamily: 'monospace',
+                ),
               ),
             ),
           ],
@@ -2245,7 +3153,8 @@ class _AiDiagnosisPromptCardState extends State<_AiDiagnosisPromptCard> {
     if (cl.length >= 3) {
       final first = cl.sublist(0, cl.length ~/ 2);
       final second = cl.sublist(cl.length ~/ 2);
-      final diff = (second.reduce((a, b) => a + b) / second.length) -
+      final diff =
+          (second.reduce((a, b) => a + b) / second.length) -
           (first.reduce((a, b) => a + b) / first.length);
       if (diff > 2) {
         trend = 'getting longer';
@@ -2263,11 +3172,12 @@ class _AiDiagnosisPromptCardState extends State<_AiDiagnosisPromptCard> {
         symptomCounts[s] = (symptomCounts[s] ?? 0) + 1;
       }
     }
-    final topSymptoms = (symptomCounts.entries.toList()
-          ..sort((a, b) => b.value.compareTo(a.value)))
-        .take(5)
-        .map((e) => '${e.key} (${e.value}x)')
-        .join(', ');
+    final topSymptoms =
+        (symptomCounts.entries.toList()
+              ..sort((a, b) => b.value.compareTo(a.value)))
+            .take(5)
+            .map((e) => '${e.key} (${e.value}x)')
+            .join(', ');
 
     // Moods
     final moodCounts = <String, int>{};
@@ -2276,11 +3186,12 @@ class _AiDiagnosisPromptCardState extends State<_AiDiagnosisPromptCard> {
         moodCounts[m] = (moodCounts[m] ?? 0) + 1;
       }
     }
-    final topMoods = (moodCounts.entries.toList()
-          ..sort((a, b) => b.value.compareTo(a.value)))
-        .take(5)
-        .map((e) => '${e.key} (${e.value}x)')
-        .join(', ');
+    final topMoods =
+        (moodCounts.entries.toList()
+              ..sort((a, b) => b.value.compareTo(a.value)))
+            .take(5)
+            .map((e) => '${e.key} (${e.value}x)')
+            .join(', ');
 
     // Flow
     int light = 0, medium = 0, heavy = 0;
@@ -2293,8 +3204,12 @@ class _AiDiagnosisPromptCardState extends State<_AiDiagnosisPromptCard> {
 
     // Period durations
     final durations = pp.periodDurations;
-    final shortestP = durations.isNotEmpty ? durations.reduce((a, b) => a < b ? a : b) : null;
-    final longestP = durations.isNotEmpty ? durations.reduce((a, b) => a > b ? a : b) : null;
+    final shortestP = durations.isNotEmpty
+        ? durations.reduce((a, b) => a < b ? a : b)
+        : null;
+    final longestP = durations.isNotEmpty
+        ? durations.reduce((a, b) => a > b ? a : b)
+        : null;
 
     // Medical checklist
     final medAgg = <String, Map<String, int>>{};
@@ -2309,9 +3224,12 @@ class _AiDiagnosisPromptCardState extends State<_AiDiagnosisPromptCard> {
     }
     final medSummary = StringBuffer();
     for (final entry in medAgg.entries) {
-      final sorted = entry.value.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
+      final sorted = entry.value.entries.toList()
+        ..sort((a, b) => b.value.compareTo(a.value));
       final total = sorted.fold<int>(0, (s, e) => s + e.value);
-      final line = sorted.map((e) => '${e.key}: ${(e.value / total * 100).round()}%').join(', ');
+      final line = sorted
+          .map((e) => '${e.key}: ${(e.value / total * 100).round()}%')
+          .join(', ');
       medSummary.writeln('- ${_label(entry.key)}: $line');
     }
 
@@ -2325,7 +3243,11 @@ ${age != null ? '- Age: $age years old' : '- Age: not provided'}
 CYCLE DATA (${pp.periods.length} periods tracked):
 - Average cycle length: $avgCycle days
 - Cycle range: ${shortest ?? '?'}–${longest ?? '?'} days
-- Cycle variation: ${variation}d (${variation <= 3 ? 'regular' : variation <= 7 ? 'slightly irregular' : 'irregular'})
+- Cycle variation: ${variation}d (${variation <= 3
+        ? 'regular'
+        : variation <= 7
+        ? 'slightly irregular'
+        : 'irregular'})
 - Cycle trend: $trend
 - Average period duration: $avgPeriod days
 - Period range: ${shortestP ?? '?'}–${longestP ?? '?'} days
@@ -2358,10 +3280,16 @@ Be specific, reference my actual numbers, and explain the reasoning. Flag anythi
 
   String _label(String key) {
     const map = {
-      'pain_level': 'Pain Level', 'discharge_color': 'Discharge Color',
-      'discharge_consistency': 'Discharge Type', 'weight': 'Weight',
-      'skin': 'Skin', 'hair': 'Hair', 'sleep': 'Sleep',
-      'libido': 'Libido', 'digestion': 'Digestion', 'breast': 'Breast',
+      'pain_level': 'Pain Level',
+      'discharge_color': 'Discharge Color',
+      'discharge_consistency': 'Discharge Type',
+      'weight': 'Weight',
+      'skin': 'Skin',
+      'hair': 'Hair',
+      'sleep': 'Sleep',
+      'libido': 'Libido',
+      'digestion': 'Digestion',
+      'breast': 'Breast',
       'energy': 'Energy',
     };
     return map[key] ?? key;
@@ -2397,11 +3325,16 @@ Be specific, reference my actual numbers, and explain the reasoning. Flag anythi
                   children: [
                     Text(
                       'Get AI Health Analysis',
-                      style: AppTextStyles.button.copyWith(color: AppColors.textPrimary, fontSize: 14),
+                      style: AppTextStyles.button.copyWith(
+                        color: AppColors.textPrimary,
+                        fontSize: 14,
+                      ),
                     ),
                     Text(
                       'Copy this prompt to Gemini, ChatGPT, or Claude',
-                      style: AppTextStyles.small.copyWith(color: AppColors.textMuted),
+                      style: AppTextStyles.small.copyWith(
+                        color: AppColors.textMuted,
+                      ),
                     ),
                   ],
                 ),
@@ -2416,7 +3349,10 @@ Be specific, reference my actual numbers, and explain the reasoning. Flag anythi
                 },
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                   decoration: BoxDecoration(
                     color: _copied ? AppColors.ovulation : AppColors.menstrual,
                     borderRadius: BorderRadius.circular(12),
@@ -2432,7 +3368,10 @@ Be specific, reference my actual numbers, and explain the reasoning. Flag anythi
                       const SizedBox(width: 4),
                       Text(
                         _copied ? 'Copied!' : 'Copy',
-                        style: AppTextStyles.small.copyWith(color: Colors.white, fontWeight: FontWeight.w700),
+                        style: AppTextStyles.small.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ],
                   ),
@@ -2453,7 +3392,9 @@ Be specific, reference my actual numbers, and explain the reasoning. Flag anythi
                 const SizedBox(width: 4),
                 Text(
                   _expanded ? 'Hide prompt preview' : 'Preview prompt',
-                  style: AppTextStyles.small.copyWith(color: AppColors.textMuted),
+                  style: AppTextStyles.small.copyWith(
+                    color: AppColors.textMuted,
+                  ),
                 ),
               ],
             ),
@@ -2470,7 +3411,11 @@ Be specific, reference my actual numbers, and explain the reasoning. Flag anythi
               ),
               child: Text(
                 prompt,
-                style: AppTextStyles.body.copyWith(fontSize: 10, height: 1.4, fontFamily: 'monospace'),
+                style: AppTextStyles.body.copyWith(
+                  fontSize: 10,
+                  height: 1.4,
+                  fontFamily: 'monospace',
+                ),
               ),
             ),
           ],
@@ -2510,7 +3455,9 @@ class _NutrientCard extends StatelessWidget {
               color: AppColors.surfaceBackground,
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Center(child: Text(emoji, style: const TextStyle(fontSize: 16))),
+            child: Center(
+              child: Text(emoji, style: const TextStyle(fontSize: 16)),
+            ),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -2519,14 +3466,23 @@ class _NutrientCard extends StatelessWidget {
               children: [
                 Text(
                   name,
-                  style: AppTextStyles.button.copyWith(color: AppColors.textPrimary, fontSize: 13),
+                  style: AppTextStyles.button.copyWith(
+                    color: AppColors.textPrimary,
+                    fontSize: 13,
+                  ),
                 ),
                 const SizedBox(height: 2),
-                Text(benefit, style: AppTextStyles.body.copyWith(fontSize: 11, height: 1.3)),
+                Text(
+                  benefit,
+                  style: AppTextStyles.body.copyWith(fontSize: 11, height: 1.3),
+                ),
                 const SizedBox(height: 3),
                 Text(
                   'Sources: $sources',
-                  style: AppTextStyles.small.copyWith(color: AppColors.textMuted, fontStyle: FontStyle.italic),
+                  style: AppTextStyles.small.copyWith(
+                    color: AppColors.textMuted,
+                    fontStyle: FontStyle.italic,
+                  ),
                 ),
               ],
             ),
@@ -2633,7 +3589,13 @@ class _OnDeviceSummaryCard extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: AppColors.luteal.withValues(alpha: 0.2)),
-        boxShadow: const [BoxShadow(color: Color(0x0FA08CB0), blurRadius: 12, offset: Offset(0, 2))],
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x0FA08CB0),
+            blurRadius: 12,
+            offset: Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -2646,22 +3608,41 @@ class _OnDeviceSummaryCard extends StatelessWidget {
                   color: AppColors.lutealBg,
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Icon(Icons.auto_awesome, size: 20, color: AppColors.luteal),
+                child: const Icon(
+                  Icons.auto_awesome,
+                  size: 20,
+                  color: AppColors.luteal,
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Health Summary', style: AppTextStyles.button.copyWith(color: AppColors.textPrimary, fontSize: 14)),
+                    Text(
+                      'Health Summary',
+                      style: AppTextStyles.button.copyWith(
+                        color: AppColors.textPrimary,
+                        fontSize: 14,
+                      ),
+                    ),
                     Row(
                       children: [
                         Container(
-                          width: 6, height: 6,
-                          decoration: const BoxDecoration(color: AppColors.ovulation, shape: BoxShape.circle),
+                          width: 6,
+                          height: 6,
+                          decoration: const BoxDecoration(
+                            color: AppColors.ovulation,
+                            shape: BoxShape.circle,
+                          ),
                         ),
                         const SizedBox(width: 4),
-                        Text('On-device analysis', style: AppTextStyles.small.copyWith(color: AppColors.ovulation)),
+                        Text(
+                          'On-device analysis',
+                          style: AppTextStyles.small.copyWith(
+                            color: AppColors.ovulation,
+                          ),
+                        ),
                       ],
                     ),
                   ],
@@ -2670,26 +3651,40 @@ class _OnDeviceSummaryCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 14),
-          ...paragraphs.map((p) => Padding(
-            padding: const EdgeInsets.only(bottom: 10),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(p.emoji, style: const TextStyle(fontSize: 16)),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(p.title, style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w700, fontSize: 12)),
-                      const SizedBox(height: 2),
-                      Text(p.body, style: AppTextStyles.body.copyWith(fontSize: 11, height: 1.4)),
-                    ],
+          ...paragraphs.map(
+            (p) => Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(p.emoji, style: const TextStyle(fontSize: 16)),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          p.title,
+                          style: AppTextStyles.body.copyWith(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 12,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          p.body,
+                          style: AppTextStyles.body.copyWith(
+                            fontSize: 11,
+                            height: 1.4,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          )),
+          ),
         ],
       ),
     );
@@ -2707,51 +3702,66 @@ class _OnDeviceSummaryCard extends StatelessWidget {
     // 1. Overall assessment
     if (hasEnoughData) {
       final variation = cl.isNotEmpty
-          ? cl.reduce((a, b) => a > b ? a : b) - cl.reduce((a, b) => a < b ? a : b)
+          ? cl.reduce((a, b) => a > b ? a : b) -
+                cl.reduce((a, b) => a < b ? a : b)
           : 0;
       final regular = variation <= 3;
       final normalLength = avgCycle >= 21 && avgCycle <= 35;
       final normalPeriod = avgPeriod >= 2 && avgPeriod <= 7;
 
       if (regular && normalLength && normalPeriod) {
-        result.add(_SummaryParagraph(
-          emoji: '💚',
-          title: 'Overall: Looking good',
-          body: 'Your cycle is regular ($avgCycle-day average, ${variation}d variation) with a $avgPeriod-day period. This is well within healthy ranges.',
-        ));
+        result.add(
+          _SummaryParagraph(
+            emoji: '💚',
+            title: 'Overall: Looking good',
+            body:
+                'Your cycle is regular ($avgCycle-day average, ${variation}d variation) with a $avgPeriod-day period. This is well within healthy ranges.',
+          ),
+        );
       } else {
         final issues = <String>[];
         if (!regular) issues.add('${variation}d cycle variation');
         if (!normalLength) issues.add('$avgCycle-day cycles');
         if (!normalPeriod) issues.add('$avgPeriod-day periods');
-        result.add(_SummaryParagraph(
-          emoji: '🔶',
-          title: 'Overall: Worth monitoring',
-          body: 'Some patterns to watch: ${issues.join(', ')}. This may be normal for your body, but track closely.',
-        ));
+        result.add(
+          _SummaryParagraph(
+            emoji: '🔶',
+            title: 'Overall: Worth monitoring',
+            body:
+                'Some patterns to watch: ${issues.join(', ')}. This may be normal for your body, but track closely.',
+          ),
+        );
       }
     } else {
-      result.add(_SummaryParagraph(
-        emoji: '📊',
-        title: 'Building your profile',
-        body: 'Luna needs more data for a complete analysis. Keep logging — insights improve with every cycle tracked.',
-      ));
+      result.add(
+        _SummaryParagraph(
+          emoji: '📊',
+          title: 'Building your profile',
+          body:
+              'Luna needs more data for a complete analysis. Keep logging — insights improve with every cycle tracked.',
+        ),
+      );
     }
 
     // 2. Current phase insight
-    result.add(_SummaryParagraph(
-      emoji: _phaseEmoji(phase),
-      title: 'Right now: ${AppColors.phaseName(phase)}',
-      body: _phaseBody(phase, cycleDay, avgCycle),
-    ));
+    result.add(
+      _SummaryParagraph(
+        emoji: _phaseEmoji(phase),
+        title: 'Right now: ${AppColors.phaseName(phase)}',
+        body: _phaseBody(phase, cycleDay, avgCycle),
+      ),
+    );
 
     // 3. Prediction insight
     if (prediction != null) {
-      result.add(_SummaryParagraph(
-        emoji: '🔮',
-        title: 'Prediction',
-        body: 'Based on your ${cl.length} logged cycles, your next cycle is estimated at ${prediction!.nextCycleLength.round()} days with a ${prediction!.nextPeriodDuration.round()}-day period. ${prediction!.fromModel ? 'LSTM model' : 'Statistical model'} confidence.',
-      ));
+      result.add(
+        _SummaryParagraph(
+          emoji: '🔮',
+          title: 'Prediction',
+          body:
+              'Based on your ${cl.length} logged cycles, your next cycle is estimated at ${prediction!.nextCycleLength.round()} days with a ${prediction!.nextPeriodDuration.round()}-day period. ${prediction!.fromModel ? 'LSTM model' : 'Statistical model'} confidence.',
+        ),
+      );
     }
 
     // 4. Symptom insight
@@ -2763,13 +3773,16 @@ class _OnDeviceSummaryCard extends StatelessWidget {
       }
     }
     if (symptomCounts.isNotEmpty) {
-      final sorted = symptomCounts.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
+      final sorted = symptomCounts.entries.toList()
+        ..sort((a, b) => b.value.compareTo(a.value));
       final top3 = sorted.take(3).map((e) => e.key).join(', ');
-      result.add(_SummaryParagraph(
-        emoji: '🩹',
-        title: 'Top symptoms: $top3',
-        body: _symptomAdvice(sorted.first.key),
-      ));
+      result.add(
+        _SummaryParagraph(
+          emoji: '🩹',
+          title: 'Top symptoms: $top3',
+          body: _symptomAdvice(sorted.first.key),
+        ),
+      );
     }
 
     // 5. Mood insight
@@ -2781,13 +3794,16 @@ class _OnDeviceSummaryCard extends StatelessWidget {
       }
     }
     if (moodCounts.isNotEmpty) {
-      final sorted = moodCounts.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
+      final sorted = moodCounts.entries.toList()
+        ..sort((a, b) => b.value.compareTo(a.value));
       final dominant = sorted.first.key;
-      result.add(_SummaryParagraph(
-        emoji: '🧠',
-        title: 'Dominant mood: $dominant',
-        body: _moodAdvice(dominant),
-      ));
+      result.add(
+        _SummaryParagraph(
+          emoji: '🧠',
+          title: 'Dominant mood: $dominant',
+          body: _moodAdvice(dominant),
+        ),
+      );
     }
 
     // 6. Flow insight
@@ -2802,17 +3818,23 @@ class _OnDeviceSummaryCard extends StatelessWidget {
     if (totalFlow >= 3) {
       final heavyPct = (heavy / totalFlow * 100).round();
       if (heavyPct >= 50) {
-        result.add(_SummaryParagraph(
-          emoji: '💧',
-          title: 'Heavy flow pattern',
-          body: 'Heavy flow logged $heavyPct% of the time. Ensure adequate iron intake — spinach, lentils, red meat. Consider a ferritin check if you feel consistently fatigued.',
-        ));
+        result.add(
+          _SummaryParagraph(
+            emoji: '💧',
+            title: 'Heavy flow pattern',
+            body:
+                'Heavy flow logged $heavyPct% of the time. Ensure adequate iron intake — spinach, lentils, red meat. Consider a ferritin check if you feel consistently fatigued.',
+          ),
+        );
       } else {
-        result.add(_SummaryParagraph(
-          emoji: '💧',
-          title: 'Flow balance',
-          body: 'Your flow pattern: Light ${(light / totalFlow * 100).round()}%, Medium ${(medium / totalFlow * 100).round()}%, Heavy $heavyPct%. This distribution looks balanced.',
-        ));
+        result.add(
+          _SummaryParagraph(
+            emoji: '💧',
+            title: 'Flow balance',
+            body:
+                'Your flow pattern: Light ${(light / totalFlow * 100).round()}%, Medium ${(medium / totalFlow * 100).round()}%, Heavy $heavyPct%. This distribution looks balanced.',
+          ),
+        );
       }
     }
 
@@ -2834,19 +3856,22 @@ class _OnDeviceSummaryCard extends StatelessWidget {
       if (pain != null) {
         final severe = (pain['Severe'] ?? 0) + (pain['Unbearable'] ?? 0);
         final total = pain.values.fold<int>(0, (s, v) => s + v);
-        if (severe > 0 && severe / total > 0.25) flags.add('severe pain ${(severe / total * 100).round()}%');
+        if (severe > 0 && severe / total > 0.25)
+          flags.add('severe pain ${(severe / total * 100).round()}%');
       }
       final sleep = medCounts['sleep'];
       if (sleep != null) {
         final poor = (sleep['Poor'] ?? 0) + (sleep['Insomnia'] ?? 0);
         final total = sleep.values.fold<int>(0, (s, v) => s + v);
-        if (poor > 0 && poor / total > 0.4) flags.add('sleep issues ${(poor / total * 100).round()}%');
+        if (poor > 0 && poor / total > 0.4)
+          flags.add('sleep issues ${(poor / total * 100).round()}%');
       }
       final energy = medCounts['energy'];
       if (energy != null) {
         final low = (energy['Low'] ?? 0) + (energy['Exhausted'] ?? 0);
         final total = energy.values.fold<int>(0, (s, v) => s + v);
-        if (low > 0 && low / total > 0.4) flags.add('low energy ${(low / total * 100).round()}%');
+        if (low > 0 && low / total > 0.4)
+          flags.add('low energy ${(low / total * 100).round()}%');
       }
       final skin = medCounts['skin'];
       if (skin != null && (skin['Acne'] ?? 0) > 0) {
@@ -2855,27 +3880,35 @@ class _OnDeviceSummaryCard extends StatelessWidget {
       }
 
       if (flags.isNotEmpty) {
-        result.add(_SummaryParagraph(
-          emoji: '🩺',
-          title: 'Medical checklist flags',
-          body: 'Your checklist data shows: ${flags.join(', ')}. These patterns are worth mentioning at your next doctor visit.',
-        ));
+        result.add(
+          _SummaryParagraph(
+            emoji: '🩺',
+            title: 'Medical checklist flags',
+            body:
+                'Your checklist data shows: ${flags.join(', ')}. These patterns are worth mentioning at your next doctor visit.',
+          ),
+        );
       } else {
-        result.add(_SummaryParagraph(
-          emoji: '🩺',
-          title: 'Medical checklist',
-          body: 'No concerning patterns in your checklist data. Keep logging for a more complete picture.',
-        ));
+        result.add(
+          _SummaryParagraph(
+            emoji: '🩺',
+            title: 'Medical checklist',
+            body:
+                'No concerning patterns in your checklist data. Keep logging for a more complete picture.',
+          ),
+        );
       }
     }
 
     // 8. Age insight
     if (age != null) {
-      result.add(_SummaryParagraph(
-        emoji: _ageEmoji(age),
-        title: 'Age context ($age)',
-        body: _ageAdvice(age, avgCycle),
-      ));
+      result.add(
+        _SummaryParagraph(
+          emoji: _ageEmoji(age),
+          title: 'Age context ($age)',
+          body: _ageAdvice(age, avgCycle),
+        ),
+      );
     }
 
     return result;
@@ -2883,10 +3916,14 @@ class _OnDeviceSummaryCard extends StatelessWidget {
 
   String _phaseEmoji(CyclePhase phase) {
     switch (phase) {
-      case CyclePhase.menstrual: return '🩸';
-      case CyclePhase.follicular: return '🌱';
-      case CyclePhase.ovulation: return '⭐';
-      case CyclePhase.luteal: return '🌙';
+      case CyclePhase.menstrual:
+        return '🩸';
+      case CyclePhase.follicular:
+        return '🌱';
+      case CyclePhase.ovulation:
+        return '⭐';
+      case CyclePhase.luteal:
+        return '🌙';
     }
   }
 
@@ -2905,28 +3942,45 @@ class _OnDeviceSummaryCard extends StatelessWidget {
 
   String _symptomAdvice(String topSymptom) {
     switch (topSymptom) {
-      case 'Cramps': return 'Frequent cramps suggest magnesium may help — try 200-400mg glycinate daily, especially in your luteal phase. Heat pads and ginger tea provide immediate relief.';
-      case 'Headache': return 'Cycle-related headaches often stem from estrogen drops. Stay hydrated, maintain stable blood sugar, and consider magnesium + B2 supplementation.';
-      case 'Fatigue': return 'Persistent fatigue may indicate low iron or B12. Track your energy levels across your cycle — if fatigue persists beyond your period, consider a blood panel.';
-      case 'Bloating': return 'Bloating peaks in the luteal phase due to progesterone. Reduce sodium, eat potassium-rich foods (bananas, avocado), and try peppermint tea.';
-      case 'Back pain': return 'Prostaglandins that cause cramps also affect your lower back. Gentle stretching, heat, and anti-inflammatory foods (omega-3, turmeric) help.';
-      case 'Acne': return 'Hormonal acne often flares in the luteal phase when androgens rise. Zinc supplements, reduced dairy, and consistent skincare can help.';
-      case 'Nausea': return 'Cycle-related nausea is linked to prostaglandins and hormonal shifts. Ginger, small frequent meals, and vitamin B6 are effective remedies.';
-      case 'Breast tenderness': return 'Breast tenderness in the luteal phase is caused by progesterone. Evening primrose oil, reducing caffeine, and vitamin E may provide relief.';
-      default: return 'Track this symptom across cycles to identify patterns. Consistent logging helps identify triggers and effective remedies.';
+      case 'Cramps':
+        return 'Frequent cramps suggest magnesium may help — try 200-400mg glycinate daily, especially in your luteal phase. Heat pads and ginger tea provide immediate relief.';
+      case 'Headache':
+        return 'Cycle-related headaches often stem from estrogen drops. Stay hydrated, maintain stable blood sugar, and consider magnesium + B2 supplementation.';
+      case 'Fatigue':
+        return 'Persistent fatigue may indicate low iron or B12. Track your energy levels across your cycle — if fatigue persists beyond your period, consider a blood panel.';
+      case 'Bloating':
+        return 'Bloating peaks in the luteal phase due to progesterone. Reduce sodium, eat potassium-rich foods (bananas, avocado), and try peppermint tea.';
+      case 'Back pain':
+        return 'Prostaglandins that cause cramps also affect your lower back. Gentle stretching, heat, and anti-inflammatory foods (omega-3, turmeric) help.';
+      case 'Acne':
+        return 'Hormonal acne often flares in the luteal phase when androgens rise. Zinc supplements, reduced dairy, and consistent skincare can help.';
+      case 'Nausea':
+        return 'Cycle-related nausea is linked to prostaglandins and hormonal shifts. Ginger, small frequent meals, and vitamin B6 are effective remedies.';
+      case 'Breast tenderness':
+        return 'Breast tenderness in the luteal phase is caused by progesterone. Evening primrose oil, reducing caffeine, and vitamin E may provide relief.';
+      default:
+        return 'Track this symptom across cycles to identify patterns. Consistent logging helps identify triggers and effective remedies.';
     }
   }
 
   String _moodAdvice(String mood) {
     switch (mood) {
-      case 'Tired': return 'Fatigue correlates strongly with your menstrual and late luteal phases. Prioritize 8+ hours of sleep, and consider iron levels if it persists throughout your cycle.';
-      case 'Anxious': return 'Anxiety often peaks in the luteal phase when progesterone drops. Magnesium, L-theanine, and breathing exercises can help. Reduce caffeine in the second half of your cycle.';
-      case 'Sad': return 'Mood dips are common premenstrually. Omega-3 fatty acids, vitamin D, and regular exercise have strong evidence for mood support. Talk to someone if it feels overwhelming.';
-      case 'Irritable': return 'Irritability in the luteal phase is linked to serotonin fluctuations. Complex carbs boost serotonin naturally. B6 supplements and regular exercise also help.';
-      case 'Happy': return 'Great to see positive moods! Happiness peaks around ovulation when estrogen and energy are highest. Maintain this with regular exercise and social connection.';
-      case 'Stressed': return 'Chronic stress disrupts cortisol which can affect cycle regularity. Adaptogenic herbs (ashwagandha), meditation, and boundary-setting are key.';
-      case 'Energetic': return 'High energy is characteristic of your follicular and ovulation phases. Channel it into challenging workouts and creative projects.';
-      default: return 'Tracking moods alongside your cycle reveals powerful patterns. Most women find mood shifts predictable once mapped to their cycle phases.';
+      case 'Tired':
+        return 'Fatigue correlates strongly with your menstrual and late luteal phases. Prioritize 8+ hours of sleep, and consider iron levels if it persists throughout your cycle.';
+      case 'Anxious':
+        return 'Anxiety often peaks in the luteal phase when progesterone drops. Magnesium, L-theanine, and breathing exercises can help. Reduce caffeine in the second half of your cycle.';
+      case 'Sad':
+        return 'Mood dips are common premenstrually. Omega-3 fatty acids, vitamin D, and regular exercise have strong evidence for mood support. Talk to someone if it feels overwhelming.';
+      case 'Irritable':
+        return 'Irritability in the luteal phase is linked to serotonin fluctuations. Complex carbs boost serotonin naturally. B6 supplements and regular exercise also help.';
+      case 'Happy':
+        return 'Great to see positive moods! Happiness peaks around ovulation when estrogen and energy are highest. Maintain this with regular exercise and social connection.';
+      case 'Stressed':
+        return 'Chronic stress disrupts cortisol which can affect cycle regularity. Adaptogenic herbs (ashwagandha), meditation, and boundary-setting are key.';
+      case 'Energetic':
+        return 'High energy is characteristic of your follicular and ovulation phases. Channel it into challenging workouts and creative projects.';
+      default:
+        return 'Tracking moods alongside your cycle reveals powerful patterns. Most women find mood shifts predictable once mapped to their cycle phases.';
     }
   }
 
@@ -2939,10 +3993,14 @@ class _OnDeviceSummaryCard extends StatelessWidget {
   }
 
   String _ageAdvice(int age, int avgCycle) {
-    if (age < 20) return 'At $age, your cycle may still be establishing regularity. This is normal — it can take several years after menarche. Focus on nutrition, especially iron and calcium.';
-    if (age < 30) return 'At $age, your $avgCycle-day cycle reflects peak reproductive years. This is when tracking is most valuable for understanding your unique patterns and planning ahead.';
-    if (age < 40) return 'At $age, your cycle should be well-established. Any new irregularities are worth noting. Fertility awareness is especially relevant — folate is important regardless of plans.';
-    if (age < 50) return 'At $age, perimenopause may begin influencing your cycle. Shorter cycles, heavier flow, or skipped periods can emerge. Share your tracking data with your provider.';
+    if (age < 20)
+      return 'At $age, your cycle may still be establishing regularity. This is normal — it can take several years after menarche. Focus on nutrition, especially iron and calcium.';
+    if (age < 30)
+      return 'At $age, your $avgCycle-day cycle reflects peak reproductive years. This is when tracking is most valuable for understanding your unique patterns and planning ahead.';
+    if (age < 40)
+      return 'At $age, your cycle should be well-established. Any new irregularities are worth noting. Fertility awareness is especially relevant — folate is important regardless of plans.';
+    if (age < 50)
+      return 'At $age, perimenopause may begin influencing your cycle. Shorter cycles, heavier flow, or skipped periods can emerge. Share your tracking data with your provider.';
     return 'At $age, cycle changes are expected. Tracking helps distinguish normal perimenopause from issues that need attention. Calcium and vitamin D are priorities now.';
   }
 }
@@ -2951,7 +4009,11 @@ class _SummaryParagraph {
   final String emoji;
   final String title;
   final String body;
-  const _SummaryParagraph({required this.emoji, required this.title, required this.body});
+  const _SummaryParagraph({
+    required this.emoji,
+    required this.title,
+    required this.body,
+  });
 }
 
 // --- Ollama enhanced (collapsible) ---
@@ -3013,14 +4075,15 @@ class _OllamaEnhancedSectionState extends State<_OllamaEnhancedSection> {
             ollamaModel: widget.aiProvider.ollamaModel,
             onRun: widget.hasEnoughData
                 ? () => widget.aiProvider.runFullDiagnosis(
-                      periods: List.from(widget.periods),
-                      logs: Map.from(widget.logs),
-                      settingsCycleLength: widget.settingsCycleLength,
-                      settingsPeriodLength: widget.settingsPeriodLength,
-                    )
+                    periods: List.from(widget.periods),
+                    logs: Map.from(widget.logs),
+                    settingsCycleLength: widget.settingsCycleLength,
+                    settingsPeriodLength: widget.settingsPeriodLength,
+                  )
                 : null,
             onCheckConnection: () => widget.aiProvider.checkOllama(),
-            onConfigureHost: (host) => widget.aiProvider.configureOllama(host: host),
+            onConfigureHost: (host) =>
+                widget.aiProvider.configureOllama(host: host),
           ),
         ],
       ],
@@ -3047,7 +4110,11 @@ class _LstmPredictionCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(18),
         border: Border.all(color: AppColors.luteal.withValues(alpha: 0.2)),
         boxShadow: const [
-          BoxShadow(color: Color(0x0FA08CB0), blurRadius: 12, offset: Offset(0, 2)),
+          BoxShadow(
+            color: Color(0x0FA08CB0),
+            blurRadius: 12,
+            offset: Offset(0, 2),
+          ),
         ],
       ),
       child: Column(
@@ -3061,7 +4128,11 @@ class _LstmPredictionCard extends StatelessWidget {
                   color: AppColors.lutealBg,
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Icon(Icons.psychology, size: 20, color: AppColors.luteal),
+                child: const Icon(
+                  Icons.psychology,
+                  size: 20,
+                  color: AppColors.luteal,
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -3076,8 +4147,12 @@ class _LstmPredictionCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      prediction?.fromModel == true ? 'LSTM Model' : 'Statistical Model',
-                      style: AppTextStyles.small.copyWith(color: AppColors.textMuted),
+                      prediction?.fromModel == true
+                          ? 'LSTM Model'
+                          : 'Statistical Model',
+                      style: AppTextStyles.small.copyWith(
+                        color: AppColors.textMuted,
+                      ),
                     ),
                   ],
                 ),
@@ -3086,7 +4161,10 @@ class _LstmPredictionCard extends StatelessWidget {
                 GestureDetector(
                   onTap: onPredict,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 8,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.luteal,
                       borderRadius: BorderRadius.circular(12),
@@ -3250,7 +4328,11 @@ class _OllamaDiagnosisCardState extends State<_OllamaDiagnosisCard> {
               : AppColors.cardBorder,
         ),
         boxShadow: const [
-          BoxShadow(color: Color(0x0FA08CB0), blurRadius: 12, offset: Offset(0, 2)),
+          BoxShadow(
+            color: Color(0x0FA08CB0),
+            blurRadius: 12,
+            offset: Offset(0, 2),
+          ),
         ],
       ),
       child: Column(
@@ -3270,7 +4352,9 @@ class _OllamaDiagnosisCardState extends State<_OllamaDiagnosisCard> {
                 child: Icon(
                   Icons.auto_awesome,
                   size: 20,
-                  color: widget.ollamaAvailable ? AppColors.ovulation : AppColors.textMuted,
+                  color: widget.ollamaAvailable
+                      ? AppColors.ovulation
+                      : AppColors.textMuted,
                 ),
               ),
               const SizedBox(width: 12),
@@ -3335,16 +4419,25 @@ class _OllamaDiagnosisCardState extends State<_OllamaDiagnosisCard> {
                     style: AppTextStyles.body.copyWith(fontSize: 12),
                     decoration: InputDecoration(
                       hintText: 'http://localhost:11434',
-                      hintStyle: AppTextStyles.small.copyWith(color: AppColors.textMuted),
+                      hintStyle: AppTextStyles.small.copyWith(
+                        color: AppColors.textMuted,
+                      ),
                       isDense: true,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 10,
+                      ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(color: AppColors.inputBorder),
+                        borderSide: const BorderSide(
+                          color: AppColors.inputBorder,
+                        ),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: const BorderSide(color: AppColors.inputBorder),
+                        borderSide: const BorderSide(
+                          color: AppColors.inputBorder,
+                        ),
                       ),
                     ),
                   ),
@@ -3357,7 +4450,10 @@ class _OllamaDiagnosisCardState extends State<_OllamaDiagnosisCard> {
                     setState(() => _showHostInput = false);
                   },
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 10,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.follicular,
                       borderRadius: BorderRadius.circular(10),
@@ -3447,7 +4543,11 @@ class _OllamaDiagnosisCardState extends State<_OllamaDiagnosisCard> {
                 children: [
                   Row(
                     children: [
-                      const Icon(Icons.error_outline, size: 16, color: AppColors.menstrual),
+                      const Icon(
+                        Icons.error_outline,
+                        size: 16,
+                        color: AppColors.menstrual,
+                      ),
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
@@ -3466,7 +4566,10 @@ class _OllamaDiagnosisCardState extends State<_OllamaDiagnosisCard> {
                       GestureDetector(
                         onTap: widget.onCheckConnection,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
                           decoration: BoxDecoration(
                             border: Border.all(color: AppColors.menstrual),
                             borderRadius: BorderRadius.circular(10),
@@ -3523,7 +4626,10 @@ class _OllamaDiagnosisCardState extends State<_OllamaDiagnosisCard> {
               GestureDetector(
                 onTap: widget.onCheckConnection,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 10,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.follicular,
                     borderRadius: BorderRadius.circular(12),
@@ -3564,7 +4670,10 @@ class _OllamaDiagnosisCardState extends State<_OllamaDiagnosisCard> {
               const SizedBox(width: 8),
               Text(
                 'Generate AI Diagnosis',
-                style: AppTextStyles.button.copyWith(color: Colors.white, fontSize: 14),
+                style: AppTextStyles.button.copyWith(
+                  color: Colors.white,
+                  fontSize: 14,
+                ),
               ),
             ],
           ),

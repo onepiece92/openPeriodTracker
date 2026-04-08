@@ -62,12 +62,19 @@ class _StepLastPeriodState extends State<StepLastPeriod> {
             child: ElevatedButton(
               onPressed: widget.onNext,
               style: ElevatedButton.styleFrom(
-                backgroundColor: widget.onNext != null ? AppColors.luteal : AppColors.cardBorder,
+                backgroundColor: widget.onNext != null
+                    ? AppColors.luteal
+                    : AppColors.cardBorder,
                 foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
                 elevation: 0,
               ),
-              child: Text('Next', style: AppTextStyles.button.copyWith(color: Colors.white)),
+              child: Text(
+                'Next',
+                style: AppTextStyles.button.copyWith(color: Colors.white),
+              ),
             ),
           ),
           const SizedBox(height: 32),
@@ -78,8 +85,16 @@ class _StepLastPeriodState extends State<StepLastPeriod> {
 
   Widget _buildCalendar() {
     final today = DateTime.now();
-    final firstDayOfMonth = DateTime(_displayedMonth.year, _displayedMonth.month, 1);
-    final daysInMonth = DateTime(_displayedMonth.year, _displayedMonth.month + 1, 0).day;
+    final firstDayOfMonth = DateTime(
+      _displayedMonth.year,
+      _displayedMonth.month,
+      1,
+    );
+    final daysInMonth = DateTime(
+      _displayedMonth.year,
+      _displayedMonth.month + 1,
+      0,
+    ).day;
     final startWeekday = firstDayOfMonth.weekday % 7; // 0=Sun
 
     return Container(
@@ -93,21 +108,35 @@ class _StepLastPeriodState extends State<StepLastPeriod> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               IconButton(
-                icon: const Icon(Icons.chevron_left, color: AppColors.textSecondary),
+                icon: const Icon(
+                  Icons.chevron_left,
+                  color: AppColors.textSecondary,
+                ),
                 onPressed: () {
                   setState(() {
-                    _displayedMonth = DateTime(_displayedMonth.year, _displayedMonth.month - 1);
+                    _displayedMonth = DateTime(
+                      _displayedMonth.year,
+                      _displayedMonth.month - 1,
+                    );
                   });
                 },
               ),
               Text(
                 DateFormat('MMMM yyyy').format(_displayedMonth),
-                style: AppTextStyles.button.copyWith(color: AppColors.textPrimary),
+                style: AppTextStyles.button.copyWith(
+                  color: AppColors.textPrimary,
+                ),
               ),
               IconButton(
-                icon: const Icon(Icons.chevron_right, color: AppColors.textSecondary),
+                icon: const Icon(
+                  Icons.chevron_right,
+                  color: AppColors.textSecondary,
+                ),
                 onPressed: () {
-                  final nextMonth = DateTime(_displayedMonth.year, _displayedMonth.month + 1);
+                  final nextMonth = DateTime(
+                    _displayedMonth.year,
+                    _displayedMonth.month + 1,
+                  );
                   if (!nextMonth.isAfter(DateTime(today.year, today.month))) {
                     setState(() => _displayedMonth = nextMonth);
                   }
@@ -119,11 +148,11 @@ class _StepLastPeriodState extends State<StepLastPeriod> {
           // Day labels
           Row(
             children: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
-                .map((d) => Expanded(
-                      child: Center(
-                        child: Text(d, style: AppTextStyles.label),
-                      ),
-                    ))
+                .map(
+                  (d) => Expanded(
+                    child: Center(child: Text(d, style: AppTextStyles.label)),
+                  ),
+                )
                 .toList(),
           ),
           const SizedBox(height: 8),
@@ -141,12 +170,18 @@ class _StepLastPeriodState extends State<StepLastPeriod> {
                 if (dayNum < 1 || dayNum > daysInMonth) {
                   return const SizedBox.shrink();
                 }
-                final date = DateTime(_displayedMonth.year, _displayedMonth.month, dayNum);
-                final isToday = date.year == today.year &&
+                final date = DateTime(
+                  _displayedMonth.year,
+                  _displayedMonth.month,
+                  dayNum,
+                );
+                final isToday =
+                    date.year == today.year &&
                     date.month == today.month &&
                     date.day == today.day;
                 final isFuture = date.isAfter(today);
-                final isSelected = widget.selectedDate != null &&
+                final isSelected =
+                    widget.selectedDate != null &&
                     date.year == widget.selectedDate!.year &&
                     date.month == widget.selectedDate!.month &&
                     date.day == widget.selectedDate!.day;
@@ -169,9 +204,11 @@ class _StepLastPeriodState extends State<StepLastPeriod> {
                           color: isFuture
                               ? AppColors.textMuted.withValues(alpha: 0.4)
                               : isSelected
-                                  ? Colors.white
-                                  : AppColors.textPrimary,
-                          fontWeight: isSelected || isToday ? FontWeight.w600 : FontWeight.w400,
+                              ? Colors.white
+                              : AppColors.textPrimary,
+                          fontWeight: isSelected || isToday
+                              ? FontWeight.w600
+                              : FontWeight.w400,
                         ),
                       ),
                     ),

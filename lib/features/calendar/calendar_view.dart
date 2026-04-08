@@ -49,8 +49,16 @@ class _CalendarViewState extends State<CalendarView> {
     final today = DateTime.now();
     final todayStr = _formatDate(today);
 
-    final firstDayOfMonth = DateTime(_displayedMonth.year, _displayedMonth.month, 1);
-    final daysInMonth = DateTime(_displayedMonth.year, _displayedMonth.month + 1, 0).day;
+    final firstDayOfMonth = DateTime(
+      _displayedMonth.year,
+      _displayedMonth.month,
+      1,
+    );
+    final daysInMonth = DateTime(
+      _displayedMonth.year,
+      _displayedMonth.month + 1,
+      0,
+    ).day;
     final startWeekday = firstDayOfMonth.weekday % 7;
     final totalCells = startWeekday + daysInMonth;
     final rows = ((totalCells) / 7).ceil();
@@ -65,10 +73,16 @@ class _CalendarViewState extends State<CalendarView> {
           Row(
             children: [
               IconButton(
-                icon: const Icon(Icons.chevron_left, color: AppColors.textSecondary),
+                icon: const Icon(
+                  Icons.chevron_left,
+                  color: AppColors.textSecondary,
+                ),
                 onPressed: () {
                   setState(() {
-                    _displayedMonth = DateTime(_displayedMonth.year, _displayedMonth.month - 1);
+                    _displayedMonth = DateTime(
+                      _displayedMonth.year,
+                      _displayedMonth.month - 1,
+                    );
                   });
                 },
               ),
@@ -76,15 +90,23 @@ class _CalendarViewState extends State<CalendarView> {
                 child: Center(
                   child: Text(
                     DateFormat('MMMM yyyy').format(_displayedMonth),
-                    style: AppTextStyles.button.copyWith(color: AppColors.textPrimary),
+                    style: AppTextStyles.button.copyWith(
+                      color: AppColors.textPrimary,
+                    ),
                   ),
                 ),
               ),
               IconButton(
-                icon: const Icon(Icons.chevron_right, color: AppColors.textSecondary),
+                icon: const Icon(
+                  Icons.chevron_right,
+                  color: AppColors.textSecondary,
+                ),
                 onPressed: () {
                   setState(() {
-                    _displayedMonth = DateTime(_displayedMonth.year, _displayedMonth.month + 1);
+                    _displayedMonth = DateTime(
+                      _displayedMonth.year,
+                      _displayedMonth.month + 1,
+                    );
                   });
                 },
               ),
@@ -93,12 +115,17 @@ class _CalendarViewState extends State<CalendarView> {
                 onTap: () => setState(() => _editMode = !_editMode),
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: _editMode ? AppColors.menstrualBg : Colors.white,
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
-                      color: _editMode ? AppColors.menstrual : AppColors.cardBorder,
+                      color: _editMode
+                          ? AppColors.menstrual
+                          : AppColors.cardBorder,
                     ),
                   ),
                   child: Row(
@@ -107,13 +134,17 @@ class _CalendarViewState extends State<CalendarView> {
                       Icon(
                         Icons.water_drop,
                         size: 14,
-                        color: _editMode ? AppColors.menstrual : AppColors.textMuted,
+                        color: _editMode
+                            ? AppColors.menstrual
+                            : AppColors.textMuted,
                       ),
                       const SizedBox(width: 4),
                       Text(
                         _editMode ? 'Done' : 'Edit',
                         style: AppTextStyles.small.copyWith(
-                          color: _editMode ? AppColors.menstrual : AppColors.textMuted,
+                          color: _editMode
+                              ? AppColors.menstrual
+                              : AppColors.textMuted,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -138,9 +169,11 @@ class _CalendarViewState extends State<CalendarView> {
           // Day labels
           Row(
             children: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
-                .map((d) => Expanded(
-                      child: Center(child: Text(d, style: AppTextStyles.label)),
-                    ))
+                .map(
+                  (d) => Expanded(
+                    child: Center(child: Text(d, style: AppTextStyles.label)),
+                  ),
+                )
                 .toList(),
           ),
           const SizedBox(height: 4),
@@ -155,7 +188,11 @@ class _CalendarViewState extends State<CalendarView> {
                   return const Expanded(child: SizedBox(height: 44));
                 }
 
-                final date = DateTime(_displayedMonth.year, _displayedMonth.month, dayNum);
+                final date = DateTime(
+                  _displayedMonth.year,
+                  _displayedMonth.month,
+                  dayNum,
+                );
                 final dateStr = _formatDate(date);
                 final status = periodProvider.getDayStatus(dateStr);
                 final isToday = dateStr == todayStr;
@@ -222,14 +259,26 @@ class _CalendarViewState extends State<CalendarView> {
                             ? Border.all(
                                 color: status == 'period'
                                     ? Colors.white.withValues(alpha: 0.5)
-                                    : AppColors.menstrual.withValues(alpha: 0.15),
+                                    : AppColors.menstrual.withValues(
+                                        alpha: 0.15,
+                                      ),
                                 width: 1.5,
                               )
                             : isToday && !isSelected
-                                ? Border.all(color: AppColors.phaseColor(phase), width: 1.5)
-                                : null,
+                            ? Border.all(
+                                color: AppColors.phaseColor(phase),
+                                width: 1.5,
+                              )
+                            : null,
                         boxShadow: isSelected && !_editMode
-                            ? [BoxShadow(color: AppColors.phaseColor(phase).withValues(alpha: 0.3), blurRadius: 6)]
+                            ? [
+                                BoxShadow(
+                                  color: AppColors.phaseColor(
+                                    phase,
+                                  ).withValues(alpha: 0.3),
+                                  blurRadius: 6,
+                                ),
+                              ]
                             : null,
                       ),
                       child: Stack(
@@ -246,7 +295,9 @@ class _CalendarViewState extends State<CalendarView> {
                                 fontWeight: FontWeight.w600,
                                 color: (status == 'period' || isSelected)
                                     ? Colors.white.withValues(alpha: 0.6)
-                                    : AppColors.textMuted.withValues(alpha: 0.5),
+                                    : AppColors.textMuted.withValues(
+                                        alpha: 0.5,
+                                      ),
                               ),
                             ),
                           ),
@@ -255,19 +306,21 @@ class _CalendarViewState extends State<CalendarView> {
                             Positioned(
                               top: 2,
                               right: 3,
-                              child: Text(
-                                '⭐',
-                                style: TextStyle(fontSize: 8),
-                              ),
+                              child: Text('⭐', style: TextStyle(fontSize: 8)),
                             ),
                           Text(
                             '$dayNum',
                             style: AppTextStyles.body.copyWith(
                               color: textColor,
-                              fontWeight: isToday || isSelected || isPeak ? FontWeight.w600 : FontWeight.w400,
+                              fontWeight: isToday || isSelected || isPeak
+                                  ? FontWeight.w600
+                                  : FontWeight.w400,
                             ),
                           ),
-                          if (flowDots > 0 || showPredictedDot || hasLog || hasMedical)
+                          if (flowDots > 0 ||
+                              showPredictedDot ||
+                              hasLog ||
+                              hasMedical)
                             Positioned(
                               bottom: 4,
                               child: Row(
@@ -275,23 +328,36 @@ class _CalendarViewState extends State<CalendarView> {
                                 children: [
                                   // Flow dots (1/2/3 for light/medium/heavy)
                                   if (flowDots > 0)
-                                    ...List.generate(flowDots, (_) => Container(
-                                      width: 4,
-                                      height: 4,
-                                      margin: const EdgeInsets.symmetric(horizontal: 0.5),
-                                      decoration: BoxDecoration(
-                                        color: isSelected ? Colors.white : Colors.white.withValues(alpha: 0.9),
-                                        shape: BoxShape.circle,
+                                    ...List.generate(
+                                      flowDots,
+                                      (_) => Container(
+                                        width: 4,
+                                        height: 4,
+                                        margin: const EdgeInsets.symmetric(
+                                          horizontal: 0.5,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: isSelected
+                                              ? Colors.white
+                                              : Colors.white.withValues(
+                                                  alpha: 0.9,
+                                                ),
+                                          shape: BoxShape.circle,
+                                        ),
                                       ),
-                                    ))
+                                    )
                                   // Predicted period dot
                                   else if (showPredictedDot)
                                     Container(
                                       width: 4,
                                       height: 4,
-                                      margin: const EdgeInsets.symmetric(horizontal: 0.5),
+                                      margin: const EdgeInsets.symmetric(
+                                        horizontal: 0.5,
+                                      ),
                                       decoration: BoxDecoration(
-                                        color: isSelected ? Colors.white : AppColors.menstrual,
+                                        color: isSelected
+                                            ? Colors.white
+                                            : AppColors.menstrual,
                                         shape: BoxShape.circle,
                                       ),
                                     ),
@@ -300,9 +366,13 @@ class _CalendarViewState extends State<CalendarView> {
                                     Container(
                                       width: 4,
                                       height: 4,
-                                      margin: const EdgeInsets.symmetric(horizontal: 0.5),
+                                      margin: const EdgeInsets.symmetric(
+                                        horizontal: 0.5,
+                                      ),
                                       decoration: BoxDecoration(
-                                        color: isSelected ? Colors.white : AppColors.luteal,
+                                        color: isSelected
+                                            ? Colors.white
+                                            : AppColors.luteal,
                                         shape: BoxShape.circle,
                                       ),
                                     ),
@@ -311,9 +381,13 @@ class _CalendarViewState extends State<CalendarView> {
                                     Container(
                                       width: 4,
                                       height: 4,
-                                      margin: const EdgeInsets.symmetric(horizontal: 0.5),
+                                      margin: const EdgeInsets.symmetric(
+                                        horizontal: 0.5,
+                                      ),
                                       decoration: BoxDecoration(
-                                        color: isSelected ? Colors.white : const Color(0xFF5BA4A4),
+                                        color: isSelected
+                                            ? Colors.white
+                                            : const Color(0xFF5BA4A4),
                                         shape: BoxShape.circle,
                                       ),
                                     ),
@@ -339,9 +413,18 @@ class _CalendarViewState extends State<CalendarView> {
               const SizedBox(width: 10),
               _FlowLegend(),
               const SizedBox(width: 10),
-              _LegendItem(color: AppColors.menstrualBg, label: 'Predicted', outlined: true, dotColor: AppColors.menstrual),
+              _LegendItem(
+                color: AppColors.menstrualBg,
+                label: 'Predicted',
+                outlined: true,
+                dotColor: AppColors.menstrual,
+              ),
               const SizedBox(width: 10),
-              _LegendItem(color: AppColors.ovulationBg, label: 'Fertile', outlined: true),
+              _LegendItem(
+                color: AppColors.ovulationBg,
+                label: 'Fertile',
+                outlined: true,
+              ),
               const SizedBox(width: 10),
               Row(
                 mainAxisSize: MainAxisSize.min,
@@ -417,10 +500,7 @@ class _LegendItem extends StatelessWidget {
         Container(
           width: 8,
           height: 8,
-          decoration: BoxDecoration(
-            color: color,
-            shape: BoxShape.circle,
-          ),
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
         ),
         const SizedBox(width: 4),
         Text(label, style: AppTextStyles.small),

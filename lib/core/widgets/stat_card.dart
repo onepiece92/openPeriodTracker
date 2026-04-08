@@ -29,11 +29,7 @@ class StatCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 4),
-          Text(
-            label,
-            style: AppTextStyles.small,
-            textAlign: TextAlign.center,
-          ),
+          Text(label, style: AppTextStyles.small, textAlign: TextAlign.center),
         ],
       ),
     );

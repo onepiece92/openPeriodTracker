@@ -100,7 +100,9 @@ class HistoryView extends StatelessWidget {
             decoration: BoxDecoration(
               color: AppColors.follicularBg,
               borderRadius: BorderRadius.circular(18),
-              border: Border.all(color: AppColors.follicular.withValues(alpha: 0.2)),
+              border: Border.all(
+                color: AppColors.follicular.withValues(alpha: 0.2),
+              ),
             ),
             child: Center(
               child: Text(

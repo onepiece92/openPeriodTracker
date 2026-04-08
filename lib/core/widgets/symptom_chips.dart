@@ -46,14 +46,18 @@ class SymptomChips extends StatelessWidget {
               color: isSelected ? const Color(0xFFE0F0F0) : Colors.white,
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: isSelected ? const Color(0xFF5BA4A4) : AppColors.cardBorder,
+                color: isSelected
+                    ? const Color(0xFF5BA4A4)
+                    : AppColors.cardBorder,
               ),
             ),
             child: Text(
               s,
               style: AppTextStyles.body.copyWith(
                 fontSize: 12,
-                color: isSelected ? const Color(0xFF5BA4A4) : AppColors.textSecondary,
+                color: isSelected
+                    ? const Color(0xFF5BA4A4)
+                    : AppColors.textSecondary,
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
               ),
             ),

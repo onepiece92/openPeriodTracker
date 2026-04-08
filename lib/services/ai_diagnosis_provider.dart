@@ -143,8 +143,7 @@ class AiDiagnosisProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await for (final token
-          in _ollama.streamDiagnosis(cycleData: cycleData)) {
+      await for (final token in _ollama.streamDiagnosis(cycleData: cycleData)) {
         _aiDiagnosis += token;
         notifyListeners();
       }
@@ -182,13 +181,13 @@ class AiDiagnosisProvider extends ChangeNotifier {
 
     final avgDuration = periods.isNotEmpty
         ? (periods.map((p) => p.durationDays).reduce((a, b) => a + b) /
-                periods.length)
-            .round()
+                  periods.length)
+              .round()
         : 5;
 
     final variation = cycleLengths.isNotEmpty
         ? cycleLengths.reduce((a, b) => a > b ? a : b) -
-            cycleLengths.reduce((a, b) => a < b ? a : b)
+              cycleLengths.reduce((a, b) => a < b ? a : b)
         : 0;
 
     // Trend
@@ -215,11 +214,12 @@ class AiDiagnosisProvider extends ChangeNotifier {
         symptomCounts[s] = (symptomCounts[s] ?? 0) + 1;
       }
     }
-    final topSymptoms = (symptomCounts.entries.toList()
-          ..sort((a, b) => b.value.compareTo(a.value)))
-        .take(3)
-        .map((e) => '${e.key} (${e.value}x)')
-        .join(', ');
+    final topSymptoms =
+        (symptomCounts.entries.toList()
+              ..sort((a, b) => b.value.compareTo(a.value)))
+            .take(3)
+            .map((e) => '${e.key} (${e.value}x)')
+            .join(', ');
 
     // Mood
     final moodCounts = <String, int>{};
@@ -230,9 +230,9 @@ class AiDiagnosisProvider extends ChangeNotifier {
     }
     final topMood = moodCounts.isNotEmpty
         ? (moodCounts.entries.toList()
-              ..sort((a, b) => b.value.compareTo(a.value)))
-            .first
-            .key
+                ..sort((a, b) => b.value.compareTo(a.value)))
+              .first
+              .key
         : 'none logged';
 
     // Flow
@@ -253,8 +253,7 @@ class AiDiagnosisProvider extends ChangeNotifier {
       'topSymptoms': topSymptoms.isNotEmpty ? topSymptoms : 'none logged',
       'topMood': topMood,
       'flowLight': totalFlow > 0 ? (lightCount / totalFlow * 100).round() : 0,
-      'flowMedium':
-          totalFlow > 0 ? (mediumCount / totalFlow * 100).round() : 0,
+      'flowMedium': totalFlow > 0 ? (mediumCount / totalFlow * 100).round() : 0,
       'flowHeavy': totalFlow > 0 ? (heavyCount / totalFlow * 100).round() : 0,
       if (_prediction != null) 'predictions': _prediction!.toMap(),
       'medicalChecklist': _buildMedicalSummary(logs),
@@ -277,15 +276,25 @@ class AiDiagnosisProvider extends ChangeNotifier {
     if (agg.isEmpty) return 'none logged';
     final buf = StringBuffer();
     const labels = {
-      'pain_level': 'Pain', 'discharge_color': 'Discharge', 'skin': 'Skin',
-      'hair': 'Hair', 'sleep': 'Sleep', 'energy': 'Energy', 'weight': 'Weight',
-      'libido': 'Libido', 'digestion': 'Digestion', 'breast': 'Breast',
+      'pain_level': 'Pain',
+      'discharge_color': 'Discharge',
+      'skin': 'Skin',
+      'hair': 'Hair',
+      'sleep': 'Sleep',
+      'energy': 'Energy',
+      'weight': 'Weight',
+      'libido': 'Libido',
+      'digestion': 'Digestion',
+      'breast': 'Breast',
     };
     for (final entry in agg.entries) {
-      final sorted = entry.value.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
+      final sorted = entry.value.entries.toList()
+        ..sort((a, b) => b.value.compareTo(a.value));
       final total = sorted.fold<int>(0, (s, e) => s + e.value);
       final top = sorted.first;
-      buf.write('${labels[entry.key] ?? entry.key}: ${top.key} ${(top.value / total * 100).round()}%; ');
+      buf.write(
+        '${labels[entry.key] ?? entry.key}: ${top.key} ${(top.value / total * 100).round()}%; ',
+      );
     }
     return '$days days — ${buf.toString().trimRight()}';
   }

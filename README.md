@@ -1,84 +1,75 @@
-# Luna - Period Tracker & Cycle Health App
+# 🌙 Luna - Offline Period Tracker & AI Cycle Health App
 
-> Privacy-first menstrual cycle tracker with AI-powered health insights, built with Flutter.
+> **Privacy-first menstrual cycle tracker built with Flutter.** Featuring AI-powered health insights, smart predictions, and 100% on-device data storage. No accounts, no cloud, no subscriptions.
 
-[![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?logo=flutter)](https://flutter.dev)
-[![Dart](https://img.shields.io/badge/Dart-3.x-0175C2?logo=dart)](https://dart.dev)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Platform](https://img.shields.io/badge/Platform-iOS%20%7C%20Android-lightgrey)]()
+[![Flutter](https://img.shields.io/badge/Flutter-3.x-02569B?style=for-the-badge&logo=flutter)](https://flutter.dev)
+[![Dart](https://img.shields.io/badge/Dart-3.x-0175C2?style=for-the-badge&logo=dart)](https://dart.dev)
+[![License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](LICENSE)
+[![Platform](https://img.shields.io/badge/Platform-iOS%20%7C%20Android%20%7C%20Web-lightgrey?style=for-the-badge)]()
 
-## What is Luna?
+---
 
-Luna is a **free, open-source period tracking app** that keeps all your data on your device. No accounts, no cloud, no tracking. It combines smart cycle predictions with AI-powered health analysis to help you understand your body better.
+## 🚀 App Store Description (ASO Optimized)
 
-### Key Features
+**Luna: Your Private Cycle & Health Companion**
 
-- **Period Tracking** - Mark period days, log flow intensity (light/medium/heavy), track cycle patterns
-- **AI Cycle Predictions** - LSTM neural network predicts your next cycle length and period duration
-- **Doctor's Checklist** - Track pain levels, discharge, skin, sleep, energy, libido, digestion, breast changes, hair growth, weight
-- **Smart Diagnosis** - On-device health analysis with flagging for irregular cycles, hormonal patterns, nutrient deficiencies
-- **Diet & Nutrition** - Phase-specific meal recommendations, vitamins, supplements, regional food suggestions based on your location
-- **Fertile Window & Peak Days** - Ovulation tracking with peak fertility indicators for family planning
-- **Analytics Dashboard** - Cycle length trends, mood/symptom frequency, phase correlations, period start day patterns
-- **AI Prompt Builder** - Copy your cycle data as a prompt for ChatGPT, Gemini, or Claude for deeper health analysis
-- **Mood Tracking** - 20 mood options with multi-select support
-- **Symptom Logging** - 8 common symptoms tracked across cycle phases
-- **Export/Import** - CSV backup and restore of all your data
-- **Birthday Celebrations** - Confetti animation on your birthday with personalized wellness tips
-- **100% Offline** - All data stored locally via SQLite. Zero network calls required.
+Take control of your menstrual health with Luna, the only period tracker that respects your privacy. Built completely offline, Luna uses advanced on-device algorithms to learn your unique cycle patterns, predict your period, and provide personalized health insights—all without ever sending your data to a server. 
 
-## Screenshots
+Whether you're tracking your cycle, analyzing PMS symptoms, mapping your fertile window, or preparing data for your doctor, Luna offers a beautiful, minimalist glassmorphic interface that makes daily logging effortless.
 
-_Coming soon_
+---
 
-## Tech Stack
+## ✨ Key Features (GEO & SEO Optimized)
+
+- 🩸 **Accurate Period Tracking:** Log your daily flow intensity (light, medium, heavy) and instantly visualize your cycle patterns on an interactive calendar.
+- 🤖 **Smart Cycle Predictions:** Luna calculates moving averages and analyzes your past cycle behaviors to accurately predict your next period, luteal phase, and cycle length.
+- 🩺 **Comprehensive Doctor's Checklist:** Log pain levels, skin changes, sleep quality, energy, libido, digestion, and basal body temperature (BBT) to share directly with your gynecologist.
+- 🔒 **100% Offline & Private:** Your health data is yours. Luna uses a local SQLite database. No network calls, no telemetry, no accounts.
+- 🥗 **Phase-Specific Diet & Nutrition:** Receive tailored meal recommendations and supplement reminders based on exactly where you are in your cycle.
+- 🌸 **Fertile Window & Ovulation:** Precision tracking for ovulation days and peak fertility windows for pregnancy planning or natural family planning.
+- 📊 **Advanced Analytics Dashboard:** View beautiful charts analyzing mood correlations, cycle length trends, and symptom frequency over time.
+- 📝 **AI Prompt Builder:** Securely generate an anonymized prompt of your symptoms to paste into ChatGPT, Claude, or Gemini for a deeper secondary health analysis.
+
+---
+
+## ❓ Frequently Asked Questions (FAQ)
+
+**Is my health data safe with Luna?**  
+Yes. Luna is a 100% offline-first application. Your period dates, symptoms, and moods are stored strictly on your device using an encrypted local SQLite database. We do not require an account and we have zero cloud servers.
+
+**How does Luna predict my next period?**  
+Luna calculates the rolling average of your most recent completed cycles. For advanced tracking, it dynamically adjusts predictions when it detects irregular cycle patterns or fluctuations in your historical data.
+
+**Can I export my period tracking data?**  
+Yes. You can export your entire cycle history, mood logs, and symptom tracking as a CSV file at any time.
+
+**Is Luna free?**  
+Luna is entirely free and open-source. There are no paywalls, hidden subscriptions, or premium features.
+
+---
+
+## 💻 Tech Stack & Architecture
+
+Luna is architected using **Feature-First Layered Architecture** ensuring maximum scalability and separation of concerns.
 
 | Layer | Technology |
 |-------|-----------|
-| Framework | Flutter 3.x (Dart 3.x) |
-| State Management | Provider |
-| Local Database | sqflite (SQLite) |
-| AI/ML | TFLite (LSTM model) + Ollama (optional LLM) |
-| Routing | go_router |
-| Location | Geolocator + Geocoding |
-| Fonts | Google Fonts (Playfair Display + Outfit) |
+| **Core Framework** | Flutter 3.x (Dart 3.x) |
+| **State Management** | Riverpod (`flutter_riverpod`) |
+| **Local Database** | sqflite (SQLite) |
+| **Routing** | go_router |
+| **Design System** | Glassmorphic UI, Pastel Palette |
+| **Typography** | Google Fonts (Nunito) |
 
-## Architecture
+---
 
-Feature-first architecture for scalability:
-
-```
-lib/
-├── main.dart
-├── app.dart
-├── core/           # Shared infrastructure
-│   ├── theme/      # Colors, typography, decorations
-│   ├── database/   # SQLite helper with migrations
-│   ├── models/     # Settings, Period, DailyLog models
-│   ├── providers/  # Settings, Period, DailyLog state
-│   ├── router/     # go_router configuration
-│   └── widgets/    # Shared UI components
-├── features/       # Feature modules
-│   ├── onboarding/ # Welcome + 3-step setup wizard
-│   ├── home/       # Dashboard, phase timeline, birthday overlay
-│   ├── calendar/   # Month view with period/fertile/peak markers
-│   ├── logging/    # Bottom sheet (flow, mood, symptoms, doctor checklist)
-│   ├── analytics/  # Charts, trends, raw data tables
-│   ├── diagnosis/  # AI health summary, diet & nutrition
-│   ├── insights/   # 7-day forecast, pattern map, symptom predictions
-│   ├── profile/    # Personal info, settings, export/import
-│   ├── history/    # Period history list
-│   └── shell/      # Bottom navigation shell
-└── services/       # AI services (Ollama, LSTM, AI provider)
-```
-
-## Getting Started
+## 🛠 Getting Started
 
 ### Prerequisites
 
 - Flutter SDK 3.x+
 - Dart 3.x+
-- Xcode (for iOS) or Android Studio (for Android)
+- Xcode (for iOS build) or Android Studio (for Android build)
 
 ### Installation
 
@@ -86,71 +77,26 @@ lib/
 git clone https://github.com/YOUR_USERNAME/luna-period-tracker.git
 cd luna-period-tracker
 flutter pub get
-flutter run
+
+# To run on iOS Simulator
+flutter run -d ios
+
+# To run in Web Browser
+flutter run -d chrome
+
+# To configure macOS build
+flutter create --platforms=macos --project-name ptrack .
+flutter run -d macos
 ```
 
-### Optional: AI Features
+---
 
-**LSTM Model** (on-device predictions):
-```bash
-pip install tensorflow numpy
-python scripts/train_lstm_model.py
-```
+## 🧭 Search Terms & Keywords
 
-**Ollama** (enhanced AI summaries):
-```bash
-brew install ollama
-brew services start ollama
-ollama pull llama3.2
-```
+*period tracker, offline menstrual cycle app, privacy first health tracker, fertility calendar, ovulation calculator, women's health app, flow tracker, pms symptom logger, pcos tracker, endometriosis diary, reproductive health, fertility awareness method, free period diary, hormone tracking, luteal phase app, fertile window calculator, cycle syncing, open source health app, flutter period tracker, digital health, femtech app, basal body temperature tracker, cycle analytics*
 
-## Privacy
+---
 
-Luna is designed with privacy as the core principle:
+## 📄 License & Acknowledgments
 
-- **Zero network calls** - The app works entirely offline
-- **No analytics** - No tracking, no telemetry, no crash reporting
-- **No accounts** - No login, no registration, no cloud sync
-- **Local storage only** - All data stored in on-device SQLite database
-- **Open source** - Full source code available for audit
-- **Export control** - You own your data. Export anytime as CSV.
-
-## Database Schema
-
-### Tables
-- `settings` - User preferences, cycle defaults, personal info
-- `periods` - Period date ranges (start/end)
-- `daily_logs` - Per-day flow, moods, symptoms, notes, medical checklist
-
-### Migrations
-- v1: Initial schema
-- v2: Default flow & moods
-- v3: User personal info (name, nickname, birthday)
-- v4: Medical checklist (doctor's questions)
-
-## Cycle Calculation
-
-Luna uses mathematical cycle analysis without artificial constraints:
-
-- **Predictions work bidirectionally** - Past and future dates are predicted from the nearest logged period
-- **No hardcoded limits** - Cycle lengths and durations are unconstrained
-- **Computed averages** - All calculations use actual logged data, falling back to user settings only when < 2 periods are logged
-- **LSTM predictions** - Neural network trained on cycle patterns, with weighted moving average fallback
-
-## Contributing
-
-Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
-
-## Keywords
-
-period tracker, menstrual cycle app, fertility tracker, ovulation calculator, women's health app, cycle prediction, period calendar, flow tracker, mood tracker, symptom logger, PCOS tracker, endometriosis tracker, reproductive health, fertility awareness, cycle analytics, period diary, menstruation app, hormone tracking, luteal phase, follicular phase, ovulation tracker, fertile window calculator, period reminder, cycle length calculator, menstrual health, women's wellness, pregnancy planning, birth control tracking, natural family planning, basal body temperature, cervical mucus tracking, period pain tracker, PMS tracker, PMDD tracker, menopause tracker, perimenopause, cycle syncing, seed cycling, moon cycle, red tent, feminine health, gynecology app, doctor checklist, medical symptom tracker, AI health analysis, machine learning health, LSTM prediction, on-device AI, privacy-first health app, offline period tracker, open source health app, Flutter health app, mobile health, mHealth, femtech, digital health
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-- Built with [Flutter](https://flutter.dev)
-- AI powered by [TFLite](https://www.tensorflow.org/lite) and [Ollama](https://ollama.ai)
-- Fonts by [Google Fonts](https://fonts.google.com)
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details. Built with [Flutter](https://flutter.dev) and designed for ultimate privacy.

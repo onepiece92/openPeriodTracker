@@ -64,7 +64,14 @@ class DoctorChecklist extends StatelessWidget {
       key: 'digestion',
       icon: '🫃',
       label: 'Digestion',
-      options: ['Normal', 'Constipated', 'Diarrhea', 'Nausea', 'Appetite loss', 'Cravings'],
+      options: [
+        'Normal',
+        'Constipated',
+        'Diarrhea',
+        'Nausea',
+        'Appetite loss',
+        'Cravings',
+      ],
     ),
     _Question(
       key: 'breast',
@@ -94,7 +101,9 @@ class DoctorChecklist extends StatelessWidget {
             Text(
               '$answeredCount / $totalCount answered',
               style: AppTextStyles.small.copyWith(
-                color: answeredCount > 0 ? AppColors.ovulation : AppColors.textMuted,
+                color: answeredCount > 0
+                    ? AppColors.ovulation
+                    : AppColors.textMuted,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -107,7 +116,9 @@ class DoctorChecklist extends StatelessWidget {
                   minHeight: 4,
                   backgroundColor: AppColors.cardBorder,
                   valueColor: AlwaysStoppedAnimation(
-                    answeredCount > 0 ? AppColors.ovulation : AppColors.textMuted,
+                    answeredCount > 0
+                        ? AppColors.ovulation
+                        : AppColors.textMuted,
                   ),
                 ),
               ),
@@ -176,12 +187,18 @@ class _QuestionRow extends StatelessWidget {
               const SizedBox(width: 6),
               Text(
                 question.label,
-                style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w600, fontSize: 12),
+                style: AppTextStyles.body.copyWith(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 12,
+                ),
               ),
               if (selected != null) ...[
                 const Spacer(),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 1,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.ovulation.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(6),
@@ -209,15 +226,22 @@ class _QuestionRow extends StatelessWidget {
                 onTap: () => onSelected(opt),
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 150),
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: isSelected
-                        ? (isWarning ? AppColors.menstrualBg : AppColors.ovulationBg)
+                        ? (isWarning
+                              ? AppColors.menstrualBg
+                              : AppColors.ovulationBg)
                         : Colors.white,
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
                       color: isSelected
-                          ? (isWarning ? AppColors.menstrual : AppColors.ovulation)
+                          ? (isWarning
+                                ? AppColors.menstrual
+                                : AppColors.ovulation)
                           : AppColors.cardBorder,
                     ),
                   ),
@@ -226,9 +250,13 @@ class _QuestionRow extends StatelessWidget {
                     style: AppTextStyles.small.copyWith(
                       fontSize: 10,
                       color: isSelected
-                          ? (isWarning ? AppColors.menstrual : AppColors.ovulation)
+                          ? (isWarning
+                                ? AppColors.menstrual
+                                : AppColors.ovulation)
                           : AppColors.textSecondary,
-                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                      fontWeight: isSelected
+                          ? FontWeight.w700
+                          : FontWeight.w500,
                     ),
                   ),
                 ),

@@ -11,10 +11,14 @@ void main() {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => SettingsProvider()..loadSettings()),
+        ChangeNotifierProvider(
+          create: (_) => SettingsProvider()..loadSettings(),
+        ),
         ChangeNotifierProvider(create: (_) => PeriodProvider()..loadPeriods()),
         ChangeNotifierProvider(create: (_) => DailyLogProvider()..loadLogs()),
-        ChangeNotifierProvider(create: (_) => AiDiagnosisProvider()..initialize()),
+        ChangeNotifierProvider(
+          create: (_) => AiDiagnosisProvider()..initialize(),
+        ),
       ],
       child: const LunaApp(),
     ),

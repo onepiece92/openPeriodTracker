@@ -27,7 +27,8 @@ class SettingsModel {
 
   factory SettingsModel.fromMap(Map<String, dynamic> map) {
     List<String> moodsList = [];
-    if (map['default_moods'] != null && (map['default_moods'] as String).isNotEmpty) {
+    if (map['default_moods'] != null &&
+        (map['default_moods'] as String).isNotEmpty) {
       moodsList = List<String>.from(jsonDecode(map['default_moods'] as String));
     }
     return SettingsModel(
@@ -51,7 +52,9 @@ class SettingsModel {
       'period_length': periodLength,
       'onboarded': onboarded ? 1 : 0,
       'default_flow': defaultFlow,
-      'default_moods': defaultMoods.isNotEmpty ? jsonEncode(defaultMoods) : null,
+      'default_moods': defaultMoods.isNotEmpty
+          ? jsonEncode(defaultMoods)
+          : null,
       'user_name': userName,
       'user_nickname': userNickname,
       'user_birthday': userBirthday,
@@ -64,7 +67,8 @@ class SettingsModel {
     final bday = DateTime.parse(userBirthday!);
     final now = DateTime.now();
     int age = now.year - bday.year;
-    if (now.month < bday.month || (now.month == bday.month && now.day < bday.day)) {
+    if (now.month < bday.month ||
+        (now.month == bday.month && now.day < bday.day)) {
       age--;
     }
     return age;
@@ -92,8 +96,12 @@ class SettingsModel {
       defaultFlow: clearDefaultFlow ? null : (defaultFlow ?? this.defaultFlow),
       defaultMoods: defaultMoods ?? this.defaultMoods,
       userName: clearUserName ? null : (userName ?? this.userName),
-      userNickname: clearUserNickname ? null : (userNickname ?? this.userNickname),
-      userBirthday: clearUserBirthday ? null : (userBirthday ?? this.userBirthday),
+      userNickname: clearUserNickname
+          ? null
+          : (userNickname ?? this.userNickname),
+      userBirthday: clearUserBirthday
+          ? null
+          : (userBirthday ?? this.userBirthday),
       createdAt: createdAt,
     );
   }

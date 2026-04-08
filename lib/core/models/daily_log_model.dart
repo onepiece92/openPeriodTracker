@@ -40,8 +40,11 @@ class DailyLogModel {
     }
 
     Map<String, String> medLog = {};
-    if (map['medical_log'] != null && (map['medical_log'] as String).isNotEmpty) {
-      medLog = Map<String, String>.from(jsonDecode(map['medical_log'] as String));
+    if (map['medical_log'] != null &&
+        (map['medical_log'] as String).isNotEmpty) {
+      medLog = Map<String, String>.from(
+        jsonDecode(map['medical_log'] as String),
+      );
     }
 
     return DailyLogModel(

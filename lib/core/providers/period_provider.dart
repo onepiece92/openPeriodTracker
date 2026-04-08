@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import '../database/database_helper.dart';
 import '../models/period_model.dart';
 import '../theme/app_theme.dart';
+import '../services/notification_service.dart';
 
 class PeriodProvider extends ChangeNotifier {
   final DatabaseHelper _db = DatabaseHelper();
@@ -65,18 +66,12 @@ class PeriodProvider extends ChangeNotifier {
     return diff + 1;
   }
 
-  /// Next predicted period date (first one after today).
+  /// Next predicted period date (first one after the last period).
   DateTime? get nextPeriodDate {
     if (lastPeriod == null) return null;
     final lastStart = DateTime.parse(lastPeriod!.startDate);
     final avg = averageCycleLength;
-    final today = DateTime.now();
-    final todayDate = DateTime(today.year, today.month, today.day);
-    var next = lastStart.add(Duration(days: avg));
-    while (!next.isAfter(todayDate)) {
-      next = next.add(Duration(days: avg));
-    }
-    return next;
+    return lastStart.add(Duration(days: avg));
   }
 
   int? get daysUntilNextPeriod {
@@ -130,6 +125,16 @@ class PeriodProvider extends ChangeNotifier {
     final db = await _db.database;
     final result = await db.query('periods', orderBy: 'start_date ASC');
     _periods = result.map((m) => PeriodModel.fromMap(m)).toList();
+
+    // Update local notifications
+    final next = nextPeriodDate;
+    if (next != null) {
+      await NotificationService().schedulePredictionAlert(next);
+      await NotificationService().scheduleLateAlert(next);
+    } else {
+      await NotificationService().cancelPredictionAlerts();
+    }
+
     notifyListeners();
   }
 
@@ -173,16 +178,20 @@ class PeriodProvider extends ChangeNotifier {
     // Peak fertility: ovulation day and the day before (highest conception probability)
     final ovulationDay = avg - 14;
     final peakStart = ovulationDay - 1; // day before ovulation
-    final peakEnd = ovulationDay;       // ovulation day
+    final peakEnd = ovulationDay; // ovulation day
 
     final fertileStart = avg - 18;
     final fertileEnd = avg - 12;
 
-    if (peakStart > 0 && cycleDayForDate >= peakStart && cycleDayForDate <= peakEnd) {
+    if (peakStart > 0 &&
+        cycleDayForDate >= peakStart &&
+        cycleDayForDate <= peakEnd) {
       return 'peak';
     }
 
-    if (fertileStart > 0 && cycleDayForDate >= fertileStart && cycleDayForDate <= fertileEnd) {
+    if (fertileStart > 0 &&
+        cycleDayForDate >= fertileStart &&
+        cycleDayForDate <= fertileEnd) {
       return 'fertile';
     }
 
@@ -214,7 +223,8 @@ class PeriodProvider extends ChangeNotifier {
   /// Find the period whose start date is closest to the given date.
   PeriodModel _findNearestPeriod(DateTime date) {
     PeriodModel nearest = _periods.first;
-    int minDist = (date.difference(DateTime.parse(nearest.startDate)).inDays).abs();
+    int minDist = (date.difference(DateTime.parse(nearest.startDate)).inDays)
+        .abs();
     for (final p in _periods) {
       final dist = (date.difference(DateTime.parse(p.startDate)).inDays).abs();
       if (dist < minDist) {

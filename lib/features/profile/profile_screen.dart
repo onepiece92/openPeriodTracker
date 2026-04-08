@@ -1,12 +1,8 @@
 import 'dart:convert';
-import 'dart:io';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:share_plus/share_plus.dart';
-import 'package:file_picker/file_picker.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/database/database_helper.dart';
 import '../../core/providers/settings_provider.dart';
@@ -14,6 +10,8 @@ import '../../core/providers/period_provider.dart';
 import '../../core/providers/daily_log_provider.dart';
 import '../../core/widgets/mood_selector.dart';
 import '../history/history_view.dart';
+import '../../core/services/notification_service.dart';
+import 'domain/services/backup_service.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -120,11 +118,53 @@ class ProfileScreen extends StatelessWidget {
             ),
             const SizedBox(height: 16),
 
+            // Notifications
+            Text('NOTIFICATIONS', style: AppTextStyles.label),
+            const SizedBox(height: 4),
+            Text(
+              'Daily reminders and cycle predictions',
+              style: AppTextStyles.small.copyWith(color: AppColors.textMuted),
+            ),
+            const SizedBox(height: 8),
+            Container(
+              width: double.infinity,
+              decoration: AppDecorations.card,
+              child: Column(
+                children: [
+                  _ActionTile(
+                    icon: Icons.notifications_active_rounded,
+                    label: 'Enable Daily Reminder (8:00 PM)',
+                    color: AppColors.textLight,
+                    onTap: () async {
+                      bool granted = await NotificationService()
+                          .requestPermissions();
+                      if (granted) {
+                        await NotificationService().scheduleDailyReminder(
+                          hour: 20,
+                          minute: 0,
+                        );
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Daily reminder scheduled for 8:00 PM',
+                              ),
+                            ),
+                          );
+                        }
+                      }
+                    },
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+
             // Export & Import
             Text('EXPORT & IMPORT', style: AppTextStyles.label),
             const SizedBox(height: 4),
             Text(
-              'Backup or restore your cycle data',
+              'Securely backup or restore your cycle data in JSON format',
               style: AppTextStyles.small.copyWith(color: AppColors.textMuted),
             ),
             const SizedBox(height: 8),
@@ -135,14 +175,23 @@ class ProfileScreen extends StatelessWidget {
                 children: [
                   _ActionTile(
                     icon: Icons.upload_file_rounded,
-                    label: 'Export All Data (CSV)',
+                    label: 'Export Backup (JSON)',
                     color: AppColors.follicular,
-                    onTap: () => _exportCsv(context),
+                    onTap: () async {
+                      try {
+                        await BackupService().exportDataToJSON();
+                      } catch (e) {
+                        if (context.mounted)
+                          ScaffoldMessenger.of(
+                            context,
+                          ).showSnackBar(SnackBar(content: Text(e.toString())));
+                      }
+                    },
                   ),
                   const Divider(height: 1, color: AppColors.cardBorder),
                   _ActionTile(
                     icon: Icons.download_rounded,
-                    label: 'Import Data (CSV)',
+                    label: 'Restore from Backup (JSON)',
                     color: AppColors.luteal,
                     onTap: () => _showImportDialog(context),
                   ),
@@ -199,245 +248,54 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Future<void> _exportCsv(BuildContext context) async {
-    final db = await DatabaseHelper().database;
-
-    // Export periods
-    final periods = await db.query('periods', orderBy: 'start_date ASC');
-    final periodCsv = StringBuffer();
-    periodCsv.writeln('type,start_date,end_date,created_at,updated_at');
-    for (final p in periods) {
-      periodCsv.writeln('period,${p['start_date']},${p['end_date']},${p['created_at']},${p['updated_at']}');
-    }
-
-    // Export daily logs
-    final logs = await db.query('daily_logs', orderBy: 'date ASC');
-    final logCsv = StringBuffer();
-    logCsv.writeln('date,flow,moods,symptoms,notes,medical_log,created_at,updated_at');
-    for (final l in logs) {
-      final date = l['date'] ?? '';
-      final flow = l['flow'] ?? '';
-      final moods = _csvEscape(l['mood'] as String? ?? '');
-      final symptoms = _csvEscape(l['symptoms'] as String? ?? '');
-      final notes = _csvEscape(l['notes'] as String? ?? '');
-      final medical = _csvEscape(l['medical_log'] as String? ?? '');
-      final created = l['created_at'] ?? '';
-      final updated = l['updated_at'] ?? '';
-      logCsv.writeln('$date,$flow,$moods,$symptoms,$notes,$medical,$created,$updated');
-    }
-
-    // Settings
-    final settings = await db.query('settings');
-    final settingsCsv = StringBuffer();
-    settingsCsv.writeln('cycle_length,period_length,user_name,user_nickname,user_birthday,default_flow,default_moods');
-    if (settings.isNotEmpty) {
-      final s = settings.first;
-      settingsCsv.writeln(
-        '${s['cycle_length']},${s['period_length']},'
-        '${_csvEscape(s['user_name'] as String? ?? '')},'
-        '${_csvEscape(s['user_nickname'] as String? ?? '')},'
-        '${s['user_birthday'] ?? ''},'
-        '${s['default_flow'] ?? ''},'
-        '${_csvEscape(s['default_moods'] as String? ?? '')}',
-      );
-    }
-
-    // Combine into one file with section markers
-    final combined = StringBuffer();
-    combined.writeln('## LUNA EXPORT ##');
-    combined.writeln('## VERSION: 1 ##');
-    combined.writeln('## DATE: ${DateTime.now().toIso8601String()} ##');
-    combined.writeln();
-    combined.writeln('## SETTINGS ##');
-    combined.write(settingsCsv);
-    combined.writeln();
-    combined.writeln('## PERIODS ##');
-    combined.write(periodCsv);
-    combined.writeln();
-    combined.writeln('## DAILY_LOGS ##');
-    combined.write(logCsv);
-
-    // Save to temp and share
-    final dir = await getApplicationDocumentsDirectory();
-    final timestamp = DateTime.now().millisecondsSinceEpoch;
-    final file = File('${dir.path}/luna_export_$timestamp.csv');
-    await file.writeAsString(combined.toString());
-
-    await Share.shareXFiles(
-      [XFile(file.path)],
-      subject: 'Luna Period Tracker Export',
-    );
-  }
-
-  String _csvEscape(String value) {
-    if (value.contains(',') || value.contains('"') || value.contains('\n')) {
-      return '"${value.replaceAll('"', '""')}"';
-    }
-    return value;
-  }
-
   void _showImportDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        title: Text('Import Data?', style: AppTextStyles.sectionTitle),
+        title: Text('Import JSON Backup?', style: AppTextStyles.sectionTitle),
         content: Text(
-          'This will REPLACE all existing data with the imported file. Your current data will be lost.\n\nOnly import files exported from Luna.',
+          'This will REPLACE all existing cycle and logging data with the JSON backup file. Your current data will be irrevocably deleted.\n\nOnly import valid Luna backups.',
           style: AppTextStyles.body,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text('Cancel', style: AppTextStyles.button.copyWith(color: AppColors.textMuted)),
+            child: Text(
+              'Cancel',
+              style: AppTextStyles.button.copyWith(color: AppColors.textMuted),
+            ),
           ),
           TextButton(
             onPressed: () async {
               Navigator.pop(ctx);
-              await _importCsv(context);
+              try {
+                bool success = await BackupService().importDataFromJSON();
+                if (success && context.mounted) {
+                  // Refresh UI state
+                  context.read<PeriodProvider>().loadPeriods();
+                  context.read<DailyLogProvider>().loadLogs();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Backup restored successfully'),
+                    ),
+                  );
+                }
+              } catch (e) {
+                if (context.mounted)
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Failed to restore backup')),
+                  );
+              }
             },
-            child: Text('Choose File', style: AppTextStyles.button.copyWith(color: AppColors.luteal)),
+            child: Text(
+              'Choose File',
+              style: AppTextStyles.button.copyWith(color: AppColors.luteal),
+            ),
           ),
         ],
       ),
     );
-  }
-
-  Future<void> _importCsv(BuildContext context) async {
-    final settingsProv = context.read<SettingsProvider>();
-    final periodProv = context.read<PeriodProvider>();
-    final logProv = context.read<DailyLogProvider>();
-
-    try {
-      final result = await FilePicker.platform.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: ['csv'],
-      );
-      if (result == null || result.files.isEmpty) return;
-
-      final file = File(result.files.single.path!);
-      final content = await file.readAsString();
-
-      if (!content.startsWith('## LUNA EXPORT ##')) {
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Invalid file — not a Luna export.')),
-          );
-        }
-        return;
-      }
-
-      final db = await DatabaseHelper().database;
-
-      // Clear existing data
-      await db.delete('settings');
-      await db.delete('periods');
-      await db.delete('daily_logs');
-
-      // Parse sections
-      final lines = content.split('\n');
-      String currentSection = '';
-
-      for (final line in lines) {
-        final trimmed = line.trim();
-        if (trimmed.isEmpty || trimmed.startsWith('## LUNA') || trimmed.startsWith('## VERSION') || trimmed.startsWith('## DATE')) continue;
-
-        if (trimmed == '## SETTINGS ##') {
-          currentSection = 'settings';
-          continue;
-        } else if (trimmed == '## PERIODS ##') {
-          currentSection = 'periods';
-          continue;
-        } else if (trimmed == '## DAILY_LOGS ##') {
-          currentSection = 'daily_logs';
-          continue;
-        }
-
-        // Skip headers
-        if (currentSection == 'settings' && trimmed.startsWith('cycle_length,')) continue;
-        if (currentSection == 'periods' && trimmed.startsWith('type,')) continue;
-        if (currentSection == 'daily_logs' && trimmed.startsWith('date,')) continue;
-
-        final fields = _parseCsvLine(trimmed);
-
-        if (currentSection == 'settings' && fields.length >= 7) {
-          await db.insert('settings', {
-            'id': 1,
-            'cycle_length': int.tryParse(fields[0]) ?? 28,
-            'period_length': int.tryParse(fields[1]) ?? 5,
-            'onboarded': 1,
-            'user_name': fields[2].isNotEmpty ? fields[2] : null,
-            'user_nickname': fields[3].isNotEmpty ? fields[3] : null,
-            'user_birthday': fields[4].isNotEmpty ? fields[4] : null,
-            'default_flow': fields[5].isNotEmpty ? fields[5] : null,
-            'default_moods': fields[6].isNotEmpty ? fields[6] : null,
-            'created_at': DateTime.now().toIso8601String(),
-          });
-        } else if (currentSection == 'periods' && fields.length >= 5) {
-          await db.insert('periods', {
-            'start_date': fields[1],
-            'end_date': fields[2],
-            'created_at': fields[3],
-            'updated_at': fields[4],
-          });
-        } else if (currentSection == 'daily_logs' && fields.length >= 8) {
-          await db.insert('daily_logs', {
-            'date': fields[0],
-            'flow': fields[1].isNotEmpty ? fields[1] : null,
-            'mood': fields[2].isNotEmpty ? fields[2] : null,
-            'symptoms': fields[3].isNotEmpty ? fields[3] : null,
-            'notes': fields[4].isNotEmpty ? fields[4] : null,
-            'medical_log': fields[5].isNotEmpty ? fields[5] : null,
-            'created_at': fields[6],
-            'updated_at': fields[7],
-          }, conflictAlgorithm: ConflictAlgorithm.replace);
-        }
-      }
-
-      // Reload all providers
-      await settingsProv.loadSettings();
-      await periodProv.loadPeriods();
-      await logProv.loadLogs();
-      periodProv.updateSettings(settingsProv.cycleLength, settingsProv.periodLength);
-
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Data imported successfully!')),
-        );
-      }
-    } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Import failed: $e')),
-        );
-      }
-    }
-  }
-
-  /// Parse a CSV line handling quoted fields with commas inside.
-  List<String> _parseCsvLine(String line) {
-    final fields = <String>[];
-    bool inQuotes = false;
-    final current = StringBuffer();
-
-    for (int i = 0; i < line.length; i++) {
-      final c = line[i];
-      if (c == '"') {
-        if (inQuotes && i + 1 < line.length && line[i + 1] == '"') {
-          current.write('"');
-          i++; // skip escaped quote
-        } else {
-          inQuotes = !inQuotes;
-        }
-      } else if (c == ',' && !inQuotes) {
-        fields.add(current.toString());
-        current.clear();
-      } else {
-        current.write(c);
-      }
-    }
-    fields.add(current.toString());
-    return fields;
   }
 
   void _showDemoDataDialog(BuildContext context) {
@@ -453,14 +311,20 @@ class ProfileScreen extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text('Cancel', style: AppTextStyles.button.copyWith(color: AppColors.textMuted)),
+            child: Text(
+              'Cancel',
+              style: AppTextStyles.button.copyWith(color: AppColors.textMuted),
+            ),
           ),
           TextButton(
             onPressed: () async {
               Navigator.pop(ctx);
               await _generateDemoData(context);
             },
-            child: Text('Generate', style: AppTextStyles.button.copyWith(color: AppColors.follicular)),
+            child: Text(
+              'Generate',
+              style: AppTextStyles.button.copyWith(color: AppColors.follicular),
+            ),
           ),
         ],
       ),
@@ -486,7 +350,7 @@ class ProfileScreen extends StatelessWidget {
 
     // Randomize base parameters
     final baseCycleLength = 24 + rng.nextInt(10); // 24-33
-    final basePeriodLength = 3 + rng.nextInt(4);  // 3-6
+    final basePeriodLength = 3 + rng.nextInt(4); // 3-6
 
     // Save settings
     await db.insert('settings', {
@@ -542,7 +406,14 @@ class ProfileScreen extends StatelessWidget {
         }
 
         // Moods during period — weighted toward tired/sad/irritable
-        final periodMoods = ['Tired', 'Sad', 'Irritable', 'Anxious', 'Sensitive', 'Sleepy'];
+        final periodMoods = [
+          'Tired',
+          'Sad',
+          'Irritable',
+          'Anxious',
+          'Sensitive',
+          'Sleepy',
+        ];
         final positiveMoods = ['Happy', 'Calm', 'Loving', 'Grateful'];
         final selectedMoods = <String>[];
         // 1-3 moods per day
@@ -554,7 +425,16 @@ class ProfileScreen extends StatelessWidget {
         }
 
         // Symptoms during period
-        final allSymptoms = ['Cramps', 'Headache', 'Bloating', 'Back pain', 'Breast tenderness', 'Acne', 'Nausea', 'Fatigue'];
+        final allSymptoms = [
+          'Cramps',
+          'Headache',
+          'Bloating',
+          'Back pain',
+          'Breast tenderness',
+          'Acne',
+          'Nausea',
+          'Fatigue',
+        ];
         final selectedSymptoms = <String>[];
         final symptomCount = rng.nextInt(4); // 0-3 symptoms
         for (int s = 0; s < symptomCount; s++) {
@@ -565,14 +445,18 @@ class ProfileScreen extends StatelessWidget {
         // Medical checklist (~60% of period days)
         String? medicalJson;
         if (rng.nextDouble() < 0.6) {
-          medicalJson = jsonEncode(_genMedical(rng, isPeriod: true, periodPos: pos));
+          medicalJson = jsonEncode(
+            _genMedical(rng, isPeriod: true, periodPos: pos),
+          );
         }
 
         await db.insert('daily_logs', {
           'date': _fmt(logDate),
           'flow': flow,
           'mood': selectedMoods.isNotEmpty ? jsonEncode(selectedMoods) : null,
-          'symptoms': selectedSymptoms.isNotEmpty ? jsonEncode(selectedSymptoms) : null,
+          'symptoms': selectedSymptoms.isNotEmpty
+              ? jsonEncode(selectedSymptoms)
+              : null,
           'notes': null,
           'medical_log': medicalJson,
           'created_at': nowStr,
@@ -583,11 +467,23 @@ class ProfileScreen extends StatelessWidget {
       // Also generate some non-period day logs (random days in follicular/luteal)
       final nonPeriodLogCount = 2 + rng.nextInt(5); // 2-6 random logs per cycle
       for (int n = 0; n < nonPeriodLogCount; n++) {
-        final dayOffset = thisPeriodLength + rng.nextInt(thisCycleLength - thisPeriodLength);
+        final dayOffset =
+            thisPeriodLength + rng.nextInt(thisCycleLength - thisPeriodLength);
         final logDate = periodStart.add(Duration(days: dayOffset));
         if (logDate.isAfter(today)) continue;
 
-        final allMoods = ['Happy', 'Tired', 'Calm', 'Energetic', 'Stressed', 'Loving', 'Anxious', 'Confident', 'Meh', 'Peaceful'];
+        final allMoods = [
+          'Happy',
+          'Tired',
+          'Calm',
+          'Energetic',
+          'Stressed',
+          'Loving',
+          'Anxious',
+          'Confident',
+          'Meh',
+          'Peaceful',
+        ];
         final selectedMoods = <String>[];
         final moodCount = 1 + rng.nextInt(2);
         for (int m = 0; m < moodCount; m++) {
@@ -599,30 +495,32 @@ class ProfileScreen extends StatelessWidget {
         final nonPeriodSymptoms = ['Headache', 'Bloating', 'Acne', 'Fatigue'];
         final selectedSymptoms = <String>[];
         if (rng.nextDouble() < 0.3) {
-          selectedSymptoms.add(nonPeriodSymptoms[rng.nextInt(nonPeriodSymptoms.length)]);
+          selectedSymptoms.add(
+            nonPeriodSymptoms[rng.nextInt(nonPeriodSymptoms.length)],
+          );
         }
 
         // Medical checklist (~30% of non-period days)
         String? medicalJson;
         if (rng.nextDouble() < 0.3) {
-          medicalJson = jsonEncode(_genMedical(rng, isPeriod: false, periodPos: 0));
+          medicalJson = jsonEncode(
+            _genMedical(rng, isPeriod: false, periodPos: 0),
+          );
         }
 
         // Use INSERT OR IGNORE to avoid duplicate date conflicts
-        await db.insert(
-          'daily_logs',
-          {
-            'date': _fmt(logDate),
-            'flow': null,
-            'mood': selectedMoods.isNotEmpty ? jsonEncode(selectedMoods) : null,
-            'symptoms': selectedSymptoms.isNotEmpty ? jsonEncode(selectedSymptoms) : null,
-            'notes': null,
-            'medical_log': medicalJson,
-            'created_at': DateTime.now().toIso8601String(),
-            'updated_at': DateTime.now().toIso8601String(),
-          },
-          conflictAlgorithm: ConflictAlgorithm.ignore,
-        );
+        await db.insert('daily_logs', {
+          'date': _fmt(logDate),
+          'flow': null,
+          'mood': selectedMoods.isNotEmpty ? jsonEncode(selectedMoods) : null,
+          'symptoms': selectedSymptoms.isNotEmpty
+              ? jsonEncode(selectedSymptoms)
+              : null,
+          'notes': null,
+          'medical_log': medicalJson,
+          'created_at': DateTime.now().toIso8601String(),
+          'updated_at': DateTime.now().toIso8601String(),
+        }, conflictAlgorithm: ConflictAlgorithm.ignore);
       }
 
       cursor = periodStart.add(Duration(days: thisCycleLength));
@@ -640,7 +538,11 @@ class ProfileScreen extends StatelessWidget {
     periodProv.updateSettings(baseCycleLength, basePeriodLength);
   }
 
-  Map<String, String> _genMedical(Random rng, {required bool isPeriod, required double periodPos}) {
+  Map<String, String> _genMedical(
+    Random rng, {
+    required bool isPeriod,
+    required double periodPos,
+  }) {
     final med = <String, String>{};
 
     // Pain — heavier during period middle
@@ -648,8 +550,8 @@ class ProfileScreen extends StatelessWidget {
       final painOpts = periodPos < 0.2
           ? ['Mild', 'Moderate']
           : periodPos < 0.6
-              ? ['Moderate', 'Severe', 'Moderate']
-              : ['Mild', 'None', 'Mild'];
+          ? ['Moderate', 'Severe', 'Moderate']
+          : ['Mild', 'None', 'Mild'];
       med['pain_level'] = painOpts[rng.nextInt(painOpts.length)];
     } else {
       med['pain_level'] = rng.nextDouble() < 0.8 ? 'None' : 'Mild';
@@ -659,7 +561,12 @@ class ProfileScreen extends StatelessWidget {
     if (isPeriod) {
       med['discharge_color'] = ['Red', 'Brown', 'Pink'][rng.nextInt(3)];
     } else {
-      med['discharge_color'] = ['Clear', 'White', 'Clear', 'Creamy'][rng.nextInt(4)];
+      med['discharge_color'] = [
+        'Clear',
+        'White',
+        'Clear',
+        'Creamy',
+      ][rng.nextInt(4)];
     }
 
     // Sleep — worse during period
@@ -693,7 +600,12 @@ class ProfileScreen extends StatelessWidget {
     // Digestion — ~40% of days
     if (rng.nextDouble() < 0.4) {
       if (isPeriod) {
-        med['digestion'] = ['Cravings', 'Normal', 'Constipated', 'Nausea'][rng.nextInt(4)];
+        med['digestion'] = [
+          'Cravings',
+          'Normal',
+          'Constipated',
+          'Nausea',
+        ][rng.nextInt(4)];
       } else {
         med['digestion'] = ['Normal', 'Normal', 'Cravings'][rng.nextInt(3)];
       }
@@ -735,7 +647,10 @@ class ProfileScreen extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text('Cancel', style: AppTextStyles.button.copyWith(color: AppColors.textMuted)),
+            child: Text(
+              'Cancel',
+              style: AppTextStyles.button.copyWith(color: AppColors.textMuted),
+            ),
           ),
           TextButton(
             onPressed: () {
@@ -744,7 +659,10 @@ class ProfileScreen extends StatelessWidget {
               context.read<PeriodProvider>().loadPeriods();
               context.read<DailyLogProvider>().loadLogs();
             },
-            child: Text('Reset', style: AppTextStyles.button.copyWith(color: AppColors.menstrual)),
+            child: Text(
+              'Reset',
+              style: AppTextStyles.button.copyWith(color: AppColors.menstrual),
+            ),
           ),
         ],
       ),
@@ -800,9 +718,13 @@ class _PersonalInfoSectionState extends State<_PersonalInfoSection> {
                 decoration: BoxDecoration(
                   color: AppColors.lutealBg,
                   shape: BoxShape.circle,
-                  border: Border.all(color: AppColors.luteal.withValues(alpha: 0.3)),
+                  border: Border.all(
+                    color: AppColors.luteal.withValues(alpha: 0.3),
+                  ),
                 ),
-                child: const Center(child: Text('🌙', style: TextStyle(fontSize: 24))),
+                child: const Center(
+                  child: Text('🌙', style: TextStyle(fontSize: 24)),
+                ),
               ),
               const SizedBox(width: 14),
               Expanded(
@@ -816,11 +738,16 @@ class _PersonalInfoSectionState extends State<_PersonalInfoSection> {
                     if (age != null)
                       Text(
                         '$age years old',
-                        style: AppTextStyles.small.copyWith(color: AppColors.textMuted),
+                        style: AppTextStyles.small.copyWith(
+                          color: AppColors.textMuted,
+                        ),
                       ),
                     Text(
                       'All data stored locally',
-                      style: AppTextStyles.small.copyWith(color: AppColors.textMuted, fontSize: 9),
+                      style: AppTextStyles.small.copyWith(
+                        color: AppColors.textMuted,
+                        fontSize: 9,
+                      ),
                     ),
                   ],
                 ),
@@ -856,7 +783,9 @@ class _PersonalInfoSectionState extends State<_PersonalInfoSection> {
             onTap: () async {
               final picked = await showDatePicker(
                 context: context,
-                initialDate: birthday != null ? DateTime.parse(birthday) : DateTime(2000, 1, 1),
+                initialDate: birthday != null
+                    ? DateTime.parse(birthday)
+                    : DateTime(2000, 1, 1),
                 firstDate: DateTime(1940),
                 lastDate: DateTime.now(),
               );
@@ -882,22 +811,34 @@ class _PersonalInfoSectionState extends State<_PersonalInfoSection> {
                           ? '${_monthName(DateTime.parse(birthday).month)} ${DateTime.parse(birthday).day}, ${DateTime.parse(birthday).year}'
                           : 'Tap to set birthday',
                       style: AppTextStyles.body.copyWith(
-                        color: birthday != null ? AppColors.textPrimary : AppColors.textMuted,
+                        color: birthday != null
+                            ? AppColors.textPrimary
+                            : AppColors.textMuted,
                       ),
                     ),
                   ),
-                  Icon(Icons.calendar_month, size: 18, color: AppColors.textMuted),
+                  Icon(
+                    Icons.calendar_month,
+                    size: 18,
+                    color: AppColors.textMuted,
+                  ),
                   if (birthday != null && age != null) ...[
                     const SizedBox(width: 8),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 2,
+                      ),
                       decoration: BoxDecoration(
                         color: AppColors.follicularBg,
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
                         '$age y/o',
-                        style: AppTextStyles.small.copyWith(color: AppColors.follicular, fontWeight: FontWeight.w700),
+                        style: AppTextStyles.small.copyWith(
+                          color: AppColors.follicular,
+                          fontWeight: FontWeight.w700,
+                        ),
                       ),
                     ),
                   ],
@@ -922,7 +863,10 @@ class _PersonalInfoSectionState extends State<_PersonalInfoSection> {
         hintText: hint,
         hintStyle: AppTextStyles.body.copyWith(color: AppColors.textMuted),
         isDense: true,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 14,
+          vertical: 12,
+        ),
         filled: true,
         fillColor: Colors.white,
         border: OutlineInputBorder(
@@ -943,7 +887,20 @@ class _PersonalInfoSectionState extends State<_PersonalInfoSection> {
   }
 
   String _monthName(int m) {
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
     return months[m - 1];
   }
 }
@@ -972,7 +929,8 @@ class _DefaultsSection extends StatelessWidget {
                 drops: 1,
                 isSelected: currentFlow == 'light',
                 onTap: () => settings.updateDefaultFlow(
-                    currentFlow == 'light' ? null : 'light'),
+                  currentFlow == 'light' ? null : 'light',
+                ),
               ),
               const SizedBox(width: 8),
               _FlowOption(
@@ -980,7 +938,8 @@ class _DefaultsSection extends StatelessWidget {
                 drops: 2,
                 isSelected: currentFlow == 'medium',
                 onTap: () => settings.updateDefaultFlow(
-                    currentFlow == 'medium' ? null : 'medium'),
+                  currentFlow == 'medium' ? null : 'medium',
+                ),
               ),
               const SizedBox(width: 8),
               _FlowOption(
@@ -988,7 +947,8 @@ class _DefaultsSection extends StatelessWidget {
                 drops: 3,
                 isSelected: currentFlow == 'heavy',
                 onTap: () => settings.updateDefaultFlow(
-                    currentFlow == 'heavy' ? null : 'heavy'),
+                  currentFlow == 'heavy' ? null : 'heavy',
+                ),
               ),
               const SizedBox(width: 8),
               if (currentFlow != null)
@@ -1000,7 +960,11 @@ class _DefaultsSection extends StatelessWidget {
                       color: AppColors.cardBorder.withValues(alpha: 0.5),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: const Icon(Icons.close, size: 14, color: AppColors.textMuted),
+                    child: const Icon(
+                      Icons.close,
+                      size: 14,
+                      color: AppColors.textMuted,
+                    ),
                   ),
                 ),
             ],
@@ -1072,7 +1036,9 @@ class _FlowOption extends StatelessWidget {
                     child: Icon(
                       Icons.water_drop,
                       size: 14,
-                      color: isSelected ? AppColors.menstrual : AppColors.textMuted,
+                      color: isSelected
+                          ? AppColors.menstrual
+                          : AppColors.textMuted,
                     ),
                   ),
                 ),
@@ -1120,9 +1086,7 @@ class _EditableSetting extends StatelessWidget {
         children: [
           Icon(icon, size: 20, color: AppColors.textLight),
           const SizedBox(width: 12),
-          Expanded(
-            child: Text(label, style: AppTextStyles.body),
-          ),
+          Expanded(child: Text(label, style: AppTextStyles.body)),
           GestureDetector(
             onTap: () {
               final newVal = value - 1;
@@ -1135,7 +1099,11 @@ class _EditableSetting extends StatelessWidget {
                 color: AppColors.cardBorder,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Icon(Icons.remove, size: 14, color: AppColors.textSecondary),
+              child: const Icon(
+                Icons.remove,
+                size: 14,
+                color: AppColors.textSecondary,
+              ),
             ),
           ),
           Padding(
@@ -1160,7 +1128,11 @@ class _EditableSetting extends StatelessWidget {
                 color: AppColors.cardBorder,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Icon(Icons.add, size: 14, color: AppColors.textSecondary),
+              child: const Icon(
+                Icons.add,
+                size: 14,
+                color: AppColors.textSecondary,
+              ),
             ),
           ),
         ],
@@ -1188,9 +1160,7 @@ class _SettingsTile extends StatelessWidget {
         children: [
           Icon(icon, size: 20, color: AppColors.textLight),
           const SizedBox(width: 12),
-          Expanded(
-            child: Text(label, style: AppTextStyles.body),
-          ),
+          Expanded(child: Text(label, style: AppTextStyles.body)),
           Text(
             value,
             style: AppTextStyles.body.copyWith(
@@ -1228,10 +1198,7 @@ class _ActionTile extends StatelessWidget {
           children: [
             Icon(icon, size: 20, color: color),
             const SizedBox(width: 12),
-            Text(
-              label,
-              style: AppTextStyles.body.copyWith(color: color),
-            ),
+            Text(label, style: AppTextStyles.body.copyWith(color: color)),
           ],
         ),
       ),
@@ -1264,7 +1231,11 @@ class _HistoryPage extends StatelessWidget {
                           color: Colors.white.withValues(alpha: 0.6),
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        child: const Icon(Icons.arrow_back, size: 20, color: AppColors.textSecondary),
+                        child: const Icon(
+                          Icons.arrow_back,
+                          size: 20,
+                          color: AppColors.textSecondary,
+                        ),
                       ),
                     ),
                     const SizedBox(width: 14),

@@ -14,10 +14,10 @@ class CyclePrediction {
   });
 
   Map<String, dynamic> toMap() => {
-        'nextCycleLength': nextCycleLength.round(),
-        'nextPeriodDuration': nextPeriodDuration.round(),
-        'fromModel': fromModel,
-      };
+    'nextCycleLength': nextCycleLength.round(),
+    'nextPeriodDuration': nextPeriodDuration.round(),
+    'fromModel': fromModel,
+  };
 }
 
 class LstmService {
@@ -38,8 +38,9 @@ class LstmService {
 
   Future<void> _loadNormParams() async {
     try {
-      final jsonStr =
-          await rootBundle.loadString('assets/models/norm_params.json');
+      final jsonStr = await rootBundle.loadString(
+        'assets/models/norm_params.json',
+      );
       _normParams = jsonDecode(jsonStr);
     } catch (e) {
       // Use defaults
@@ -55,7 +56,9 @@ class LstmService {
 
   Future<void> _loadModel() async {
     try {
-      _interpreter = await Interpreter.fromAsset('models/cycle_predictor.tflite');
+      _interpreter = await Interpreter.fromAsset(
+        'models/cycle_predictor.tflite',
+      );
       _modelAvailable = true;
     } catch (_) {
       _modelAvailable = false;
@@ -87,7 +90,9 @@ class LstmService {
   }
 
   CyclePrediction? _predictWithModel(
-      List<int> cycleLengths, List<int> periodDurations) {
+    List<int> cycleLengths,
+    List<int> periodDurations,
+  ) {
     try {
       final seqLen = (_normParams!['sequence_length'] as num).toInt();
       final xMean = List<double>.from(_normParams!['x_mean']);
@@ -144,7 +149,9 @@ class LstmService {
   /// Weighted moving average fallback.
   /// More recent cycles get higher weight.
   CyclePrediction _predictStatistical(
-      List<int> cycleLengths, List<int> periodDurations) {
+    List<int> cycleLengths,
+    List<int> periodDurations,
+  ) {
     final cycleP = _weightedMovingAverage(cycleLengths);
     final periodP = _weightedMovingAverage(periodDurations);
 

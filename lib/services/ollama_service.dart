@@ -10,8 +10,8 @@ class OllamaService {
   String _model;
 
   OllamaService({String? host, String? model})
-      : _host = host ?? _defaultHost,
-        _model = model ?? _defaultModel;
+    : _host = host ?? _defaultHost,
+      _model = model ?? _defaultModel;
 
   String get host => _host;
   String get model => _model;
@@ -29,7 +29,11 @@ class OllamaService {
           .timeout(_timeout);
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        final models = (data['models'] as List?)?.map((m) => m['name'] as String).toList() ?? [];
+        final models =
+            (data['models'] as List?)
+                ?.map((m) => m['name'] as String)
+                .toList() ??
+            [];
         // Check if our model (or a variant) is available
         return models.any((m) => m.startsWith(_model));
       }
@@ -72,10 +76,7 @@ class OllamaService {
               'model': _model,
               'prompt': prompt,
               'stream': false,
-              'options': {
-                'temperature': 0.3,
-                'num_predict': 512,
-              },
+              'options': {'temperature': 0.3, 'num_predict': 512},
             }),
           )
           .timeout(const Duration(seconds: 60));
@@ -95,26 +96,22 @@ class OllamaService {
     final prompt = _buildDiagnosisPrompt(cycleData);
 
     try {
-      final request = http.Request(
-        'POST',
-        Uri.parse('$_host/api/generate'),
-      );
+      final request = http.Request('POST', Uri.parse('$_host/api/generate'));
       request.headers['Content-Type'] = 'application/json';
       request.body = jsonEncode({
         'model': _model,
         'prompt': prompt,
         'stream': true,
-        'options': {
-          'temperature': 0.3,
-          'num_predict': 512,
-        },
+        'options': {'temperature': 0.3, 'num_predict': 512},
       });
 
-      final streamedResponse = await http.Client().send(request).timeout(
-            const Duration(seconds: 60),
-          );
+      final streamedResponse = await http.Client()
+          .send(request)
+          .timeout(const Duration(seconds: 60));
 
-      await for (final chunk in streamedResponse.stream.transform(utf8.decoder)) {
+      await for (final chunk in streamedResponse.stream.transform(
+        utf8.decoder,
+      )) {
         // Each chunk may contain multiple JSON objects separated by newlines
         for (final line in chunk.split('\n')) {
           if (line.trim().isEmpty) continue;

@@ -42,7 +42,10 @@ class StepPeriodLength extends StatelessWidget {
               const SizedBox(width: 32),
               Column(
                 children: [
-                  Text('$value', style: AppTextStyles.largeNumber.copyWith(fontSize: 48)),
+                  Text(
+                    '$value',
+                    style: AppTextStyles.largeNumber.copyWith(fontSize: 48),
+                  ),
                   Text('days', style: AppTextStyles.body),
                 ],
               ),
@@ -62,10 +65,15 @@ class StepPeriodLength extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.luteal,
                 foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
                 elevation: 0,
               ),
-              child: Text('Start Tracking ✨', style: AppTextStyles.button.copyWith(color: Colors.white)),
+              child: Text(
+                'Start Tracking ✨',
+                style: AppTextStyles.button.copyWith(color: Colors.white),
+              ),
             ),
           ),
           const SizedBox(height: 48),
@@ -95,7 +103,11 @@ class _StepperButton extends StatelessWidget {
           border: Border.all(color: AppColors.cardBorder),
           boxShadow: enabled
               ? const [
-                  BoxShadow(color: Color(0x0FA08CB0), blurRadius: 8, offset: Offset(0, 2)),
+                  BoxShadow(
+                    color: Color(0x0FA08CB0),
+                    blurRadius: 8,
+                    offset: Offset(0, 2),
+                  ),
                 ]
               : null,
         ),

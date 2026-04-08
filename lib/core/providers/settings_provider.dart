@@ -19,7 +19,8 @@ class SettingsProvider extends ChangeNotifier {
   String? get userNickname => _settings?.userNickname;
   String? get userBirthday => _settings?.userBirthday;
   int? get userAge => _settings?.age;
-  String get displayName => _settings?.userNickname ?? _settings?.userName ?? 'Luna User';
+  String get displayName =>
+      _settings?.userNickname ?? _settings?.userName ?? 'Luna User';
 
   Future<void> loadSettings() async {
     final db = await _db.database;
@@ -52,7 +53,12 @@ class SettingsProvider extends ChangeNotifier {
     if (_settings == null) return;
     final db = await _db.database;
     _settings = _settings!.copyWith(cycleLength: length);
-    await db.update('settings', {'cycle_length': length}, where: 'id = ?', whereArgs: [1]);
+    await db.update(
+      'settings',
+      {'cycle_length': length},
+      where: 'id = ?',
+      whereArgs: [1],
+    );
     notifyListeners();
   }
 
@@ -60,7 +66,12 @@ class SettingsProvider extends ChangeNotifier {
     if (_settings == null) return;
     final db = await _db.database;
     _settings = _settings!.copyWith(periodLength: length);
-    await db.update('settings', {'period_length': length}, where: 'id = ?', whereArgs: [1]);
+    await db.update(
+      'settings',
+      {'period_length': length},
+      where: 'id = ?',
+      whereArgs: [1],
+    );
     notifyListeners();
   }
 
@@ -93,13 +104,19 @@ class SettingsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> updateUserInfo({String? name, String? nickname, String? birthday}) async {
+  Future<void> updateUserInfo({
+    String? name,
+    String? nickname,
+    String? birthday,
+  }) async {
     if (_settings == null) return;
     final db = await _db.database;
     final updates = <String, dynamic>{};
     if (name != null) updates['user_name'] = name.isEmpty ? null : name;
-    if (nickname != null) updates['user_nickname'] = nickname.isEmpty ? null : nickname;
-    if (birthday != null) updates['user_birthday'] = birthday.isEmpty ? null : birthday;
+    if (nickname != null)
+      updates['user_nickname'] = nickname.isEmpty ? null : nickname;
+    if (birthday != null)
+      updates['user_birthday'] = birthday.isEmpty ? null : birthday;
 
     if (updates.isNotEmpty) {
       await db.update('settings', updates, where: 'id = ?', whereArgs: [1]);

@@ -24,19 +24,31 @@ class AnalyticsScreen extends StatelessWidget {
     final logs = lp.allLogs;
 
     // Stats
-    final shortestCycle = cycleLengths.isNotEmpty ? cycleLengths.reduce(min) : null;
-    final longestCycle = cycleLengths.isNotEmpty ? cycleLengths.reduce(max) : null;
-    final shortestPeriod = periodDurations.isNotEmpty ? periodDurations.reduce(min) : null;
-    final longestPeriod = periodDurations.isNotEmpty ? periodDurations.reduce(max) : null;
+    final shortestCycle = cycleLengths.isNotEmpty
+        ? cycleLengths.reduce(min)
+        : null;
+    final longestCycle = cycleLengths.isNotEmpty
+        ? cycleLengths.reduce(max)
+        : null;
+    final shortestPeriod = periodDurations.isNotEmpty
+        ? periodDurations.reduce(min)
+        : null;
+    final longestPeriod = periodDurations.isNotEmpty
+        ? periodDurations.reduce(max)
+        : null;
     final stdDev = _stdDev(cycleLengths);
 
     // Tracking stats
     final totalLogDays = logs.values.where((l) => l.hasData).length;
-    final firstPeriod = periods.isNotEmpty ? DateTime.parse(periods.first.startDate) : null;
+    final firstPeriod = periods.isNotEmpty
+        ? DateTime.parse(periods.first.startDate)
+        : null;
     final trackingDays = firstPeriod != null
         ? DateTime.now().difference(firstPeriod).inDays + 1
         : 0;
-    final logRate = trackingDays > 0 ? (totalLogDays / trackingDays * 100).round() : 0;
+    final logRate = trackingDays > 0
+        ? (totalLogDays / trackingDays * 100).round()
+        : 0;
 
     // Flow stats
     int lightCount = 0, mediumCount = 0, heavyCount = 0;
@@ -105,7 +117,8 @@ class AnalyticsScreen extends StatelessWidget {
       medicalDays++;
       for (final entry in log.medicalLog.entries) {
         medicalAgg.putIfAbsent(entry.key, () => {});
-        medicalAgg[entry.key]![entry.value] = (medicalAgg[entry.key]![entry.value] ?? 0) + 1;
+        medicalAgg[entry.key]![entry.value] =
+            (medicalAgg[entry.key]![entry.value] ?? 0) + 1;
       }
     }
 
@@ -125,13 +138,17 @@ class AnalyticsScreen extends StatelessWidget {
     // Cycle length trend (per cycle)
     final cycleTrendData = <_TrendPoint>[];
     for (int i = 0; i < cycleLengths.length; i++) {
-      cycleTrendData.add(_TrendPoint(index: i, value: cycleLengths[i].toDouble()));
+      cycleTrendData.add(
+        _TrendPoint(index: i, value: cycleLengths[i].toDouble()),
+      );
     }
 
     // Period duration trend
     final periodTrendData = <_TrendPoint>[];
     for (int i = 0; i < periodDurations.length; i++) {
-      periodTrendData.add(_TrendPoint(index: i, value: periodDurations[i].toDouble()));
+      periodTrendData.add(
+        _TrendPoint(index: i, value: periodDurations[i].toDouble()),
+      );
     }
 
     return SafeArea(
@@ -155,12 +172,25 @@ class AnalyticsScreen extends StatelessWidget {
             Row(
               children: [
                 _Stat(label: 'Tracking', value: '$trackingDays', unit: 'days'),
-                _Stat(label: 'Periods', value: '${periods.length}', unit: 'logged'),
+                _Stat(
+                  label: 'Periods',
+                  value: '${periods.length}',
+                  unit: 'logged',
+                ),
                 _Stat(label: 'Log rate', value: '$logRate', unit: '%'),
                 if (userAge != null)
-                  _Stat(label: 'Age', value: '$userAge', unit: 'y/o', color: AppColors.luteal)
+                  _Stat(
+                    label: 'Age',
+                    value: '$userAge',
+                    unit: 'y/o',
+                    color: AppColors.luteal,
+                  )
                 else
-                  _Stat(label: 'Log days', value: '$totalLogDays', unit: 'total'),
+                  _Stat(
+                    label: 'Log days',
+                    value: '$totalLogDays',
+                    unit: 'total',
+                  ),
               ],
             ),
 
@@ -173,17 +203,26 @@ class AnalyticsScreen extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: AppColors.lutealBg,
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: AppColors.luteal.withValues(alpha: 0.2)),
+                  border: Border.all(
+                    color: AppColors.luteal.withValues(alpha: 0.2),
+                  ),
                 ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(_ageEmoji(userAge), style: const TextStyle(fontSize: 18)),
+                    Text(
+                      _ageEmoji(userAge),
+                      style: const TextStyle(fontSize: 18),
+                    ),
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
                         _ageInsight(userAge, avgCycle),
-                        style: AppTextStyles.body.copyWith(fontSize: 11, height: 1.4, color: AppColors.luteal),
+                        style: AppTextStyles.body.copyWith(
+                          fontSize: 11,
+                          height: 1.4,
+                          color: AppColors.luteal,
+                        ),
                       ),
                     ),
                   ],
@@ -197,10 +236,30 @@ class AnalyticsScreen extends StatelessWidget {
             const SizedBox(height: 8),
             Row(
               children: [
-                _Stat(label: 'Average', value: '$avgCycle', unit: 'd', color: AppColors.follicular),
-                _Stat(label: 'Shortest', value: '${shortestCycle ?? '—'}', unit: 'd', color: AppColors.ovulation),
-                _Stat(label: 'Longest', value: '${longestCycle ?? '—'}', unit: 'd', color: AppColors.luteal),
-                _Stat(label: 'Std Dev', value: stdDev != null ? stdDev.toStringAsFixed(1) : '—', unit: 'd', color: AppColors.menstrual),
+                _Stat(
+                  label: 'Average',
+                  value: '$avgCycle',
+                  unit: 'd',
+                  color: AppColors.follicular,
+                ),
+                _Stat(
+                  label: 'Shortest',
+                  value: '${shortestCycle ?? '—'}',
+                  unit: 'd',
+                  color: AppColors.ovulation,
+                ),
+                _Stat(
+                  label: 'Longest',
+                  value: '${longestCycle ?? '—'}',
+                  unit: 'd',
+                  color: AppColors.luteal,
+                ),
+                _Stat(
+                  label: 'Std Dev',
+                  value: stdDev != null ? stdDev.toStringAsFixed(1) : '—',
+                  unit: 'd',
+                  color: AppColors.menstrual,
+                ),
               ],
             ),
             if (cycleTrendData.length >= 2) ...[
@@ -220,10 +279,29 @@ class AnalyticsScreen extends StatelessWidget {
             const SizedBox(height: 8),
             Row(
               children: [
-                _Stat(label: 'Average', value: '$avgPeriod', unit: 'd', color: AppColors.menstrual),
-                _Stat(label: 'Shortest', value: '${shortestPeriod ?? '—'}', unit: 'd'),
-                _Stat(label: 'Longest', value: '${longestPeriod ?? '—'}', unit: 'd'),
-                _Stat(label: 'Range', value: shortestPeriod != null ? '${longestPeriod! - shortestPeriod}' : '—', unit: 'd'),
+                _Stat(
+                  label: 'Average',
+                  value: '$avgPeriod',
+                  unit: 'd',
+                  color: AppColors.menstrual,
+                ),
+                _Stat(
+                  label: 'Shortest',
+                  value: '${shortestPeriod ?? '—'}',
+                  unit: 'd',
+                ),
+                _Stat(
+                  label: 'Longest',
+                  value: '${longestPeriod ?? '—'}',
+                  unit: 'd',
+                ),
+                _Stat(
+                  label: 'Range',
+                  value: shortestPeriod != null
+                      ? '${longestPeriod! - shortestPeriod}'
+                      : '—',
+                  unit: 'd',
+                ),
               ],
             ),
             if (periodTrendData.length >= 2) ...[
@@ -242,7 +320,11 @@ class AnalyticsScreen extends StatelessWidget {
             if (totalFlow > 0) ...[
               Text('FLOW DISTRIBUTION', style: AppTextStyles.label),
               const SizedBox(height: 8),
-              _FlowDistribution(light: lightCount, medium: mediumCount, heavy: heavyCount),
+              _FlowDistribution(
+                light: lightCount,
+                medium: mediumCount,
+                heavy: heavyCount,
+              ),
               const SizedBox(height: 20),
             ],
 
@@ -297,7 +379,10 @@ class AnalyticsScreen extends StatelessWidget {
 
             // ─── MEDICAL CHECKLIST ───
             if (medicalAgg.isNotEmpty) ...[
-              Text('MEDICAL CHECKLIST ($medicalDays days)', style: AppTextStyles.label),
+              Text(
+                'MEDICAL CHECKLIST ($medicalDays days)',
+                style: AppTextStyles.label,
+              ),
               const SizedBox(height: 8),
               _MedicalGrid(data: medicalAgg),
               const SizedBox(height: 20),
@@ -320,7 +405,10 @@ class AnalyticsScreen extends StatelessWidget {
   double? _stdDev(List<int> values) {
     if (values.length < 2) return null;
     final mean = values.reduce((a, b) => a + b) / values.length;
-    final sumSqDiff = values.fold<double>(0, (sum, v) => sum + (v - mean) * (v - mean));
+    final sumSqDiff = values.fold<double>(
+      0,
+      (sum, v) => sum + (v - mean) * (v - mean),
+    );
     return sqrt(sumSqDiff / (values.length - 1));
   }
 
@@ -347,11 +435,26 @@ class AnalyticsScreen extends StatelessWidget {
   }
 
   static const _moodEmojis = {
-    'Happy': '😊', 'Sad': '😢', 'Tired': '😴', 'Irritable': '😤',
-    'Loving': '🥰', 'Anxious': '😰', 'Calm': '😌', 'Grateful': '🤗',
-    'Lonely': '😔', 'Sick': '🤒', 'Angry': '😤', 'Sensitive': '🥺',
-    'Energetic': '🤩', 'Numb': '😶', 'Stressed': '😖', 'Sleepy': '🥱',
-    'Meh': '🫠', 'Confident': '💪', 'Peaceful': '😇', 'Overwhelmed': '🤯',
+    'Happy': '😊',
+    'Sad': '😢',
+    'Tired': '😴',
+    'Irritable': '😤',
+    'Loving': '🥰',
+    'Anxious': '😰',
+    'Calm': '😌',
+    'Grateful': '🤗',
+    'Lonely': '😔',
+    'Sick': '🤒',
+    'Angry': '😤',
+    'Sensitive': '🥺',
+    'Energetic': '🤩',
+    'Numb': '😶',
+    'Stressed': '😖',
+    'Sleepy': '🥱',
+    'Meh': '🫠',
+    'Confident': '💪',
+    'Peaceful': '😇',
+    'Overwhelmed': '🤯',
   };
 }
 
@@ -362,7 +465,12 @@ class _Stat extends StatelessWidget {
   final String unit;
   final Color? color;
 
-  const _Stat({required this.label, required this.value, required this.unit, this.color});
+  const _Stat({
+    required this.label,
+    required this.value,
+    required this.unit,
+    this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -380,7 +488,13 @@ class _Stat extends StatelessWidget {
                 color: color ?? AppColors.textPrimary,
               ),
             ),
-            Text(unit, style: AppTextStyles.small.copyWith(fontSize: 8, color: AppColors.textMuted)),
+            Text(
+              unit,
+              style: AppTextStyles.small.copyWith(
+                fontSize: 8,
+                color: AppColors.textMuted,
+              ),
+            ),
             const SizedBox(height: 2),
             Text(label, style: AppTextStyles.small.copyWith(fontSize: 9)),
           ],
@@ -423,8 +537,21 @@ class _TrendChart extends StatelessWidget {
         children: [
           Row(
             children: [
-              Expanded(child: Text(label, style: AppTextStyles.small.copyWith(color: AppColors.textSecondary))),
-              Text('avg ${average.round()}', style: AppTextStyles.small.copyWith(color: color, fontWeight: FontWeight.w700)),
+              Expanded(
+                child: Text(
+                  label,
+                  style: AppTextStyles.small.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+              ),
+              Text(
+                'avg ${average.round()}',
+                style: AppTextStyles.small.copyWith(
+                  color: color,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 8),
@@ -432,7 +559,11 @@ class _TrendChart extends StatelessWidget {
             height: height,
             child: CustomPaint(
               size: Size.infinite,
-              painter: _TrendPainter(data: data, average: average, color: color),
+              painter: _TrendPainter(
+                data: data,
+                average: average,
+                color: color,
+              ),
             ),
           ),
         ],
@@ -446,7 +577,11 @@ class _TrendPainter extends CustomPainter {
   final double average;
   final Color color;
 
-  _TrendPainter({required this.data, required this.average, required this.color});
+  _TrendPainter({
+    required this.data,
+    required this.average,
+    required this.color,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -457,7 +592,8 @@ class _TrendPainter extends CustomPainter {
     final range = maxVal - minVal;
 
     double toY(double v) => size.height - ((v - minVal) / range * size.height);
-    double toX(int i) => data.length == 1 ? size.width / 2 : i / (data.length - 1) * size.width;
+    double toX(int i) =>
+        data.length == 1 ? size.width / 2 : i / (data.length - 1) * size.width;
 
     // Average line
     final avgPaint = Paint()
@@ -508,7 +644,6 @@ class _TrendPainter extends CustomPainter {
       canvas.drawCircle(c, 4, dotPaint);
       canvas.drawCircle(c, 4, dotBorder);
     }
-
   }
 
   @override
@@ -518,7 +653,11 @@ class _TrendPainter extends CustomPainter {
 // ─── Flow distribution bar ───
 class _FlowDistribution extends StatelessWidget {
   final int light, medium, heavy;
-  const _FlowDistribution({required this.light, required this.medium, required this.heavy});
+  const _FlowDistribution({
+    required this.light,
+    required this.medium,
+    required this.heavy,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -538,17 +677,23 @@ class _FlowDistribution extends StatelessWidget {
                   if (light > 0)
                     Expanded(
                       flex: light,
-                      child: Container(color: AppColors.menstrual.withValues(alpha: 0.3)),
+                      child: Container(
+                        color: AppColors.menstrual.withValues(alpha: 0.3),
+                      ),
                     ),
                   if (medium > 0)
                     Expanded(
                       flex: medium,
-                      child: Container(color: AppColors.menstrual.withValues(alpha: 0.55)),
+                      child: Container(
+                        color: AppColors.menstrual.withValues(alpha: 0.55),
+                      ),
                     ),
                   if (heavy > 0)
                     Expanded(
                       flex: heavy,
-                      child: Container(color: AppColors.menstrual.withValues(alpha: 0.85)),
+                      child: Container(
+                        color: AppColors.menstrual.withValues(alpha: 0.85),
+                      ),
                     ),
                 ],
               ),
@@ -572,9 +717,22 @@ class _FlowDistribution extends StatelessWidget {
     final pct = total > 0 ? (count / total * 100).round() : 0;
     return Column(
       children: [
-        Text('$pct%', style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w700, color: AppColors.menstrual, fontSize: 13)),
+        Text(
+          '$pct%',
+          style: AppTextStyles.body.copyWith(
+            fontWeight: FontWeight.w700,
+            color: AppColors.menstrual,
+            fontSize: 13,
+          ),
+        ),
         Text(label, style: AppTextStyles.small.copyWith(fontSize: 9)),
-        Text('$count days', style: AppTextStyles.small.copyWith(fontSize: 8, color: AppColors.textMuted)),
+        Text(
+          '$count days',
+          style: AppTextStyles.small.copyWith(
+            fontSize: 8,
+            color: AppColors.textMuted,
+          ),
+        ),
       ],
     );
   }
@@ -636,7 +794,9 @@ class _RankedList extends StatelessWidget {
                       value: pct,
                       minHeight: 6,
                       backgroundColor: AppColors.cardBorder,
-                      valueColor: AlwaysStoppedAnimation(color.withValues(alpha: 0.3 + pct * 0.7)),
+                      valueColor: AlwaysStoppedAnimation(
+                        color.withValues(alpha: 0.3 + pct * 0.7),
+                      ),
                     ),
                   ),
                 ),
@@ -645,7 +805,10 @@ class _RankedList extends StatelessWidget {
                   width: 22,
                   child: Text(
                     '${item.value}',
-                    style: AppTextStyles.small.copyWith(fontWeight: FontWeight.w700, color: AppColors.textSecondary),
+                    style: AppTextStyles.small.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textSecondary,
+                    ),
                     textAlign: TextAlign.right,
                   ),
                 ),
@@ -702,7 +865,9 @@ class _PhaseCorrelation extends StatelessWidget {
                   width: 70,
                   child: Text(
                     AppColors.phaseName(phase).replaceAll(' Phase', ''),
-                    style: AppTextStyles.small.copyWith(fontWeight: FontWeight.w700),
+                    style: AppTextStyles.small.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
                 Expanded(
@@ -712,14 +877,22 @@ class _PhaseCorrelation extends StatelessWidget {
                     children: items.map((e) {
                       final emoji = emojis?[e.key] ?? '';
                       return Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2,
+                        ),
                         decoration: BoxDecoration(
-                          color: AppColors.phaseColor(phase).withValues(alpha: 0.1),
+                          color: AppColors.phaseColor(
+                            phase,
+                          ).withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Text(
                           '$emoji${e.key} ×${e.value}',
-                          style: AppTextStyles.small.copyWith(fontSize: 9, color: AppColors.textSecondary),
+                          style: AppTextStyles.small.copyWith(
+                            fontSize: 9,
+                            color: AppColors.textSecondary,
+                          ),
                         ),
                       );
                     }).toList(),
@@ -770,12 +943,17 @@ class _DayOfWeekChart extends StatelessWidget {
                   Container(
                     height: h.clamp(2.0, 60.0),
                     decoration: BoxDecoration(
-                      color: isMax ? AppColors.luteal : AppColors.luteal.withValues(alpha: 0.3),
+                      color: isMax
+                          ? AppColors.luteal
+                          : AppColors.luteal.withValues(alpha: 0.3),
                       borderRadius: BorderRadius.circular(4),
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Text(days[i], style: AppTextStyles.small.copyWith(fontSize: 9)),
+                  Text(
+                    days[i],
+                    style: AppTextStyles.small.copyWith(fontSize: 9),
+                  ),
                 ],
               ),
             ),
@@ -794,7 +972,20 @@ class _MonthChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final maxCount = counts.reduce(max).clamp(1, 999);
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(14),
@@ -818,19 +1009,29 @@ class _MonthChart extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 7,
                           fontWeight: FontWeight.w700,
-                          color: isMax ? AppColors.follicular : AppColors.textMuted,
+                          color: isMax
+                              ? AppColors.follicular
+                              : AppColors.textMuted,
                         ),
                       ),
                     const SizedBox(height: 2),
                     Container(
                       height: h.clamp(2.0, 55.0),
                       decoration: BoxDecoration(
-                        color: isMax ? AppColors.follicular : AppColors.follicular.withValues(alpha: 0.3),
+                        color: isMax
+                            ? AppColors.follicular
+                            : AppColors.follicular.withValues(alpha: 0.3),
                         borderRadius: BorderRadius.circular(3),
                       ),
                     ),
                     const SizedBox(height: 3),
-                    Text(months[i], style: const TextStyle(fontSize: 7, color: AppColors.textMuted)),
+                    Text(
+                      months[i],
+                      style: const TextStyle(
+                        fontSize: 7,
+                        color: AppColors.textMuted,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -848,15 +1049,26 @@ class _MedicalGrid extends StatelessWidget {
   const _MedicalGrid({required this.data});
 
   static const _labels = {
-    'pain_level': '😣 Pain', 'discharge_color': '🔬 Discharge', 'discharge_consistency': '💧 Type',
-    'weight': '⚖️ Weight', 'skin': '✨ Skin', 'hair': '💇‍♀️ Hair', 'sleep': '😴 Sleep',
-    'libido': '💕 Libido', 'digestion': '🫃 Digestion', 'breast': '🩱 Breast', 'energy': '⚡ Energy',
+    'pain_level': '😣 Pain',
+    'discharge_color': '🔬 Discharge',
+    'discharge_consistency': '💧 Type',
+    'weight': '⚖️ Weight',
+    'skin': '✨ Skin',
+    'hair': '💇‍♀️ Hair',
+    'sleep': '😴 Sleep',
+    'libido': '💕 Libido',
+    'digestion': '🫃 Digestion',
+    'breast': '🩱 Breast',
+    'energy': '⚡ Energy',
   };
 
   static const _warnings = {
-    'pain_level': {'Severe', 'Unbearable'}, 'discharge_color': {'Green', 'Yellow'},
-    'hair': {'Thinning', 'Excess body hair'}, 'sleep': {'Insomnia'},
-    'breast': {'Lumpy'}, 'energy': {'Exhausted'},
+    'pain_level': {'Severe', 'Unbearable'},
+    'discharge_color': {'Green', 'Yellow'},
+    'hair': {'Thinning', 'Excess body hair'},
+    'sleep': {'Insomnia'},
+    'breast': {'Lumpy'},
+    'energy': {'Exhausted'},
   };
 
   @override
@@ -869,7 +1081,8 @@ class _MedicalGrid extends StatelessWidget {
         children: data.entries.map((entry) {
           final label = _labels[entry.key] ?? entry.key;
           final counts = entry.value;
-          final sorted = counts.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
+          final sorted = counts.entries.toList()
+            ..sort((a, b) => b.value.compareTo(a.value));
           final total = sorted.fold<int>(0, (s, e) => s + e.value);
           if (total == 0) return const SizedBox.shrink();
 
@@ -884,7 +1097,13 @@ class _MedicalGrid extends StatelessWidget {
               children: [
                 SizedBox(
                   width: 80,
-                  child: Text(label, style: AppTextStyles.small.copyWith(fontSize: 9, fontWeight: FontWeight.w600)),
+                  child: Text(
+                    label,
+                    style: AppTextStyles.small.copyWith(
+                      fontSize: 9,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ),
                 Expanded(
                   child: ClipRRect(
@@ -893,13 +1112,16 @@ class _MedicalGrid extends StatelessWidget {
                       height: 8,
                       child: Row(
                         children: sorted.map((opt) {
-                          final w = _warnings[entry.key]?.contains(opt.key) ?? false;
+                          final w =
+                              _warnings[entry.key]?.contains(opt.key) ?? false;
                           return Expanded(
                             flex: opt.value,
                             child: Container(
                               color: w
                                   ? AppColors.menstrual.withValues(alpha: 0.5)
-                                  : AppColors.follicular.withValues(alpha: 0.15 + (opt.value / total) * 0.5),
+                                  : AppColors.follicular.withValues(
+                                      alpha: 0.15 + (opt.value / total) * 0.5,
+                                    ),
                             ),
                           );
                         }).toList(),
@@ -915,7 +1137,9 @@ class _MedicalGrid extends StatelessWidget {
                     style: AppTextStyles.small.copyWith(
                       fontSize: 8,
                       fontWeight: FontWeight.w700,
-                      color: isWarn ? AppColors.menstrual : AppColors.textSecondary,
+                      color: isWarn
+                          ? AppColors.menstrual
+                          : AppColors.textSecondary,
                     ),
                     textAlign: TextAlign.right,
                     overflow: TextOverflow.ellipsis,
@@ -967,9 +1191,19 @@ class _DataTable extends StatelessWidget {
               child: Row(
                 children: [
                   _cell('$idx', width: 24, color: AppColors.textMuted),
-                  _cell(DateFormat('MMM d').format(DateTime.parse(p.startDate)), flex: 1),
-                  _cell(DateFormat('MMM d').format(DateTime.parse(p.endDate)), flex: 1),
-                  _cell('${p.durationDays}d', width: 32, color: AppColors.menstrual),
+                  _cell(
+                    DateFormat('MMM d').format(DateTime.parse(p.startDate)),
+                    flex: 1,
+                  ),
+                  _cell(
+                    DateFormat('MMM d').format(DateTime.parse(p.endDate)),
+                    flex: 1,
+                  ),
+                  _cell(
+                    '${p.durationDays}d',
+                    width: 32,
+                    color: AppColors.menstrual,
+                  ),
                   _cell(cycleLen, width: 38, color: AppColors.follicular),
                 ],
               ),
@@ -980,7 +1214,13 @@ class _DataTable extends StatelessWidget {
     );
   }
 
-  Widget _cell(String text, {bool isHeader = false, int? width, int? flex, Color? color}) {
+  Widget _cell(
+    String text, {
+    bool isHeader = false,
+    int? width,
+    int? flex,
+    Color? color,
+  }) {
     final widget = Text(
       text,
       style: isHeader

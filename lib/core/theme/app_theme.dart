@@ -131,11 +131,7 @@ class AppDecorations {
     borderRadius: BorderRadius.circular(18),
     border: Border.all(color: AppColors.cardBorder),
     boxShadow: const [
-      BoxShadow(
-        color: Color(0x0FA08CB0),
-        blurRadius: 12,
-        offset: Offset(0, 2),
-      ),
+      BoxShadow(color: Color(0x0FA08CB0), blurRadius: 12, offset: Offset(0, 2)),
     ],
   );
 }

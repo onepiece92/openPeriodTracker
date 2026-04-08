@@ -10,7 +10,9 @@ class DailyLogProvider extends ChangeNotifier {
   Future<void> loadLogs() async {
     final db = await _db.database;
     final result = await db.query('daily_logs');
-    _logs = {for (final m in result) m['date'] as String: DailyLogModel.fromMap(m)};
+    _logs = {
+      for (final m in result) m['date'] as String: DailyLogModel.fromMap(m),
+    };
     notifyListeners();
   }
 
@@ -33,22 +35,31 @@ class DailyLogProvider extends ChangeNotifier {
     final existing = _logs[date];
 
     if (existing != null) {
-      final updatedMap = <String, dynamic>{
-        'updated_at': now,
-      };
+      final updatedMap = <String, dynamic>{'updated_at': now};
       if (flow != null || clearFlow) updatedMap['flow'] = flow;
       if (moods != null || clearMoods) {
-        updatedMap['mood'] = moods != null && moods.isNotEmpty ? jsonEncode(moods) : null;
+        updatedMap['mood'] = moods != null && moods.isNotEmpty
+            ? jsonEncode(moods)
+            : null;
       }
       if (symptoms != null) {
-        updatedMap['symptoms'] = symptoms.isNotEmpty ? jsonEncode(symptoms) : null;
+        updatedMap['symptoms'] = symptoms.isNotEmpty
+            ? jsonEncode(symptoms)
+            : null;
       }
       if (notes != null) updatedMap['notes'] = notes.isNotEmpty ? notes : null;
       if (medicalLog != null) {
-        updatedMap['medical_log'] = medicalLog.isNotEmpty ? jsonEncode(medicalLog) : null;
+        updatedMap['medical_log'] = medicalLog.isNotEmpty
+            ? jsonEncode(medicalLog)
+            : null;
       }
 
-      await db.update('daily_logs', updatedMap, where: 'date = ?', whereArgs: [date]);
+      await db.update(
+        'daily_logs',
+        updatedMap,
+        where: 'date = ?',
+        whereArgs: [date],
+      );
     } else {
       final newLog = DailyLogModel(
         date: date,
@@ -64,7 +75,11 @@ class DailyLogProvider extends ChangeNotifier {
     }
 
     // Reload the specific log
-    final result = await db.query('daily_logs', where: 'date = ?', whereArgs: [date]);
+    final result = await db.query(
+      'daily_logs',
+      where: 'date = ?',
+      whereArgs: [date],
+    );
     if (result.isNotEmpty) {
       _logs[date] = DailyLogModel.fromMap(result.first);
     }

@@ -20,7 +20,8 @@ class CycleRing extends StatefulWidget {
   State<CycleRing> createState() => _CycleRingState();
 }
 
-class _CycleRingState extends State<CycleRing> with SingleTickerProviderStateMixin {
+class _CycleRingState extends State<CycleRing>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
 
@@ -31,9 +32,10 @@ class _CycleRingState extends State<CycleRing> with SingleTickerProviderStateMix
       duration: const Duration(milliseconds: 600),
       vsync: this,
     );
-    _animation = Tween<double>(begin: 0, end: 1).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOut),
-    );
+    _animation = Tween<double>(
+      begin: 0,
+      end: 1,
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
     _controller.forward();
   }
 
@@ -78,10 +80,7 @@ class _CycleRingState extends State<CycleRing> with SingleTickerProviderStateMix
                       color: AppColors.phaseColor(widget.phase),
                     ),
                   ),
-                  Text(
-                    'CYCLE DAY',
-                    style: AppTextStyles.label,
-                  ),
+                  Text('CYCLE DAY', style: AppTextStyles.label),
                 ],
               ),
             ),

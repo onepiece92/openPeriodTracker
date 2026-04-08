@@ -50,24 +50,26 @@ class _BirthdayOverlayState extends State<BirthdayOverlay>
 
     // Generate confetti pieces
     for (int i = 0; i < 60; i++) {
-      _confetti.add(_ConfettiPiece(
-        x: _rng.nextDouble(),
-        delay: _rng.nextDouble() * 0.6,
-        speed: 0.3 + _rng.nextDouble() * 0.7,
-        size: 4 + _rng.nextDouble() * 8,
-        color: [
-          AppColors.menstrual,
-          AppColors.follicular,
-          AppColors.ovulation,
-          AppColors.luteal,
-          const Color(0xFFE88FB4),
-          const Color(0xFFF5D76E),
-          const Color(0xFF7B9ED9),
-        ][_rng.nextInt(7)],
-        rotation: _rng.nextDouble() * pi * 2,
-        wobble: _rng.nextDouble() * 2 - 1,
-        shape: _rng.nextInt(3), // 0=circle, 1=rect, 2=star
-      ));
+      _confetti.add(
+        _ConfettiPiece(
+          x: _rng.nextDouble(),
+          delay: _rng.nextDouble() * 0.6,
+          speed: 0.3 + _rng.nextDouble() * 0.7,
+          size: 4 + _rng.nextDouble() * 8,
+          color: [
+            AppColors.menstrual,
+            AppColors.follicular,
+            AppColors.ovulation,
+            AppColors.luteal,
+            const Color(0xFFE88FB4),
+            const Color(0xFFF5D76E),
+            const Color(0xFF7B9ED9),
+          ][_rng.nextInt(7)],
+          rotation: _rng.nextDouble() * pi * 2,
+          wobble: _rng.nextDouble() * 2 - 1,
+          shape: _rng.nextInt(3), // 0=circle, 1=rect, 2=star
+        ),
+      );
     }
 
     _fadeController = AnimationController(
@@ -80,7 +82,10 @@ class _BirthdayOverlayState extends State<BirthdayOverlay>
       duration: const Duration(milliseconds: 800),
       vsync: this,
     );
-    _cardScale = CurvedAnimation(parent: _scaleController, curve: Curves.elasticOut);
+    _cardScale = CurvedAnimation(
+      parent: _scaleController,
+      curve: Curves.elasticOut,
+    );
 
     _confettiController = AnimationController(
       duration: const Duration(seconds: 4),
@@ -188,7 +193,10 @@ class _BirthdayOverlayState extends State<BirthdayOverlay>
                       ),
                       const SizedBox(height: 4),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: AppColors.menstrualBg,
                           borderRadius: BorderRadius.circular(12),
@@ -257,7 +265,9 @@ class _BirthdayOverlayState extends State<BirthdayOverlay>
                           child: Center(
                             child: Text(
                               'Thank you! 🌙',
-                              style: AppTextStyles.button.copyWith(color: Colors.white),
+                              style: AppTextStyles.button.copyWith(
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                         ),
@@ -318,14 +328,19 @@ class _ConfettiPainter extends CustomPainter {
       canvas.translate(x, y);
       canvas.rotate(p.rotation + t * pi * 2);
 
-      final paint = Paint()..color = p.color.withValues(alpha: opacity.clamp(0.0, 1.0));
+      final paint = Paint()
+        ..color = p.color.withValues(alpha: opacity.clamp(0.0, 1.0));
 
       if (p.shape == 0) {
         canvas.drawCircle(Offset.zero, p.size / 2, paint);
       } else if (p.shape == 1) {
         canvas.drawRRect(
           RRect.fromRectAndRadius(
-            Rect.fromCenter(center: Offset.zero, width: p.size, height: p.size * 0.6),
+            Rect.fromCenter(
+              center: Offset.zero,
+              width: p.size,
+              height: p.size * 0.6,
+            ),
             Radius.circular(1),
           ),
           paint,
@@ -353,5 +368,6 @@ class _ConfettiPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant _ConfettiPainter old) => old.progress != progress;
+  bool shouldRepaint(covariant _ConfettiPainter old) =>
+      old.progress != progress;
 }
