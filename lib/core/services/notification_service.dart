@@ -14,16 +14,24 @@ class NotificationService {
       FlutterLocalNotificationsPlugin();
   bool _isInitialized = false;
 
+  /// True only on platforms where flutter_local_notifications is fully supported.
+  bool get _isSupported =>
+      !kIsWeb && (Platform.isAndroid || Platform.isIOS || Platform.isMacOS);
+
   Future<void> initialize() async {
     if (_isInitialized) return;
+    if (!_isSupported) {
+      _isInitialized = true;
+      return;
+    }
 
     tz.initializeTimeZones();
 
     const AndroidInitializationSettings androidSettings =
         AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    // Request permission for iOS 10+
-    const DarwinInitializationSettings iosSettings =
+    // Darwin covers both iOS and macOS
+    const DarwinInitializationSettings darwinSettings =
         DarwinInitializationSettings(
           requestAlertPermission: false,
           requestBadgePermission: false,
@@ -32,7 +40,8 @@ class NotificationService {
 
     const InitializationSettings initSettings = InitializationSettings(
       android: androidSettings,
-      iOS: iosSettings,
+      iOS: darwinSettings,
+      macOS: darwinSettings,
     );
 
     await _notificationsPlugin.initialize(
@@ -46,12 +55,14 @@ class NotificationService {
   }
 
   Future<bool> requestPermissions() async {
-    if (Platform.isIOS) {
-      final iosImplementation = _notificationsPlugin
+    if (!_isSupported) return false;
+
+    if (Platform.isIOS || Platform.isMacOS) {
+      final impl = _notificationsPlugin
           .resolvePlatformSpecificImplementation<
             IOSFlutterLocalNotificationsPlugin
           >();
-      final granted = await iosImplementation?.requestPermissions(
+      final granted = await impl?.requestPermissions(
         alert: true,
         badge: true,
         sound: true,
@@ -62,8 +73,8 @@ class NotificationService {
           .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin
           >();
-      final granted = await androidImplementation
-          ?.requestNotificationsPermission();
+      final granted =
+          await androidImplementation?.requestNotificationsPermission();
       return granted ?? false;
     }
     return false;
@@ -73,8 +84,9 @@ class NotificationService {
     required int hour,
     required int minute,
   }) async {
+    if (!_isSupported || Platform.isMacOS) return; // macOS doesn't support zonedSchedule
     await initialize();
-    await _notificationsPlugin.cancel(0); // Cancel existing if any
+    await _notificationsPlugin.cancel(0);
 
     final now = tz.TZDateTime.now(tz.local);
     var scheduledDate = tz.TZDateTime(
@@ -103,6 +115,7 @@ class NotificationService {
           priority: Priority.defaultPriority,
         ),
         iOS: DarwinNotificationDetails(),
+        macOS: DarwinNotificationDetails(),
       ),
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       uiLocalNotificationDateInterpretation:
@@ -112,18 +125,18 @@ class NotificationService {
   }
 
   Future<void> cancelDailyReminder() async {
+    if (!_isSupported) return;
     await _notificationsPlugin.cancel(0);
   }
 
   Future<void> schedulePredictionAlert(DateTime predictedDate) async {
+    if (!_isSupported || Platform.isMacOS) return;
     await initialize();
     await _notificationsPlugin.cancel(1);
 
-    // Schedule 2 days before
     final targetDate = predictedDate.subtract(const Duration(days: 2));
     final now = DateTime.now();
 
-    // Only schedule if it's in the future
     if (targetDate.isAfter(now)) {
       final scheduledDate = tz.TZDateTime.from(targetDate, tz.local);
 
@@ -141,6 +154,7 @@ class NotificationService {
             priority: Priority.high,
           ),
           iOS: DarwinNotificationDetails(),
+          macOS: DarwinNotificationDetails(),
         ),
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
         uiLocalNotificationDateInterpretation:
@@ -150,17 +164,16 @@ class NotificationService {
   }
 
   Future<void> scheduleLateAlert(DateTime predictedDate) async {
+    if (!_isSupported || Platform.isMacOS) return;
     await initialize();
-    await _notificationsPlugin.cancel(2); // Cancel existing if any
+    await _notificationsPlugin.cancel(2);
 
-    // Schedule 1 day after expected date
     final targetDate = predictedDate.add(const Duration(days: 1));
     final now = DateTime.now();
 
-    // Only schedule if it's in the future
     if (targetDate.isAfter(now)) {
       final scheduledDate = tz.TZDateTime.from(targetDate, tz.local);
-      
+
       final prefs = await SharedPreferences.getInstance();
       final userName = prefs.getString('displayName') ?? 'there';
 
@@ -178,6 +191,7 @@ class NotificationService {
             priority: Priority.high,
           ),
           iOS: DarwinNotificationDetails(),
+          macOS: DarwinNotificationDetails(),
         ),
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
         uiLocalNotificationDateInterpretation:
@@ -187,7 +201,8 @@ class NotificationService {
   }
 
   Future<void> cancelPredictionAlerts() async {
-    await _notificationsPlugin.cancel(1); // Early prediction alert
-    await _notificationsPlugin.cancel(2); // Late alert
+    if (!_isSupported) return;
+    await _notificationsPlugin.cancel(1);
+    await _notificationsPlugin.cancel(2);
   }
 }
