@@ -42,6 +42,13 @@ class _LunaAppState extends State<LunaApp> {
             scaffoldBackgroundColor: Colors.transparent,
           ),
           routerConfig: _router,
+          builder: (context, child) {
+            return GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+              child: child,
+            );
+          },
         );
       },
     );
