@@ -13,8 +13,13 @@ class PeriodProvider extends ChangeNotifier {
   List<PeriodModel> get periods => _periods;
 
   void updateSettings(int cycleLength, int periodLength) {
+    if (_settingsCycleLength == cycleLength &&
+        _settingsPeriodLength == periodLength) {
+      return;
+    }
     _settingsCycleLength = cycleLength;
     _settingsPeriodLength = periodLength;
+    notifyListeners();
   }
 
   // --- Computed cycle data (centralized, no duplication) ---

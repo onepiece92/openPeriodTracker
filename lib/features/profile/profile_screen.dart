@@ -73,6 +73,11 @@ class ProfileScreen extends StatelessWidget {
                 ],
               ),
             ),
+            const SizedBox(height: 6),
+            Text(
+              'Cycle Length is a starting estimate. Once you log 2+ periods, predictions switch to your Computed Avg Cycle.',
+              style: AppTextStyles.small.copyWith(color: AppColors.textMuted),
+            ),
             const SizedBox(height: 16),
 
             // Defaults section
@@ -84,6 +89,17 @@ class ProfileScreen extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             _DefaultsSection(),
+            const SizedBox(height: 16),
+
+            // Dietary preferences
+            Text('DIETARY PREFERENCES', style: AppTextStyles.label),
+            const SizedBox(height: 4),
+            Text(
+              'Filters Diet tab recommendations',
+              style: AppTextStyles.small.copyWith(color: AppColors.textMuted),
+            ),
+            const SizedBox(height: 8),
+            _DietPreferencesSection(),
             const SizedBox(height: 16),
 
             // Data section
@@ -270,8 +286,10 @@ class ProfileScreen extends StatelessWidget {
                 bool success = await BackupService().importDataFromJSON();
                 if (success && context.mounted) {
                   // Refresh UI state
-                  context.read<PeriodProvider>().loadPeriods();
-                  context.read<DailyLogProvider>().loadLogs();
+                  await context.read<PeriodProvider>().loadPeriods();
+                  if (!context.mounted) return;
+                  await context.read<DailyLogProvider>().loadLogs();
+                  if (!context.mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
                       content: Text('Backup restored successfully'),
@@ -357,11 +375,13 @@ class ProfileScreen extends StatelessWidget {
             ),
           ),
           TextButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(ctx);
-              context.read<SettingsProvider>().resetApp();
-              context.read<PeriodProvider>().loadPeriods();
-              context.read<DailyLogProvider>().loadLogs();
+              await context.read<SettingsProvider>().resetApp();
+              if (!context.mounted) return;
+              await context.read<PeriodProvider>().loadPeriods();
+              if (!context.mounted) return;
+              await context.read<DailyLogProvider>().loadLogs();
             },
             child: Text(
               'Reset',
@@ -695,6 +715,126 @@ class _DefaultsSection extends StatelessWidget {
               ),
             ),
           ],
+        ],
+      ),
+    );
+  }
+}
+
+class _DietPreferencesSection extends StatelessWidget {
+  static const List<({String key, String label})> _dietTypes = [
+    (key: 'omnivore', label: 'Omnivore'),
+    (key: 'vegetarian', label: 'Vegetarian'),
+    (key: 'vegan', label: 'Vegan'),
+    (key: 'pescatarian', label: 'Pescatarian'),
+    (key: 'halal', label: 'Halal'),
+    (key: 'kosher', label: 'Kosher'),
+  ];
+
+  static const List<({String key, String label})> _allergyTags = [
+    (key: 'dairy', label: 'Dairy'),
+    (key: 'gluten', label: 'Gluten'),
+    (key: 'nuts', label: 'Nuts'),
+    (key: 'eggs', label: 'Eggs'),
+    (key: 'soy', label: 'Soy'),
+    (key: 'shellfish', label: 'Shellfish'),
+    (key: 'fish', label: 'Fish'),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final settings = context.watch<SettingsProvider>();
+    final dietType = settings.dietType;
+    final allergies = settings.allergies;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: AppDecorations.card,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('DIET TYPE', style: AppTextStyles.label),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: _dietTypes.map((d) {
+              final selected = dietType == d.key;
+              return GestureDetector(
+                onTap: () => settings.updateDietType(selected ? null : d.key),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: selected ? AppColors.luteal : Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: selected
+                          ? AppColors.luteal
+                          : AppColors.inputBorder,
+                    ),
+                  ),
+                  child: Text(
+                    d.label,
+                    style: AppTextStyles.small.copyWith(
+                      color: selected ? Colors.white : AppColors.textSecondary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+          const SizedBox(height: 20),
+          Text('AVOID / ALLERGIES', style: AppTextStyles.label),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: _allergyTags.map((t) {
+              final selected = allergies.contains(t.key);
+              return GestureDetector(
+                onTap: () {
+                  final next = List<String>.from(allergies);
+                  if (selected) {
+                    next.remove(t.key);
+                  } else {
+                    next.add(t.key);
+                  }
+                  settings.updateAllergies(next);
+                },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
+                  decoration: BoxDecoration(
+                    color: selected
+                        ? AppColors.menstrual.withValues(alpha: 0.15)
+                        : Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: selected
+                          ? AppColors.menstrual
+                          : AppColors.inputBorder,
+                    ),
+                  ),
+                  child: Text(
+                    t.label,
+                    style: AppTextStyles.small.copyWith(
+                      color: selected
+                          ? AppColors.menstrual
+                          : AppColors.textSecondary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
         ],
       ),
     );

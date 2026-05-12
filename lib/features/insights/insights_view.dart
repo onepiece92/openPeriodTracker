@@ -288,14 +288,17 @@ class _CycleComparison extends StatelessWidget {
             children: [
               Text('📊', style: const TextStyle(fontSize: 18)),
               const SizedBox(width: 8),
-              Text(
-                'Cycle Progress',
-                style: AppTextStyles.button.copyWith(
-                  color: AppColors.textPrimary,
-                  fontSize: 13,
+              Expanded(
+                child: Text(
+                  'Cycle Progress',
+                  style: AppTextStyles.button.copyWith(
+                    color: AppColors.textPrimary,
+                    fontSize: 13,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
-              const Spacer(),
+              const SizedBox(width: 8),
               Text(
                 'Day $cycleDay / $avgCycle',
                 style: AppTextStyles.small.copyWith(
@@ -503,11 +506,14 @@ class _WeeklyScore extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Text(
-                      'Weekly Log Score',
-                      style: AppTextStyles.button.copyWith(
-                        fontSize: 13,
-                        color: AppColors.textPrimary,
+                    Flexible(
+                      child: Text(
+                        'Weekly Log Score',
+                        style: AppTextStyles.button.copyWith(
+                          fontSize: 13,
+                          color: AppColors.textPrimary,
+                        ),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                     const SizedBox(width: 6),

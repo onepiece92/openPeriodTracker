@@ -207,11 +207,14 @@ class DoctorView extends StatelessWidget {
                         style: const TextStyle(fontSize: 14),
                       ),
                       const SizedBox(width: 8),
-                      Text(
-                        _questionLabel(key),
-                        style: AppTextStyles.body.copyWith(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 12,
+                      Expanded(
+                        child: Text(
+                          _questionLabel(key),
+                          style: AppTextStyles.body.copyWith(
+                            fontWeight: FontWeight.w700,
+                            fontSize: 12,
+                          ),
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ],

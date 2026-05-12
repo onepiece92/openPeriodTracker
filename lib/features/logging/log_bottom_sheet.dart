@@ -47,13 +47,25 @@ class _LogBottomSheetState extends State<LogBottomSheet> {
     final parsedDate = DateTime.parse(widget.date);
     final suggestedDays = settingsProvider.periodLength;
 
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.85,
-      decoration: const BoxDecoration(
-        color: AppColors.surfaceBackground,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-        border: Border(top: BorderSide(color: Color(0xFFEFE8F5))),
-      ),
+    final mediaQuery = MediaQuery.of(context);
+    final keyboardHeight = mediaQuery.viewInsets.bottom;
+    final maxSheetHeight = mediaQuery.size.height * 0.85;
+    // Shrink the sheet so its visible portion (above the keyboard) still has
+    // room to scroll. The bottom padding pushes the sheet above the keyboard.
+    final sheetHeight =
+        (maxSheetHeight - keyboardHeight).clamp(240.0, maxSheetHeight);
+
+    return AnimatedPadding(
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.easeOut,
+      padding: EdgeInsets.only(bottom: keyboardHeight),
+      child: Container(
+        height: sheetHeight,
+        decoration: const BoxDecoration(
+          color: AppColors.surfaceBackground,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          border: Border(top: BorderSide(color: Color(0xFFEFE8F5))),
+        ),
       child: Column(
         children: [
           // Drag handle
@@ -131,6 +143,8 @@ class _LogBottomSheetState extends State<LogBottomSheet> {
           // Scrollable content
           Expanded(
             child: SingleChildScrollView(
+              keyboardDismissBehavior:
+                  ScrollViewKeyboardDismissBehavior.onDrag,
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -323,6 +337,7 @@ class _LogBottomSheetState extends State<LogBottomSheet> {
             ),
           ),
         ],
+      ),
       ),
     );
   }

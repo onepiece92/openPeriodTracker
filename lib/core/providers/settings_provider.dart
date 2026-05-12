@@ -19,6 +19,8 @@ class SettingsProvider extends ChangeNotifier {
   String? get userNickname => _settings?.userNickname;
   String? get userBirthday => _settings?.userBirthday;
   int? get userAge => _settings?.age;
+  String? get dietType => _settings?.dietType;
+  List<String> get allergies => _settings?.allergies ?? const [];
   String get displayName =>
       _settings?.userNickname ?? _settings?.userName ?? 'Luna User';
 
@@ -130,6 +132,35 @@ class SettingsProvider extends ChangeNotifier {
       );
       notifyListeners();
     }
+  }
+
+  Future<void> updateDietType(String? type) async {
+    if (_settings == null) return;
+    final db = await _db.database;
+    _settings = _settings!.copyWith(
+      dietType: type,
+      clearDietType: type == null,
+    );
+    await db.update(
+      'settings',
+      {'diet_type': type},
+      where: 'id = ?',
+      whereArgs: [1],
+    );
+    notifyListeners();
+  }
+
+  Future<void> updateAllergies(List<String> tags) async {
+    if (_settings == null) return;
+    final db = await _db.database;
+    _settings = _settings!.copyWith(allergies: tags);
+    await db.update(
+      'settings',
+      {'allergies': tags.isNotEmpty ? jsonEncode(tags) : null},
+      where: 'id = ?',
+      whereArgs: [1],
+    );
+    notifyListeners();
   }
 
   /// Skip onboarding — create settings with defaults, no initial period.

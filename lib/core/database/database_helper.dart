@@ -20,7 +20,7 @@ class DatabaseHelper {
 
     return await openDatabase(
       path,
-      version: 4,
+      version: 5,
       onCreate: _onCreate,
       onUpgrade: _onUpgrade,
     );
@@ -38,6 +38,8 @@ class DatabaseHelper {
         user_name TEXT,
         user_nickname TEXT,
         user_birthday TEXT,
+        diet_type TEXT,
+        allergies TEXT,
         created_at TEXT NOT NULL
       )
     ''');
@@ -79,6 +81,10 @@ class DatabaseHelper {
     }
     if (oldVersion < 4) {
       await db.execute('ALTER TABLE daily_logs ADD COLUMN medical_log TEXT');
+    }
+    if (oldVersion < 5) {
+      await db.execute('ALTER TABLE settings ADD COLUMN diet_type TEXT');
+      await db.execute('ALTER TABLE settings ADD COLUMN allergies TEXT');
     }
   }
 

@@ -10,6 +10,12 @@ class SettingsModel {
   final String? userName;
   final String? userNickname;
   final String? userBirthday; // ISO 8601 date YYYY-MM-DD
+  /// One of: 'omnivore', 'vegetarian', 'vegan', 'pescatarian', 'halal',
+  /// 'kosher'. null means no restriction.
+  final String? dietType;
+  /// Lower-case tags the user wants to avoid. Examples: 'dairy', 'gluten',
+  /// 'nuts', 'eggs', 'soy', 'shellfish', 'fish'.
+  final List<String> allergies;
   final String createdAt;
 
   SettingsModel({
@@ -22,6 +28,8 @@ class SettingsModel {
     this.userName,
     this.userNickname,
     this.userBirthday,
+    this.dietType,
+    this.allergies = const [],
     required this.createdAt,
   });
 
@@ -30,6 +38,11 @@ class SettingsModel {
     if (map['default_moods'] != null &&
         (map['default_moods'] as String).isNotEmpty) {
       moodsList = List<String>.from(jsonDecode(map['default_moods'] as String));
+    }
+    List<String> allergiesList = [];
+    if (map['allergies'] != null &&
+        (map['allergies'] as String).isNotEmpty) {
+      allergiesList = List<String>.from(jsonDecode(map['allergies'] as String));
     }
     return SettingsModel(
       id: map['id'] as int,
@@ -41,6 +54,8 @@ class SettingsModel {
       userName: map['user_name'] as String?,
       userNickname: map['user_nickname'] as String?,
       userBirthday: map['user_birthday'] as String?,
+      dietType: map['diet_type'] as String?,
+      allergies: allergiesList,
       createdAt: map['created_at'] as String,
     );
   }
@@ -58,6 +73,8 @@ class SettingsModel {
       'user_name': userName,
       'user_nickname': userNickname,
       'user_birthday': userBirthday,
+      'diet_type': dietType,
+      'allergies': allergies.isNotEmpty ? jsonEncode(allergies) : null,
       'created_at': createdAt,
     };
   }
@@ -83,10 +100,13 @@ class SettingsModel {
     String? userName,
     String? userNickname,
     String? userBirthday,
+    String? dietType,
+    List<String>? allergies,
     bool clearDefaultFlow = false,
     bool clearUserName = false,
     bool clearUserNickname = false,
     bool clearUserBirthday = false,
+    bool clearDietType = false,
   }) {
     return SettingsModel(
       id: id,
@@ -102,6 +122,8 @@ class SettingsModel {
       userBirthday: clearUserBirthday
           ? null
           : (userBirthday ?? this.userBirthday),
+      dietType: clearDietType ? null : (dietType ?? this.dietType),
+      allergies: allergies ?? this.allergies,
       createdAt: createdAt,
     );
   }

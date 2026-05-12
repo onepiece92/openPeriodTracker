@@ -406,26 +406,24 @@ class _CalendarViewState extends State<CalendarView> {
           const SizedBox(height: 12),
 
           // Legend
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+          Wrap(
+            alignment: WrapAlignment.center,
+            spacing: 10,
+            runSpacing: 6,
             children: [
               _LegendItem(color: AppColors.menstrual, label: 'Period'),
-              const SizedBox(width: 10),
               _FlowLegend(),
-              const SizedBox(width: 10),
               _LegendItem(
                 color: AppColors.menstrualBg,
                 label: 'Predicted',
                 outlined: true,
                 dotColor: AppColors.menstrual,
               ),
-              const SizedBox(width: 10),
               _LegendItem(
                 color: AppColors.ovulationBg,
                 label: 'Fertile',
                 outlined: true,
               ),
-              const SizedBox(width: 10),
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -434,7 +432,6 @@ class _CalendarViewState extends State<CalendarView> {
                   Text('Peak', style: AppTextStyles.small),
                 ],
               ),
-              const SizedBox(width: 10),
               _LegendItem(color: const Color(0xFF5BA4A4), label: 'Medical'),
             ],
           ),

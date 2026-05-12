@@ -16,7 +16,14 @@ void main() async {
         ChangeNotifierProvider(
           create: (_) => SettingsProvider()..loadSettings(),
         ),
-        ChangeNotifierProvider(create: (_) => PeriodProvider()..loadPeriods()),
+        ChangeNotifierProxyProvider<SettingsProvider, PeriodProvider>(
+          create: (_) => PeriodProvider()..loadPeriods(),
+          update: (_, settings, period) {
+            period ??= PeriodProvider()..loadPeriods();
+            period.updateSettings(settings.cycleLength, settings.periodLength);
+            return period;
+          },
+        ),
         ChangeNotifierProvider(create: (_) => DailyLogProvider()..loadLogs()),
         ChangeNotifierProvider(
           create: (_) => AiDiagnosisProvider()..initialize(),
