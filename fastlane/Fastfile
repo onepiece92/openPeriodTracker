@@ -64,6 +64,22 @@ platform :ios do
     )
   end
 
+  desc "Attach the processed build to the App Store version without submitting (fastlane ios attach_build build:10)"
+  lane :attach_build do |options|
+    asc_key(options)
+    deliver(
+      app_identifier: APP_ID,
+      app_version: "1.1.0",
+      build_number: options.fetch(:build, "10"),
+      skip_binary_upload: true,
+      skip_metadata: true,
+      skip_screenshots: true,
+      submit_for_review: false,
+      run_precheck_before_submit: false,
+      force: true,
+    )
+  end
+
   desc "Upload the IPA built by `flutter build ipa` to App Store Connect"
   lane :upload do |options|
     asc_key(options)
