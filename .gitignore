@@ -63,3 +63,6 @@ assets/models/cycle_predictor.tflite
 # Screenshot pipeline scratch (regenerate with design/README.md); store-ready files stay in design/screenshots/out/
 design/screenshots/raw/
 design/preview/
+
+# Store credentials pasted locally; never committed
+.key/

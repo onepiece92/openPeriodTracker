@@ -1,22 +1,44 @@
 # Store upload lanes for Open Period Tracker.
-# Credentials are always passed on the command line; nothing is read from the repo.
+# Credentials live in the git-ignored .key/ folder (see .key/README.md) or are
+# passed on the command line; nothing secret is read from tracked files.
 #
-#   fastlane ios metadata key_id:... issuer_id:... key_path:/path/AuthKey.p8
-#   fastlane ios upload   key_id:... issuer_id:... key_path:/path/AuthKey.p8
-#   fastlane android metadata json_key:/path/service-account.json
-#   fastlane android upload   json_key:/path/service-account.json
+#   fastlane ios metadata        # or: key_id:... issuer_id:... key_path:/path/AuthKey.p8
+#   fastlane ios upload
+#   fastlane android metadata    # or: json_key:/path/service-account.json
+#   fastlane android upload
 
+opt_out_usage
 default_platform(:ios)
 
 APP_ID = "com.brandbuilder.periodtracker"
 SCREENSHOTS = File.expand_path("../design/screenshots/out", __dir__)
+KEY_DIR = File.expand_path("../.key", __dir__)
+
+# KEY_ID=... / ISSUER_ID=... lines from .key/apple.env
+def apple_env
+  path = File.join(KEY_DIR, "apple.env")
+  return {} unless File.exist?(path)
+  File.readlines(path).each_with_object({}) do |line, h|
+    next if line.strip.start_with?("#") || !line.include?("=")
+    k, v = line.strip.split("=", 2)
+    h[k.strip] = v.to_s.strip.delete('"')
+  end
+end
 
 def asc_key(options)
-  app_store_connect_api_key(
-    key_id: options.fetch(:key_id),
-    issuer_id: options.fetch(:issuer_id),
-    key_filepath: options.fetch(:key_path),
-  )
+  env = apple_env
+  key_path = options[:key_path] || File.join(KEY_DIR, "AuthKey.p8")
+  key_id = options[:key_id] || env["KEY_ID"]
+  issuer_id = options[:issuer_id] || env["ISSUER_ID"]
+  UI.user_error!("Paste the App Store Connect key into .key/AuthKey.p8") unless File.size?(key_path)
+  UI.user_error!("Fill KEY_ID and ISSUER_ID in .key/apple.env") if key_id.to_s.empty? || issuer_id.to_s.empty?
+  app_store_connect_api_key(key_id: key_id, issuer_id: issuer_id, key_filepath: key_path)
+end
+
+def play_json(options)
+  path = options[:json_key] || File.join(KEY_DIR, "play-service-account.json")
+  UI.user_error!("Paste the Play service-account JSON into .key/play-service-account.json") unless File.size?(path)
+  path
 end
 
 platform :ios do
@@ -25,10 +47,13 @@ platform :ios do
     asc_key(options)
     # deliver expects screenshots grouped by locale; the 6.9" and 13" sets are
     # detected by image size.
+    # Prefix each set so the identical basenames do not overwrite each other.
     sh("rm -rf #{SCREENSHOTS}/deliver && mkdir -p #{SCREENSHOTS}/deliver/en-US && " \
-       "cp #{SCREENSHOTS}/iphone69/*.png #{SCREENSHOTS}/ipad13/*.png #{SCREENSHOTS}/deliver/en-US/")
+       "for f in #{SCREENSHOTS}/iphone69/*.png; do cp \"$f\" #{SCREENSHOTS}/deliver/en-US/iphone69_$(basename \"$f\"); done && " \
+       "for f in #{SCREENSHOTS}/ipad13/*.png; do cp \"$f\" #{SCREENSHOTS}/deliver/en-US/ipad13_$(basename \"$f\"); done")
     deliver(
       app_identifier: APP_ID,
+      app_version: "1.1.0",
       metadata_path: "./metadata",
       screenshots_path: "#{SCREENSHOTS}/deliver",
       overwrite_screenshots: true,
@@ -60,7 +85,7 @@ platform :android do
        "cp #{SCREENSHOTS}/iphone69/*.png #{SCREENSHOTS}/supply/en-US/images/phoneScreenshots/")
     upload_to_play_store(
       package_name: APP_ID,
-      json_key: options.fetch(:json_key),
+      json_key: play_json(options),
       metadata_path: "./metadata/android",
       skip_upload_aab: true,
       skip_upload_apk: true,
@@ -70,15 +95,16 @@ platform :android do
     )
   end
 
-  desc "Upload the AAB built by `flutter build appbundle` to the production track"
+  desc "Upload the AAB built by `flutter build appbundle` to the production track as a DRAFT release"
   lane :upload do |options|
     aab = File.expand_path("../build/app/outputs/bundle/release/app-release.aab", __dir__)
     UI.user_error!("No AAB found; run `flutter build appbundle --release` first") unless File.exist?(aab)
     upload_to_play_store(
       package_name: APP_ID,
-      json_key: options.fetch(:json_key),
+      json_key: play_json(options),
       aab: aab,
       track: options.fetch(:track, "production"),
+      release_status: options.fetch(:release_status, "draft"),
       metadata_path: "./metadata/android",
       skip_upload_metadata: true,
       skip_upload_images: true,
