@@ -35,14 +35,14 @@ class BackupService {
         await directory.create(recursive: true);
       }
       final backupFile = File(
-        '${directory.path}/luna_backup_${DateTime.now().millisecondsSinceEpoch}.json',
+        '${directory.path}/open_period_backup_${DateTime.now().millisecondsSinceEpoch}.json',
       );
       await backupFile.writeAsString(jsonString);
 
       // Trigger native share sheet
       await Share.shareXFiles([
         XFile(backupFile.path),
-      ], subject: 'Luna Backup Data');
+      ], subject: 'Open Period Tracker Backup');
     } catch (e) {
       throw Exception('Failed to export data: $e');
     }

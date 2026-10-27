@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Open Period Tracker</title>
+<meta name="description" content="Open Period Tracker is a free, open-source period and cycle tracker for iOS and Android. Works offline, needs no account, shows no ads, and keeps your data on your device.">
+<link rel="canonical" href="https://onepiece92.github.io/openPeriodTracker/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Open Period Tracker">
+<meta property="og:description" content="Free, open-source period and cycle tracker. Offline. No account. No ads. Your data stays on your device.">
+<meta property="og:url" content="https://onepiece92.github.io/openPeriodTracker/">
+<meta property="og:image" content="https://onepiece92.github.io/openPeriodTracker/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="assets/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg1:#FDF2F6; --bg2:#EDE4F5; --bg3:#E4EDF8; --bg4:#EEF6F2;
+    --text:#2D2440; --text2:#6B5F7D; --muted:#9B8FAD;
+    --rose:#E07088; --teal:#5BA4B5; --mint:#6AB88A; --violet:#A386BF;
+    --card:#FFFFFF; --border:#F0E8F5;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html { scroll-behavior:smooth; }
+  body {
+    font-family:'Outfit',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    color:var(--text); line-height:1.6;
+    background:linear-gradient(135deg,var(--bg1),var(--bg2),var(--bg3),var(--bg4));
+    background-attachment:fixed; min-height:100vh;
+  }
+  h1,h2,h3 { font-family:'Playfair Display',Georgia,serif; line-height:1.2; }
+  a { color:var(--violet); }
+  .wrap { max-width:1040px; margin:0 auto; padding:0 20px; }
+  header { padding:28px 0 8px; }
+  header .wrap { display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+  header img { height:40px; width:auto; }
+  nav a { margin-left:18px; font-size:15px; color:var(--text2); text-decoration:none; }
+  nav a:hover { color:var(--text); }
+  .hero { padding:48px 0 32px; text-align:center; }
+  .hero h1 { font-size:clamp(32px,6vw,52px); margin-bottom:16px; }
+  .hero p.lead { font-size:clamp(17px,2.4vw,21px); color:var(--text2); max-width:640px; margin:0 auto 28px; }
+  .btns { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+  .btn { display:inline-flex; align-items:center; gap:8px; padding:13px 22px; border-radius:14px;
+         font-weight:600; font-size:15px; text-decoration:none; border:1px solid transparent; transition:transform .12s; }
+  .btn:hover { transform:translateY(-1px); }
+  .btn-dark { background:var(--text); color:#fff; }
+  .btn-light { background:var(--card); color:var(--text); border-color:var(--border); }
+  .fine { margin-top:14px; font-size:13px; color:var(--muted); }
+  section { padding:40px 0; }
+  section h2 { font-size:clamp(24px,3.6vw,32px); margin-bottom:8px; }
+  section p.sub { color:var(--text2); margin-bottom:24px; }
+  .grid { display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); }
+  .card { background:var(--card); border:1px solid var(--border); border-radius:20px; padding:22px;
+          box-shadow:0 2px 12px rgba(160,140,176,.06); }
+  .card h3 { font-size:18px; margin-bottom:6px; }
+  .card p { color:var(--text2); font-size:15px; }
+  .dot { width:12px; height:12px; border-radius:50%; display:inline-block; margin-right:8px; vertical-align:middle; }
+  .shots { display:flex; gap:14px; overflow-x:auto; padding:6px 2px 18px; scroll-snap-type:x mandatory; }
+  .shots img { flex:0 0 auto; width:220px; max-width:70vw; border-radius:22px; border:1px solid var(--border);
+               box-shadow:0 8px 24px rgba(45,36,64,.10); scroll-snap-align:start; background:var(--card); }
+  details { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:16px 20px; margin-bottom:10px; }
+  summary { cursor:pointer; font-weight:600; font-size:16px; list-style:none; display:flex; justify-content:space-between; }
+  summary::-webkit-details-marker { display:none; }
+  summary::after { content:'+'; color:var(--violet); font-weight:600; }
+  details[open] summary::after { content:'–'; }
+  details p { margin-top:10px; color:var(--text2); font-size:15px; }
+  footer { padding:36px 0 48px; color:var(--muted); font-size:13px; text-align:center; }
+  footer a { color:var(--text2); margin:0 8px; }
+  @media (max-width:600px) { nav { display:none; } .hero { padding:32px 0 20px; } section { padding:28px 0; } }
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Open Period Tracker",
+  "alternateName": "Open Period & Cycle Tracker",
+  "operatingSystem": "iOS, Android",
+  "applicationCategory": "HealthApplication",
+  "description": "Free, open-source period and cycle tracker. Works offline, needs no account, shows no ads, and keeps your data on your device.",
+  "url": "https://onepiece92.github.io/openPeriodTracker/",
+  "image": "https://onepiece92.github.io/openPeriodTracker/assets/og.png",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "license": "https://opensource.org/licenses/MIT",
+  "isAccessibleForFree": true,
+  "codeRepository": "https://github.com/onepiece92/openPeriodTracker",
+  "sameAs": [
+    "https://apps.apple.com/us/app/open-period-cycle-tracker/id6761253443",
+    "https://play.google.com/store/apps/details?id=com.brandbuilder.periodtracker",
+    "https://github.com/onepiece92/openPeriodTracker"
+  ],
+  "author": { "@type": "Organization", "name": "Brand Builder", "url": "https://brandbuilder.com.np" },
+  "featureList": [
+    "Period and flow logging on a calendar",
+    "Mood, symptom and note logging",
+    "Doctor's checklist",
+    "On-device cycle prediction",
+    "Fertile window and peak day",
+    "Insights and analytics",
+    "Phase-aware diet and nutrition",
+    "Cycle-phase yoga",
+    "JSON backup and restore"
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    { "@type": "Question", "name": "Does Open Period Tracker work offline?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes. Every feature runs on the device. No connection is required for tracking, predictions, insights, analytics or backup." } },
+    { "@type": "Question", "name": "Do I need an account?",
+      "acceptedAnswer": { "@type": "Answer", "text": "No. There is no sign-up, login or email. Open the app and start logging." } },
+    { "@type": "Question", "name": "What does it cost?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Nothing. The app is free with no subscription, premium tier, in-app purchase or advertising." } },
+    { "@type": "Question", "name": "Can I export my data?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Yes. Profile → Backup exports a JSON file you can keep anywhere and restore later on any device." } },
+    { "@type": "Question", "name": "Where is the source code?",
+      "acceptedAnswer": { "@type": "Answer", "text": "On GitHub at https://github.com/onepiece92/openPeriodTracker under the MIT license." } },
+    { "@type": "Question", "name": "Does it send my data anywhere?",
+      "acceptedAnswer": { "@type": "Answer", "text": "No. The app runs no servers and includes no analytics or advertising SDKs. Your logs stay in a local database on the device. Three optional features touch the network only if you use them: opening YouTube links from the Yoga tab, the operating system's geocoder to pick a food region when you grant location access, and an Ollama server you configure yourself for local AI summaries." } },
+    { "@type": "Question", "name": "Is it medical advice?",
+      "acceptedAnswer": { "@type": "Answer", "text": "No. Open Period Tracker is a tracking and information tool, not a medical device. Talk to a healthcare professional about anything that concerns you." } }
+  ]
+}
+</script>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <a href="./" aria-label="Open Period Tracker home"><img src="assets/logo-horizontal.png" alt="Open Period Tracker"></a>
+    <nav aria-label="Page sections">
+      <a href="#why">Why</a><a href="#features">Features</a><a href="#screens">Screens</a><a href="#faq">FAQ</a>
+      <a href="https://github.com/onepiece92/openPeriodTracker">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <h1>A period tracker that keeps your data to itself.</h1>
+      <p class="lead">Open Period Tracker is free and open source. It works offline, needs no account, shows no ads, and stores everything on your own phone.</p>
+      <div class="btns">
+        <a class="btn btn-dark" href="https://apps.apple.com/us/app/open-period-cycle-tracker/id6761253443">Download on the App Store</a>
+        <a class="btn btn-dark" href="https://play.google.com/store/apps/details?id=com.brandbuilder.periodtracker">Get it on Google Play</a>
+        <a class="btn btn-light" href="https://github.com/onepiece92/openPeriodTracker">View source on GitHub</a>
+      </div>
+      <p class="fine">iOS 13+ and Android 5+. MIT licensed. Listed in the stores as “Open Period &amp; Cycle Tracker”.</p>
+    </div>
+  </section>
+
+  <section id="why">
+    <div class="wrap">
+      <h2>Why this one</h2>
+      <p class="sub">Four things most period trackers do not promise, stated plainly.</p>
+      <div class="grid">
+        <div class="card"><h3><span class="dot" style="background:var(--rose)"></span>Offline</h3><p>Tracking, predictions, insights, analytics and backup all run on the device. No server, no sync, no waiting.</p></div>
+        <div class="card"><h3><span class="dot" style="background:var(--teal)"></span>No account</h3><p>No sign-up, no email, no password. The app has nothing to log you into.</p></div>
+        <div class="card"><h3><span class="dot" style="background:var(--mint)"></span>Free, no ads</h3><p>No subscription, no premium tier, no in-app purchase, no advertising SDK.</p></div>
+        <div class="card"><h3><span class="dot" style="background:var(--violet)"></span>Open source</h3><p>Every line is public under the MIT license. Read it, audit it, build it yourself.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="features">
+    <div class="wrap">
+      <h2>What it does</h2>
+      <p class="sub">Built for daily logging first, with the analysis layered on top of your own history.</p>
+      <div class="grid">
+        <div class="card"><h3>Track</h3><p>Periods and flow on a calendar. Moods, symptoms and notes for any day. A doctor's checklist covering pain, sleep, skin, digestion, energy and more.</p></div>
+        <div class="card"><h3>Predict</h3><p>Next period, fertile window and peak day. An on-device model refines cycle length and period duration from your history. Optional reminders.</p></div>
+        <div class="card"><h3>Understand</h3><p>Insights and analytics: best and worst cycle days, mood and symptom frequency, phase correlations, 7-day phase forecast.</p></div>
+        <div class="card"><h3>Eat and move</h3><p>Phase-aware diet and nutrition guidance, with regional food picks if you share your location. Yoga and breathwork matched to each phase.</p></div>
+        <div class="card"><h3>Ask an AI, on your terms</h3><p>Build an anonymised summary of your logs to paste into ChatGPT, Claude or Gemini. Or point the app at your own Ollama server.</p></div>
+        <div class="card"><h3>Keep control</h3><p>JSON backup and restore. A demo-data generator to explore the app before you log anything real.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="screens">
+    <div class="wrap">
+      <h2>Screens</h2>
+      <p class="sub">Swipe to see more.</p>
+      <div class="shots">
+        <img src="assets/screenshots/01.png" alt="Home screen: calendar with period days, fertile window and the current phase. Works offline with no account." loading="lazy">
+        <img src="assets/screenshots/02.png" alt="Insights: seven-day forecast, cycle progress and fertility status" loading="lazy">
+        <img src="assets/screenshots/03.png" alt="Daily log sheet with flow, moods, symptoms and notes" loading="lazy">
+        <img src="assets/screenshots/04.png" alt="Doctor's checklist with findings and pain, sleep and skin data" loading="lazy">
+        <img src="assets/screenshots/05.png" alt="Analytics: cycle length and period duration trends" loading="lazy">
+        <img src="assets/screenshots/06.png" alt="Diagnosis: cycle health score and on-device health summary" loading="lazy">
+        <img src="assets/screenshots/07.png" alt="Diet and nutrition: phase-aware foods and nutrient gaps from logged symptoms" loading="lazy">
+        <img src="assets/screenshots/08.png" alt="Profile: name, cycle settings and JSON backup" loading="lazy">
+      </div>
+    </div>
+  </section>
+
+  <section id="faq">
+    <div class="wrap">
+      <h2>Questions</h2>
+      <p class="sub">Short answers. The privacy policy has the long ones.</p>
+      <details><summary>Does it work offline?</summary><p>Yes. Every feature runs on the device. No connection is required for tracking, predictions, insights, analytics or backup.</p></details>
+      <details><summary>Do I need an account?</summary><p>No. There is no sign-up, login or email. Open the app and start logging.</p></details>
+      <details><summary>What does it cost?</summary><p>Nothing. The app is free with no subscription, premium tier, in-app purchase or advertising.</p></details>
+      <details><summary>Can I export my data?</summary><p>Yes. Profile → Backup exports a JSON file you can keep anywhere and restore later on any device.</p></details>
+      <details><summary>Where is the source code?</summary><p>On <a href="https://github.com/onepiece92/openPeriodTracker">GitHub</a> under the MIT license.</p></details>
+      <details><summary>Does it send my data anywhere?</summary><p>No. The app runs no servers and includes no analytics or advertising SDKs. Your logs stay in a local database on the device. Three optional features touch the network only if you use them: opening YouTube links from the Yoga tab, the operating system's geocoder to pick a food region when you grant location access, and an Ollama server you configure yourself for local AI summaries.</p></details>
+      <details><summary>Is it medical advice?</summary><p>No. Open Period Tracker is a tracking and information tool, not a medical device. Talk to a healthcare professional about anything that concerns you.</p></details>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>
+      <a href="privacy-policy.html">Privacy policy</a>
+      <a href="https://github.com/onepiece92/openPeriodTracker/blob/main/LICENSE">MIT license</a>
+      <a href="https://github.com/onepiece92/openPeriodTracker/issues">Support</a>
+      <a href="https://brandbuilder.com.np">Brand Builder</a>
+    </p>
+    <p style="margin-top:10px">© 2026 Brand Builder. Not a medical device.</p>
+  </div>
+</footer>
+</body>
+</html>

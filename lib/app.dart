@@ -4,14 +4,14 @@ import 'package:provider/provider.dart';
 import 'core/providers/settings_provider.dart';
 import 'core/router/app_router.dart';
 
-class LunaApp extends StatefulWidget {
-  const LunaApp({super.key});
+class OpenPeriodApp extends StatefulWidget {
+  const OpenPeriodApp({super.key});
 
   @override
-  State<LunaApp> createState() => _LunaAppState();
+  State<OpenPeriodApp> createState() => _OpenPeriodAppState();
 }
 
-class _LunaAppState extends State<LunaApp> {
+class _OpenPeriodAppState extends State<OpenPeriodApp> {
   GoRouter? _router;
   bool? _lastOnboarded;
 
@@ -35,7 +35,7 @@ class _LunaAppState extends State<LunaApp> {
         }
 
         return MaterialApp.router(
-          title: 'Luna: Open Period & Cycle Tracker',
+          title: 'Open Period Tracker',
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
             useMaterial3: true,

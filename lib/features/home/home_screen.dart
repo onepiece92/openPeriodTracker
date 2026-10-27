@@ -7,6 +7,7 @@ import '../../core/providers/settings_provider.dart';
 import '../../core/providers/period_provider.dart';
 import '../../core/providers/daily_log_provider.dart';
 import '../../core/services/share_service.dart';
+import '../../core/services/review_service.dart';
 import '../../core/widgets/phase_card.dart';
 import 'birthday_overlay.dart';
 
@@ -23,6 +24,17 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _birthdayShown = false;
   bool _showBirthday = false;
   bool _dismissedWarning = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Ask for a store rating only once the user has real history (see ReviewService).
+    Future.delayed(const Duration(seconds: 4), () {
+      if (!mounted) return;
+      final cycles = context.read<PeriodProvider>().cycleLengths.length;
+      ReviewService().maybeRequest(completedCycles: cycles);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,15 +80,23 @@ class _HomeScreenState extends State<HomeScreen> {
                         !_dismissedWarning)
                       Container(
                         margin: const EdgeInsets.only(top: 16),
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 8,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.redAccent.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.redAccent.withValues(alpha: 0.3)),
+                          border: Border.all(
+                            color: Colors.redAccent.withValues(alpha: 0.3),
+                          ),
                         ),
                         child: Row(
                           children: [
-                            const Icon(Icons.warning_amber_rounded, color: Colors.redAccent),
+                            const Icon(
+                              Icons.warning_amber_rounded,
+                              color: Colors.redAccent,
+                            ),
                             const SizedBox(width: 12),
                             Expanded(
                               child: Text(
@@ -88,8 +108,12 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                             ),
                             IconButton(
-                              icon: const Icon(Icons.close, color: Colors.redAccent),
-                              onPressed: () => setState(() => _dismissedWarning = true),
+                              icon: const Icon(
+                                Icons.close,
+                                color: Colors.redAccent,
+                              ),
+                              onPressed: () =>
+                                  setState(() => _dismissedWarning = true),
                             ),
                           ],
                         ),
@@ -102,7 +126,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Luna', style: AppTextStyles.appTitle),
+                            Text('Open Period', style: AppTextStyles.appTitle),
                             Text(
                               'Hi, ${settingsProvider.displayName}',
                               style: AppTextStyles.body.copyWith(

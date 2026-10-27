@@ -1,11 +1,11 @@
 # Privacy Policy
 
-**Luna: Open Period & Cycle Tracker**
+**Open Period & Cycle Tracker**
 *Last updated: March 27, 2026*
 
 ## Overview
 
-Luna: Open Period & Cycle Tracker ("Luna", "the App", "we", "our") is a menstrual cycle tracking application developed by Brand Builder. We are committed to protecting your privacy. This Privacy Policy explains how the App handles your information.
+Open Period & Cycle Tracker ("Open Period Tracker", "the App", "we", "our") is a menstrual cycle tracking application developed by Brand Builder. We are committed to protecting your privacy. This Privacy Policy explains how the App handles your information.
 
 **The most important thing to know: All your data stays on your device. We do not collect, transmit, store, or share any personal or health data.**
 
@@ -147,14 +147,14 @@ We may update this Privacy Policy from time to time. Any changes will be reflect
 ## Open Source
 
 The App is open source. You can review the complete source code to verify our privacy practices at:
-https://github.com/YOUR_USERNAME/luna-period-tracker
+https://github.com/onepiece92/openPeriodTracker
 
 ## Contact Us
 
 If you have questions or concerns about this Privacy Policy, please contact us at:
 
 **Email:** [your-email@example.com]
-**GitHub:** https://github.com/YOUR_USERNAME/luna-period-tracker/issues
+**GitHub:** https://github.com/onepiece92/openPeriodTracker/issues
 
 ## Compliance
 
@@ -167,5 +167,5 @@ This App is designed to comply with:
 
 ---
 
-*Luna: Open Period & Cycle Tracker is developed by Brand Builder.*
+*Open Period & Cycle Tracker is developed by Brand Builder.*
 *Bundle ID: com.brandbuilder.periodtracker*

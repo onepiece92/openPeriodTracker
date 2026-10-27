@@ -1,4 +1,6 @@
-# Luna — Period Tracker App
+# Open Period Tracker — App Spec
+
+> Historical design spec from March 2026. The app was renamed from "Luna" to Open Period Tracker in October 2026; names below were updated, everything else is as originally written.
 
 ## Technical Specification for Flutter Implementation
 
@@ -33,7 +35,7 @@ dev_dependencies:
 
 ## App Overview
 
-Luna is a minimal, pastel-themed period tracking app. Users onboard by entering their last period date, average cycle length, and period duration. The app then predicts future periods and fertile windows, learns from logged data over time, and provides phase-based wellness insights.
+Open Period Tracker is a minimal, pastel-themed period tracking app. Users onboard by entering their last period date, average cycle length, and period duration. The app then predicts future periods and fertile windows, learns from logged data over time, and provides phase-based wellness insights.
 
 ### Core Principles
 
@@ -196,7 +198,7 @@ MultiProvider(
     ChangeNotifierProvider(create: (_) => PeriodProvider()..loadPeriods()),
     ChangeNotifierProvider(create: (_) => DailyLogProvider()..loadLogs()),
   ],
-  child: const LunaApp(),
+  child: const OpenPeriodApp(),
 )
 ```
 
@@ -210,7 +212,7 @@ MultiProvider(
 
 #### Step 1 — Last Period Start Date
 
-- Show the Luna logo (🌙 emoji or custom icon) and "Luna — Your cycle companion" tagline
+- Show the Open Period Tracker logo (open cycle ring) and "Open Period — Your cycle companion" tagline
 - "Get Started" button → transitions to date picker
 - Calendar widget for selecting the date (navigate months, disable future dates)
 - Display selected date below the calendar in human-readable format
@@ -228,7 +230,7 @@ MultiProvider(
 
 - Same stepper UI
 - Range: 2–10 days, default: 5
-- Subtitle: "An estimate is fine — Luna will learn from your logs"
+- Subtitle: "An estimate is fine — the app will learn from your logs"
 - "Start Tracking ✨" button → calls `SettingsProvider.completeOnboarding()` which also creates the first period entry in `PeriodProvider`
 
 **On complete:** settings saved to DB, first period record created (start = selected date, end = start + periodLength - 1), navigate to Home.
@@ -241,7 +243,7 @@ The main screen has a **scrollable column** layout with a **bottom tab-like sect
 
 #### Header Section (always visible at top)
 
-- "Luna" title + "your cycle companion" subtitle (left-aligned)
+- "Open Period" title + "your cycle companion" subtitle (left-aligned)
 - "Reset" button (top-right, small, outlined) — triggers confirmation dialog → `SettingsProvider.resetApp()`
 
 #### Phase Card

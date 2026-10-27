@@ -2,7 +2,7 @@
 
 ## Data Privacy
 
-Luna is designed with a **zero-trust, privacy-first** architecture:
+Open Period Tracker is designed with a **zero-trust, privacy-first** architecture:
 
 - All data is stored locally on your device using SQLite
 - The app makes zero network calls for core functionality

@@ -10,26 +10,28 @@ import 'app.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await NotificationService().initialize();
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(
-          create: (_) => SettingsProvider()..loadSettings(),
-        ),
-        ChangeNotifierProxyProvider<SettingsProvider, PeriodProvider>(
-          create: (_) => PeriodProvider()..loadPeriods(),
-          update: (_, settings, period) {
-            period ??= PeriodProvider()..loadPeriods();
-            period.updateSettings(settings.cycleLength, settings.periodLength);
-            return period;
-          },
-        ),
-        ChangeNotifierProvider(create: (_) => DailyLogProvider()..loadLogs()),
-        ChangeNotifierProvider(
-          create: (_) => AiDiagnosisProvider()..initialize(),
-        ),
-      ],
-      child: const LunaApp(),
-    ),
+  runApp(buildApp());
+}
+
+/// The provider tree and root widget. Shared with integration tests so they
+/// can wrap the real app without re-declaring providers.
+Widget buildApp() {
+  return MultiProvider(
+    providers: [
+      ChangeNotifierProvider(create: (_) => SettingsProvider()..loadSettings()),
+      ChangeNotifierProxyProvider<SettingsProvider, PeriodProvider>(
+        create: (_) => PeriodProvider()..loadPeriods(),
+        update: (_, settings, period) {
+          period ??= PeriodProvider()..loadPeriods();
+          period.updateSettings(settings.cycleLength, settings.periodLength);
+          return period;
+        },
+      ),
+      ChangeNotifierProvider(create: (_) => DailyLogProvider()..loadLogs()),
+      ChangeNotifierProvider(
+        create: (_) => AiDiagnosisProvider()..initialize(),
+      ),
+    ],
+    child: const OpenPeriodApp(),
   );
 }

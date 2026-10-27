@@ -197,7 +197,7 @@ class _WelcomeStep extends StatelessWidget {
           const Spacer(flex: 2),
           const Text('🌙', style: TextStyle(fontSize: 64)),
           const SizedBox(height: 20),
-          Text('Luna', style: AppTextStyles.appTitle),
+          Text('Open Period', style: AppTextStyles.appTitle),
           const SizedBox(height: 8),
           Text(
             'Your cycle companion',

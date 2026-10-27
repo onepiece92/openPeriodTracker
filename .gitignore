@@ -59,3 +59,7 @@ assets/models/cycle_predictor.tflite
 # Environment
 .env
 *.env.local
+
+# Screenshot pipeline scratch (regenerate with design/README.md); store-ready files stay in design/screenshots/out/
+design/screenshots/raw/
+design/preview/

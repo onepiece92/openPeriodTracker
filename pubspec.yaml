@@ -1,5 +1,5 @@
-name: luna_period_tracker
-description: "Luna: Open Period & Cycle Tracker"
+name: open_period_tracker
+description: "Open Period Tracker: offline, open-source period and cycle tracker."
 publish_to: 'none'
 
 version: 1.0.3+1
@@ -28,6 +28,7 @@ dependencies:
   timezone: ^0.9.3
   url_launcher: ^6.3.2
   shared_preferences: ^2.5.5
+  in_app_review: ^2.0.12
 
 dev_dependencies:
   flutter_test:
@@ -35,6 +36,8 @@ dev_dependencies:
   flutter_lints: ^6.0.0
   sqflite_common_ffi: ^2.3.0
   flutter_launcher_icons: ^0.14.4
+  integration_test:
+    sdk: flutter
 
 flutter:
   uses-material-design: true
@@ -51,8 +54,8 @@ flutter_launcher_icons:
   min_sdk_android: 21
 
   # Android adaptive icon (recommended)
-  adaptive_icon_background: "#ffffff"
-  adaptive_icon_foreground: "assets/icon/logo.png"
+  adaptive_icon_background: "assets/icon/adaptive_background.png"
+  adaptive_icon_foreground: "assets/icon/adaptive_foreground.png"
 
   # Optional platforms
   web:

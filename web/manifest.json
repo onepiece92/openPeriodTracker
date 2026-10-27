@@ -1,11 +1,11 @@
 {
-    "name": "Luna: Open Period & Cycle Tracker",
-    "short_name": "Luna: Open Period & Cycle Tracker",
+    "name": "Open Period Tracker",
+    "short_name": "Open Period",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#ffffff",
     "theme_color": "#ffffff",
-    "description": "A new Flutter project.",
+    "description": "Open Period Tracker is a free, open-source period and cycle tracker that works offline, needs no account and keeps your data on your device.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
