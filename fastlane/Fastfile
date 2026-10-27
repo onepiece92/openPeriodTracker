@@ -8,6 +8,7 @@
 #   fastlane android upload
 
 opt_out_usage
+skip_docs
 default_platform(:ios)
 
 APP_ID = "com.brandbuilder.periodtracker"

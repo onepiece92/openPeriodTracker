@@ -66,3 +66,9 @@ design/preview/
 
 # Store credentials pasted locally; never committed
 .key/
+
+# fastlane working files
+design/screenshots/out/deliver/
+design/screenshots/out/supply/
+fastlane/report.xml
+fastlane/Preview.html
