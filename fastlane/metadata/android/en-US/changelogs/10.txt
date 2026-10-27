@@ -1,0 +1,7 @@
+Luna is now Open Period Tracker. Same app, same data, new name and a new icon.
+
+• New icon and a shorter name on your home screen
+• Everything still runs on your phone: no account, no server, no ads
+• Existing data and backups keep working, nothing to migrate
+
+Open source at github.com/onepiece92/openPeriodTracker

@@ -1,0 +1,88 @@
+# Store upload lanes for Open Period Tracker.
+# Credentials are always passed on the command line; nothing is read from the repo.
+#
+#   fastlane ios metadata key_id:... issuer_id:... key_path:/path/AuthKey.p8
+#   fastlane ios upload   key_id:... issuer_id:... key_path:/path/AuthKey.p8
+#   fastlane android metadata json_key:/path/service-account.json
+#   fastlane android upload   json_key:/path/service-account.json
+
+default_platform(:ios)
+
+APP_ID = "com.brandbuilder.periodtracker"
+SCREENSHOTS = File.expand_path("../design/screenshots/out", __dir__)
+
+def asc_key(options)
+  app_store_connect_api_key(
+    key_id: options.fetch(:key_id),
+    issuer_id: options.fetch(:issuer_id),
+    key_filepath: options.fetch(:key_path),
+  )
+end
+
+platform :ios do
+  desc "Push listing text and screenshots to App Store Connect (no binary)"
+  lane :metadata do |options|
+    asc_key(options)
+    # deliver expects screenshots grouped by locale; the 6.9" and 13" sets are
+    # detected by image size.
+    sh("rm -rf #{SCREENSHOTS}/deliver && mkdir -p #{SCREENSHOTS}/deliver/en-US && " \
+       "cp #{SCREENSHOTS}/iphone69/*.png #{SCREENSHOTS}/ipad13/*.png #{SCREENSHOTS}/deliver/en-US/")
+    deliver(
+      app_identifier: APP_ID,
+      metadata_path: "./metadata",
+      screenshots_path: "#{SCREENSHOTS}/deliver",
+      overwrite_screenshots: true,
+      skip_binary_upload: true,
+      precheck_include_in_app_purchases: false,
+      force: true,
+    )
+  end
+
+  desc "Upload the IPA built by `flutter build ipa` to App Store Connect"
+  lane :upload do |options|
+    asc_key(options)
+    ipa = Dir[File.expand_path("../build/ios/ipa/*.ipa", __dir__)].first
+    UI.user_error!("No IPA found; run `flutter build ipa --release --export-method app-store` first") unless ipa
+    upload_to_app_store(
+      app_identifier: APP_ID,
+      ipa: ipa,
+      skip_metadata: true,
+      skip_screenshots: true,
+      precheck_include_in_app_purchases: false,
+    )
+  end
+end
+
+platform :android do
+  desc "Push listing text and screenshots to the Play Console (no binary)"
+  lane :metadata do |options|
+    sh("rm -rf #{SCREENSHOTS}/supply && mkdir -p #{SCREENSHOTS}/supply/en-US/images/phoneScreenshots && " \
+       "cp #{SCREENSHOTS}/iphone69/*.png #{SCREENSHOTS}/supply/en-US/images/phoneScreenshots/")
+    upload_to_play_store(
+      package_name: APP_ID,
+      json_key: options.fetch(:json_key),
+      metadata_path: "./metadata/android",
+      skip_upload_aab: true,
+      skip_upload_apk: true,
+      skip_upload_changelogs: false,
+      skip_upload_images: true,
+      skip_upload_screenshots: false,
+    )
+  end
+
+  desc "Upload the AAB built by `flutter build appbundle` to the production track"
+  lane :upload do |options|
+    aab = File.expand_path("../build/app/outputs/bundle/release/app-release.aab", __dir__)
+    UI.user_error!("No AAB found; run `flutter build appbundle --release` first") unless File.exist?(aab)
+    upload_to_play_store(
+      package_name: APP_ID,
+      json_key: options.fetch(:json_key),
+      aab: aab,
+      track: options.fetch(:track, "production"),
+      metadata_path: "./metadata/android",
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+    )
+  end
+end
