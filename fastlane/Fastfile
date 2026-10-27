@@ -64,20 +64,36 @@ platform :ios do
     )
   end
 
-  desc "Attach the processed build to the App Store version without submitting (fastlane ios attach_build build:10)"
+  desc "Attach a processed build to the App Store version without submitting (fastlane ios attach_build build:11)"
   lane :attach_build do |options|
     asc_key(options)
-    deliver(
-      app_identifier: APP_ID,
-      app_version: "1.1.0",
-      build_number: options.fetch(:build, "10"),
-      skip_binary_upload: true,
-      skip_metadata: true,
-      skip_screenshots: true,
-      submit_for_review: false,
-      run_precheck_before_submit: false,
-      force: true,
-    )
+    wanted = options.fetch(:build, "11")
+    app = Spaceship::ConnectAPI::App.find(APP_ID)
+    version = app.get_edit_app_store_version(platform: Spaceship::ConnectAPI::Platform::IOS)
+    UI.user_error!("No editable App Store version found") unless version
+    builds = Spaceship::ConnectAPI::Build.all(app_id: app.id, version: version.version_string, build_number: wanted)
+    build = builds.first
+    UI.user_error!("Build #{wanted} for #{version.version_string} not found on App Store Connect yet") unless build
+    UI.message("Build #{build.version} state: #{build.processing_state}")
+    UI.user_error!("Build #{wanted} is still #{build.processing_state}; try again later") unless build.processing_state == "VALID"
+    version.select_build(build_id: build.id)
+    check = Spaceship::ConnectAPI::AppStoreVersion.get(app_store_version_id: version.id, includes: "build")
+    attached = check.build ? check.build.version : "none"
+    UI.success("Version #{version.version_string} (#{version.app_store_state}) now has build #{attached} attached")
+  end
+
+  desc "List the most recent builds on App Store Connect with their processing state"
+  lane :builds do |options|
+    asc_key(options)
+    app = Spaceship::ConnectAPI::App.find(APP_ID)
+    builds = Spaceship::ConnectAPI::Build.all(app_id: app.id, sort: "-uploadedDate", limit: 6, includes: "preReleaseVersion")
+    UI.message("#{builds.size} build(s)")
+    builds.each do |b|
+      mv = b.pre_release_version ? b.pre_release_version.version : "?"
+      UI.message("BUILD #{mv} (#{b.version}) state=#{b.processing_state} uploaded=#{b.uploaded_date} expired=#{b.expired}")
+    end
+    ver = app.get_edit_app_store_version(platform: Spaceship::ConnectAPI::Platform::IOS)
+    UI.message("EDIT VERSION #{ver.version_string} state=#{ver.app_store_state}") if ver
   end
 
   desc "Upload the IPA built by `flutter build ipa` to App Store Connect"
