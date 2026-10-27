@@ -131,7 +131,7 @@ class OllamaService {
   }
 
   String _buildDiagnosisPrompt(Map<String, dynamic> data) {
-    return '''You are a women's health assistant embedded in a period tracking app called Luna.
+    return '''You are a women's health assistant embedded in a period tracking app called Open Period Tracker.
 Analyze the following cycle data and provide a brief, empathetic health summary.
 
 CYCLE DATA:

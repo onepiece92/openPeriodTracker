@@ -1,6 +1,6 @@
 ---
 name: Feature Request
-about: Suggest a new feature for Luna
+about: Suggest a new feature for Open Period Tracker
 title: '[FEATURE] '
 labels: enhancement
 assignees: ''

@@ -1,6 +1,20 @@
 # Changelog
 
-All notable changes to Luna will be documented in this file.
+All notable changes to Open Period Tracker will be documented in this file.
+
+## [Unreleased]
+
+### Changed
+- App renamed. The product is now **Open Period Tracker**; the installed app shows as **Open Period**; the store title stays *Open Period & Cycle Tracker*. The earlier name (Luna) is retired and must not be reintroduced.
+- Display name updated in the iOS Info.plist and Xcode project, the Android manifest, the macOS app config, and the web title and manifest.
+- README rewritten to describe the app accurately (provider for state management, JSON backup, no database encryption, the three optional network uses), with store links and a short FAQ.
+- CONTRIBUTING, SECURITY and issue templates updated to the new name.
+
+### Added
+- `fastlane/metadata/` with App Store and Google Play listing text: subtitle, keywords, promotional text, description, release notes, URLs.
+- `docs/` GitHub Pages landing page with FAQ, SoftwareApplication and FAQPage structured data, and a copy of the privacy policy.
+- `.github/repository-settings.md` with the repository description, 20 topics, a `gh repo edit` command and the GitHub Pages steps.
+- `store/submissions.md` with ready-to-paste texts for AlternativeTo, Product Hunt, an F-Droid packaging request, a Reddit maker post, and an App Store Connect field checklist.
 
 ## [1.0.0] - 2026-03-27
 

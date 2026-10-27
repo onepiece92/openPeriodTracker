@@ -27,7 +27,7 @@ class StepPeriodLength extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'An estimate is fine — Luna will\nlearn from your logs',
+            'An estimate is fine — the app will\nlearn from your logs',
             style: AppTextStyles.body,
             textAlign: TextAlign.center,
           ),

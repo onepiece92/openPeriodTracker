@@ -268,7 +268,7 @@ class ProfileScreen extends StatelessWidget {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
         title: Text('Import JSON Backup?', style: AppTextStyles.sectionTitle),
         content: Text(
-          'This will REPLACE all existing cycle and logging data with the JSON backup file. Your current data will be irrevocably deleted.\n\nOnly import valid Luna backups.',
+          'This will REPLACE all existing cycle and logging data with the JSON backup file. Your current data will be irrevocably deleted.\n\nOnly import valid Open Period Tracker backups.',
           style: AppTextStyles.body,
         ),
         actions: [
@@ -361,7 +361,7 @@ class ProfileScreen extends StatelessWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        title: Text('Reset Luna?', style: AppTextStyles.sectionTitle),
+        title: Text('Reset app?', style: AppTextStyles.sectionTitle),
         content: Text(
           'This will delete all your data and return to the setup screen. This cannot be undone.',
           style: AppTextStyles.body,
@@ -495,7 +495,7 @@ class _PersonalInfoSectionState extends State<_PersonalInfoSection> {
           const SizedBox(height: 6),
           _field(
             controller: _nicknameCtrl,
-            hint: 'What should Luna call you?',
+            hint: 'What should we call you?',
             onChanged: (v) => settings.updateUserInfo(nickname: v),
           ),
           const SizedBox(height: 12),

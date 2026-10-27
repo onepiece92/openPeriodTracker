@@ -1,6 +1,6 @@
 ---
 name: Bug Report
-about: Report a bug in Luna
+about: Report a bug in Open Period Tracker
 title: '[BUG] '
 labels: bug
 assignees: ''

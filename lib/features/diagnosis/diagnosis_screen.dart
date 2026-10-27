@@ -511,7 +511,7 @@ class _DiagnosisScreenState extends State<DiagnosisScreen> {
           Text('Not enough data yet', style: AppTextStyles.sectionTitle),
           const SizedBox(height: 8),
           Text(
-            'Log periods, moods, symptoms, and flow so Luna can analyze your cycle patterns and provide health insights.',
+            'Log periods, moods, symptoms, and flow so the app can analyze your cycle patterns and provide health insights.',
             style: AppTextStyles.body,
             textAlign: TextAlign.center,
           ),
@@ -1913,7 +1913,7 @@ class _OnDeviceSummaryCard extends StatelessWidget {
           emoji: '📊',
           title: 'Building your profile',
           body:
-              'Luna needs more data for a complete analysis. Keep logging — insights improve with every cycle tracked.',
+              'More data is needed for a complete analysis. Keep logging — insights improve with every cycle tracked.',
         ),
       );
     }

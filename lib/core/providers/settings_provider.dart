@@ -22,7 +22,7 @@ class SettingsProvider extends ChangeNotifier {
   String? get dietType => _settings?.dietType;
   List<String> get allergies => _settings?.allergies ?? const [];
   String get displayName =>
-      _settings?.userNickname ?? _settings?.userName ?? 'Luna User';
+      _settings?.userNickname ?? _settings?.userName ?? 'Friend';
 
   Future<void> loadSettings() async {
     final db = await _db.database;

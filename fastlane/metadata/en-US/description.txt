@@ -1,0 +1,37 @@
+Does it work offline? Yes. Every feature runs on your phone, with no server behind it.
+Do I need an account? No. Open the app and start logging.
+What does it cost? Nothing. No subscription, no premium tier, no ads.
+
+Open Period Tracker is a free, open-source period and cycle tracker for people who want useful insights without handing their health data to anyone.
+
+TRACK
+• Log periods and flow (light, medium, heavy) on a calendar
+• Record moods, symptoms and notes for any day
+• Doctor's checklist: pain, discharge, skin, hair, sleep, libido, digestion, breast changes, energy, weight
+• Period history and a comparison of the current cycle against your average
+
+PREDICT
+• Next period, fertile window and peak day, shown on the calendar and home screen
+• An on-device model refines cycle length and period duration predictions from your own history
+• 7-day phase forecast and symptom forecast based on your past cycles
+• Optional reminders before a predicted period
+
+UNDERSTAND
+• Insights: best and worst cycle days, weekly logging score, phase-based tips drawn from your own logs
+• Analytics: cycle length trends, mood and symptom frequency, phase correlations
+• Diet & Nutrition: phase-aware foods, macro and hydration guides, supplement suggestions, and regional food picks if you choose to share your location
+• Yoga: poses and breathwork matched to each cycle phase, with links to practice videos
+• AI prompt builder: create an anonymised summary of your logs to paste into ChatGPT, Claude or Gemini if you want a second opinion
+
+PRIVATE BY DESIGN
+• Your data lives in a local database on your device
+• No account, no cloud, no analytics, no advertising SDKs
+• Back up and restore with a JSON file you control
+• Location is optional and is used only to pick a food region
+• Optional: point the app at your own Ollama server for local AI summaries
+
+OPEN SOURCE
+The full source code is published under the MIT license. Read it, audit it, or contribute:
+https://github.com/onepiece92/openPeriodTracker
+
+Open Period Tracker is not a medical device and does not replace advice from a healthcare professional.

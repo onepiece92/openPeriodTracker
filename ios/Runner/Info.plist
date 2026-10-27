@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Luna: Open Period &amp; Cycle Tracker</string>
+	<string>Open Period</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -15,7 +15,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>Luna: Open Period &amp; Cycle Tracker</string>
+	<string>Open Period</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -50,11 +50,11 @@
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Luna uses your location to suggest regional diet and food recommendations for your cycle phase.</string>
+	<string>Open Period uses your location to suggest regional diet and food recommendations for your cycle phase.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Luna uses your location to suggest regional diet and food recommendations for your cycle phase.</string>
+	<string>Open Period uses your location to suggest regional diet and food recommendations for your cycle phase.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Luna needs access to your photo library to import data files.</string>
+	<string>Open Period needs access to your photo library to import data files.</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>NSAppTransportSecurity</key>

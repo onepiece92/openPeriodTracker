@@ -1,6 +1,6 @@
-# Contributing to Luna
+# Contributing to Open Period Tracker
 
-Thank you for your interest in contributing to Luna! This guide will help you get started.
+Thank you for your interest in contributing to Open Period Tracker! This guide will help you get started.
 
 ## How to Contribute
 
@@ -57,7 +57,7 @@ python scripts/train_lstm_model.py
 
 ## Privacy Commitment
 
-Luna is a privacy-first app. All contributions must maintain this principle:
+Open Period Tracker is a privacy-first app. All contributions must maintain this principle:
 - No analytics or tracking code
 - No network calls for core functionality
 - No third-party data collection

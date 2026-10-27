@@ -1,0 +1,1 @@
+Diet & Nutrition tab with phase-aware foods, regional picks, and personalized recommendations based on your dietary preferences and allergies — plus smoother keyboard handling in logs and more reliable backup restore.

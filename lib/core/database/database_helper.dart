@@ -16,6 +16,8 @@ class DatabaseHelper {
 
   Future<Database> _initDatabase() async {
     final dbPath = await getDatabasesPath();
+    // The file keeps its original name on purpose: renaming it would orphan
+    // the data of everyone who installed the app while it was called Luna.
     final path = join(dbPath, 'luna.db');
 
     return await openDatabase(

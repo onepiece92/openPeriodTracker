@@ -18,7 +18,7 @@ class ShareService {
     final int? daysUntil = periodProvider.daysUntilNextPeriod;
 
     final StringBuffer buffer = StringBuffer();
-    buffer.writeln('🌸 Luna Update');
+    buffer.writeln('🌸 Cycle Update');
     buffer.writeln('Currently on Day $cycleDay ($phaseName Phase).');
 
     // Add period prediction
@@ -56,7 +56,7 @@ class ShareService {
     }
 
     buffer.writeln();
-    buffer.writeln('- Shared via Luna App 🌙');
+    buffer.writeln('- Shared via Open Period Tracker');
 
     await Share.share(buffer.toString());
   }
