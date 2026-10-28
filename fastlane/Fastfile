@@ -64,10 +64,10 @@ platform :ios do
     )
   end
 
-  desc "Attach a processed build to the App Store version without submitting (fastlane ios attach_build build:12)"
+  desc "Attach a processed build to the App Store version without submitting (fastlane ios attach_build build:13)"
   lane :attach_build do |options|
     asc_key(options)
-    wanted = options.fetch(:build, "12")
+    wanted = options.fetch(:build, "13")
     app = Spaceship::ConnectAPI::App.find(APP_ID)
     version = app.get_edit_app_store_version(platform: Spaceship::ConnectAPI::Platform::IOS)
     UI.user_error!("No editable App Store version found") unless version

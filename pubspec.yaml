@@ -2,7 +2,7 @@ name: open_period_tracker
 description: "Open Period Tracker: offline, open-source period and cycle tracker."
 publish_to: 'none'
 
-version: 1.1.0+12
+version: 1.1.0+13
 
 environment:
   sdk: ^3.11.3
