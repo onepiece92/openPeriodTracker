@@ -10,8 +10,8 @@ flutter build ipa --release --export-method app-store   # build/ios/ipa/*.ipa
 flutter build appbundle --release                       # build/app/outputs/bundle/release/app-release.aab
 ```
 
-Version is `1.1.0+10` in pubspec.yaml: version name 1.1.0, iOS build 10,
-Android versionCode 10. If Play rejects the bundle because an earlier upload
+Version is `1.1.0+13` in pubspec.yaml: version name 1.1.0, iOS build 13,
+Android versionCode 13. If Play rejects the bundle because an earlier upload
 used a higher versionCode, raise the number after the `+` and rebuild.
 
 ## 2. iOS: App Store Connect

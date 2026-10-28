@@ -32,4 +32,4 @@ If you discover a security vulnerability, please:
 
 ## Data Export
 
-Users can export all their data as CSV at any time via Profile > Export. This ensures data portability and user control.
+Users can export all their data as a JSON backup at any time via Profile > Backup, and import it again on any device. This ensures data portability and user control.

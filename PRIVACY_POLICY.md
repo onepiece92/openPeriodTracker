@@ -45,8 +45,8 @@ The App stores the following data **exclusively on your device** using a local S
 
 ## Data Export & Import
 
-The App provides a CSV export feature that allows you to:
-- Export all your cycle data to a CSV file
+The App provides a JSON backup and restore feature that allows you to:
+- Export all your cycle data to a JSON file
 - Share that file via your device's share sheet (AirDrop, email, files, etc.)
 - Import previously exported data
 
@@ -136,7 +136,7 @@ Always consult a qualified healthcare professional for medical advice. Do not re
 You have the right to:
 - **Access** all your data (it's on your device and you can export it anytime)
 - **Delete** all your data (via the Reset feature)
-- **Port** your data (via CSV export)
+- **Port** your data (via JSON backup export)
 - **Control** location and notification permissions (via device settings)
 - **Use** the App without providing any personal information
 
