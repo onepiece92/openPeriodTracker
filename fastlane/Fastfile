@@ -4,6 +4,7 @@
 #
 #   fastlane ios metadata        # or: key_id:... issuer_id:... key_path:/path/AuthKey.p8
 #   fastlane ios upload
+#   fastlane ios submit         # age rating + submit for review
 #   fastlane android metadata    # or: json_key:/path/service-account.json
 #   fastlane android upload
 
@@ -56,6 +57,7 @@ platform :ios do
       app_identifier: APP_ID,
       app_version: "1.1.0",
       metadata_path: "./metadata",
+      app_rating_config_path: "./metadata/age_rating.json",
       screenshots_path: "#{SCREENSHOTS}/deliver",
       overwrite_screenshots: true,
       skip_binary_upload: true,
@@ -107,6 +109,27 @@ platform :ios do
       skip_metadata: true,
       skip_screenshots: true,
       precheck_include_in_app_purchases: false,
+    )
+  end
+  desc "Apply the age rating answers in metadata/age_rating.json and submit the staged version for review (fastlane ios submit)"
+  lane :submit do |options|
+    asc_key(options)
+    deliver(
+      app_identifier: APP_ID,
+      app_version: options.fetch(:version, "1.1.0"),
+      metadata_path: "./metadata",
+      app_rating_config_path: "./metadata/age_rating.json",
+      skip_screenshots: true,
+      skip_binary_upload: true,
+      submit_for_review: true,
+      automatic_release: true,
+      precheck_include_in_app_purchases: false,
+      submission_information: {
+        add_id_info_uses_idfa: false,
+        export_compliance_uses_encryption: false,
+        content_rights_contains_third_party_content: false,
+      },
+      force: true,
     )
   end
 end

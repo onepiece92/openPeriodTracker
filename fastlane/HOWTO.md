@@ -12,21 +12,24 @@ docs/assets/screenshots/            screenshots used by both stores and the webs
 
 ## Upload to the App Store
 
+Credentials come from the git-ignored `.key/` folder (`AuthKey.p8` plus
+`KEY_ID` and `ISSUER_ID` in `apple.env`), or from `key_id:`, `issuer_id:` and
+`key_path:` lane arguments.
+
 ```bash
-gem install fastlane
+brew install fastlane
 cd <repo root>
-fastlane deliver --app_identifier com.brandbuilder.periodtracker \
-  --metadata_path fastlane/metadata \
-  --skip_binary_upload --skip_screenshots
+fastlane ios metadata              # listing text, categories, copyright, age rating, screenshots
+fastlane ios upload                # IPA from `flutter build ipa --release --export-method app-store`
+fastlane ios builds                # processing state of recent builds
+fastlane ios attach_build build:13 # attach a VALID build to the editable version
+fastlane ios submit                # age rating + submit for review, release after approval
 ```
 
-Add `--skip_metadata false --screenshots_path <folder>` once the screenshots
-are arranged per device size (deliver wants
-`fastlane/screenshots/en-US/` with device-size names in the file names).
-
-Fields that `deliver` cannot change and that must be set by hand in
-App Store Connect: primary category (Health & Fitness), secondary category
-(Medical), and the age-rating questionnaire (target 12+).
+`metadata/age_rating.json` holds the age-rating questionnaire answers; both
+`metadata` and `submit` apply it. Apple rejects builds silently when a
+purpose string is missing (ITMS-90683): watch for the email, since
+`altool --validate-app` does not catch it.
 
 ## Upload to Google Play
 

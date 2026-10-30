@@ -33,7 +33,7 @@ used a higher versionCode, raise the number after the `+` and rebuild.
 | What's New | paste whole file | release_notes.txt |
 | Primary category | Health & Fitness | App Information |
 | Secondary category | Medical | App Information |
-| Age rating | re-answer the questionnaire; target 12+ (no unrestricted web access, infrequent medical info) | App Information |
+| Age rating | answers in fastlane/metadata/age_rating.json (health topics yes, medical info infrequent/mild, nothing else); applied by `fastlane ios submit` | App Information |
 | Support URL | https://github.com/onepiece92/openPeriodTracker/issues | support_url.txt |
 | Marketing URL | https://onepiece92.github.io/openPeriodTracker/ | marketing_url.txt |
 | Privacy policy | https://onepiece92.github.io/openPeriodTracker/privacy-policy.html (or keep the brandbuilder.com.np page once its Luna alias is removed) | privacy_url.txt |
@@ -71,6 +71,9 @@ Install fastlane (`brew install fastlane`), then:
   save the `.p8` outside the repo, and run
   `fastlane ios metadata key_id:XXX issuer_id:YYY key_path:/path/AuthKey.p8`
   to push the listing text and screenshots. `fastlane ios upload` uploads the IPA.
+  `fastlane ios attach_build build:N` selects a processed build and
+  `fastlane ios submit` applies the age rating and submits for review with
+  automatic release after approval.
 - Android: create a service account with "Release manager" on the Play
   Console, save its JSON outside the repo, and run
   `fastlane android metadata json_key:/path/key.json` or
