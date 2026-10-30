@@ -2,7 +2,7 @@
 
 All notable changes to Open Period Tracker will be documented in this file.
 
-## [Unreleased]
+## [1.1.0] - 2026-10-27
 
 ### Changed
 - App renamed. The product is now **Open Period Tracker**; the installed app shows as **Open Period**; the store title stays *Open Period & Cycle Tracker*. The earlier name (Luna) is retired and must not be reintroduced.

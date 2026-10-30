@@ -1,0 +1,175 @@
+# Store upload lanes for Open Period Tracker.
+# Credentials live in the git-ignored .key/ folder (see .key/README.md) or are
+# passed on the command line; nothing secret is read from tracked files.
+#
+#   fastlane ios metadata        # or: key_id:... issuer_id:... key_path:/path/AuthKey.p8
+#   fastlane ios metadata screenshots:false   # text, categories, age rating only
+#   fastlane ios upload
+#   fastlane ios submit         # age rating + submit for review
+#   fastlane android metadata    # or: json_key:/path/service-account.json
+#   fastlane android upload
+
+opt_out_usage
+skip_docs
+default_platform(:ios)
+
+APP_ID = "com.brandbuilder.periodtracker"
+SCREENSHOTS = File.expand_path("../design/screenshots/out", __dir__)
+KEY_DIR = File.expand_path("../.key", __dir__)
+# deliver/supply run with the project root as cwd, so metadata paths must be absolute
+METADATA = File.expand_path("metadata", __dir__)
+AGE_RATING = File.join(METADATA, "age_rating.json")
+
+# KEY_ID=... / ISSUER_ID=... lines from .key/apple.env
+def apple_env
+  path = File.join(KEY_DIR, "apple.env")
+  return {} unless File.exist?(path)
+  File.readlines(path).each_with_object({}) do |line, h|
+    next if line.strip.start_with?("#") || !line.include?("=")
+    k, v = line.strip.split("=", 2)
+    h[k.strip] = v.to_s.strip.delete('"')
+  end
+end
+
+def asc_key(options)
+  env = apple_env
+  key_path = options[:key_path] || File.join(KEY_DIR, "AuthKey.p8")
+  key_id = options[:key_id] || env["KEY_ID"]
+  issuer_id = options[:issuer_id] || env["ISSUER_ID"]
+  UI.user_error!("Paste the App Store Connect key into .key/AuthKey.p8") unless File.size?(key_path)
+  UI.user_error!("Fill KEY_ID and ISSUER_ID in .key/apple.env") if key_id.to_s.empty? || issuer_id.to_s.empty?
+  app_store_connect_api_key(key_id: key_id, issuer_id: issuer_id, key_filepath: key_path)
+end
+
+def play_json(options)
+  path = options[:json_key] || File.join(KEY_DIR, "play-service-account.json")
+  UI.user_error!("Paste the Play service-account JSON into .key/play-service-account.json") unless File.size?(path)
+  path
+end
+
+platform :ios do
+  desc "Push listing text and screenshots to App Store Connect (no binary)"
+  lane :metadata do |options|
+    asc_key(options)
+    # deliver expects screenshots grouped by locale; the 6.9" and 13" sets are
+    # detected by image size.
+    # Prefix each set so the identical basenames do not overwrite each other.
+    sh("rm -rf #{SCREENSHOTS}/deliver && mkdir -p #{SCREENSHOTS}/deliver/en-US && " \
+       "for f in #{SCREENSHOTS}/iphone69/*.png; do cp \"$f\" #{SCREENSHOTS}/deliver/en-US/iphone69_$(basename \"$f\"); done && " \
+       "for f in #{SCREENSHOTS}/ipad13/*.png; do cp \"$f\" #{SCREENSHOTS}/deliver/en-US/ipad13_$(basename \"$f\"); done")
+    deliver(
+      app_identifier: APP_ID,
+      app_version: "1.1.0",
+      metadata_path: METADATA,
+      app_rating_config_path: AGE_RATING,
+      screenshots_path: "#{SCREENSHOTS}/deliver",
+      overwrite_screenshots: true,
+      skip_screenshots: options[:screenshots].to_s == "false",
+      skip_binary_upload: true,
+      precheck_include_in_app_purchases: false,
+      force: true,
+    )
+  end
+
+  desc "Attach a processed build to the App Store version without submitting (fastlane ios attach_build build:13)"
+  lane :attach_build do |options|
+    asc_key(options)
+    wanted = options.fetch(:build, "13")
+    app = Spaceship::ConnectAPI::App.find(APP_ID)
+    version = app.get_edit_app_store_version(platform: Spaceship::ConnectAPI::Platform::IOS)
+    UI.user_error!("No editable App Store version found") unless version
+    builds = Spaceship::ConnectAPI::Build.all(app_id: app.id, version: version.version_string, build_number: wanted)
+    build = builds.first
+    UI.user_error!("Build #{wanted} for #{version.version_string} not found on App Store Connect yet") unless build
+    UI.message("Build #{build.version} state: #{build.processing_state}")
+    UI.user_error!("Build #{wanted} is still #{build.processing_state}; try again later") unless build.processing_state == "VALID"
+    version.select_build(build_id: build.id)
+    check = Spaceship::ConnectAPI::AppStoreVersion.get(app_store_version_id: version.id, includes: "build")
+    attached = check.build ? check.build.version : "none"
+    UI.success("Version #{version.version_string} (#{version.app_store_state}) now has build #{attached} attached")
+  end
+
+  desc "List the most recent builds on App Store Connect with their processing state"
+  lane :builds do |options|
+    asc_key(options)
+    app = Spaceship::ConnectAPI::App.find(APP_ID)
+    builds = Spaceship::ConnectAPI::Build.all(app_id: app.id, sort: "-uploadedDate", limit: 6, includes: "preReleaseVersion")
+    UI.message("#{builds.size} build(s)")
+    builds.each do |b|
+      mv = b.pre_release_version ? b.pre_release_version.version : "?"
+      UI.message("BUILD #{mv} (#{b.version}) state=#{b.processing_state} uploaded=#{b.uploaded_date} expired=#{b.expired}")
+    end
+    ver = app.get_edit_app_store_version(platform: Spaceship::ConnectAPI::Platform::IOS)
+    UI.message("EDIT VERSION #{ver.version_string} state=#{ver.app_store_state}") if ver
+  end
+
+  desc "Upload the IPA built by `flutter build ipa` to App Store Connect"
+  lane :upload do |options|
+    asc_key(options)
+    ipa = Dir[File.expand_path("../build/ios/ipa/*.ipa", __dir__)].first
+    UI.user_error!("No IPA found; run `flutter build ipa --release --export-method app-store` first") unless ipa
+    upload_to_app_store(
+      app_identifier: APP_ID,
+      ipa: ipa,
+      skip_metadata: true,
+      skip_screenshots: true,
+      precheck_include_in_app_purchases: false,
+    )
+  end
+  desc "Apply the age rating answers in metadata/age_rating.json and submit the staged version for review (fastlane ios submit)"
+  lane :submit do |options|
+    asc_key(options)
+    deliver(
+      app_identifier: APP_ID,
+      app_version: options.fetch(:version, "1.1.0"),
+      metadata_path: METADATA,
+      app_rating_config_path: AGE_RATING,
+      skip_screenshots: true,
+      skip_binary_upload: true,
+      submit_for_review: true,
+      automatic_release: true,
+      precheck_include_in_app_purchases: false,
+      submission_information: {
+        add_id_info_uses_idfa: false,
+        export_compliance_uses_encryption: false,
+        content_rights_contains_third_party_content: false,
+      },
+      force: true,
+    )
+  end
+end
+
+platform :android do
+  desc "Push listing text and screenshots to the Play Console (no binary)"
+  lane :metadata do |options|
+    sh("rm -rf #{SCREENSHOTS}/supply && mkdir -p #{SCREENSHOTS}/supply/en-US/images/phoneScreenshots && " \
+       "cp #{SCREENSHOTS}/iphone69/*.png #{SCREENSHOTS}/supply/en-US/images/phoneScreenshots/")
+    upload_to_play_store(
+      package_name: APP_ID,
+      json_key: play_json(options),
+      metadata_path: File.join(METADATA, "android"),
+      skip_upload_aab: true,
+      skip_upload_apk: true,
+      skip_upload_changelogs: false,
+      skip_upload_images: true,
+      skip_upload_screenshots: false,
+    )
+  end
+
+  desc "Upload the AAB built by `flutter build appbundle` to the production track as a DRAFT release"
+  lane :upload do |options|
+    aab = File.expand_path("../build/app/outputs/bundle/release/app-release.aab", __dir__)
+    UI.user_error!("No AAB found; run `flutter build appbundle --release` first") unless File.exist?(aab)
+    upload_to_play_store(
+      package_name: APP_ID,
+      json_key: play_json(options),
+      aab: aab,
+      track: options.fetch(:track, "production"),
+      release_status: options.fetch(:release_status, "draft"),
+      metadata_path: File.join(METADATA, "android"),
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+    )
+  end
+end

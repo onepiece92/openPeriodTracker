@@ -1,1 +1,7 @@
-Diet & Nutrition tab with phase-aware foods, regional picks, and personalized recommendations based on your dietary preferences and allergies — plus smoother keyboard handling in logs and more reliable backup restore.
+Luna is now Open Period Tracker. Same app, same data, new name and a new icon.
+
+• New icon and a shorter name on your home screen
+• Everything still runs on your phone: no account, no server, no ads
+• Existing data and backups keep working, nothing to migrate
+
+Open source at github.com/onepiece92/openPeriodTracker
