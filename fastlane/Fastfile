@@ -3,6 +3,7 @@
 # passed on the command line; nothing secret is read from tracked files.
 #
 #   fastlane ios metadata        # or: key_id:... issuer_id:... key_path:/path/AuthKey.p8
+#   fastlane ios metadata screenshots:false   # text, categories, age rating only
 #   fastlane ios upload
 #   fastlane ios submit         # age rating + submit for review
 #   fastlane android metadata    # or: json_key:/path/service-account.json
@@ -15,6 +16,9 @@ default_platform(:ios)
 APP_ID = "com.brandbuilder.periodtracker"
 SCREENSHOTS = File.expand_path("../design/screenshots/out", __dir__)
 KEY_DIR = File.expand_path("../.key", __dir__)
+# deliver/supply run with the project root as cwd, so metadata paths must be absolute
+METADATA = File.expand_path("metadata", __dir__)
+AGE_RATING = File.join(METADATA, "age_rating.json")
 
 # KEY_ID=... / ISSUER_ID=... lines from .key/apple.env
 def apple_env
@@ -56,10 +60,11 @@ platform :ios do
     deliver(
       app_identifier: APP_ID,
       app_version: "1.1.0",
-      metadata_path: "./metadata",
-      app_rating_config_path: "./metadata/age_rating.json",
+      metadata_path: METADATA,
+      app_rating_config_path: AGE_RATING,
       screenshots_path: "#{SCREENSHOTS}/deliver",
       overwrite_screenshots: true,
+      skip_screenshots: options[:screenshots].to_s == "false",
       skip_binary_upload: true,
       precheck_include_in_app_purchases: false,
       force: true,
@@ -117,8 +122,8 @@ platform :ios do
     deliver(
       app_identifier: APP_ID,
       app_version: options.fetch(:version, "1.1.0"),
-      metadata_path: "./metadata",
-      app_rating_config_path: "./metadata/age_rating.json",
+      metadata_path: METADATA,
+      app_rating_config_path: AGE_RATING,
       skip_screenshots: true,
       skip_binary_upload: true,
       submit_for_review: true,
@@ -142,7 +147,7 @@ platform :android do
     upload_to_play_store(
       package_name: APP_ID,
       json_key: play_json(options),
-      metadata_path: "./metadata/android",
+      metadata_path: File.join(METADATA, "android"),
       skip_upload_aab: true,
       skip_upload_apk: true,
       skip_upload_changelogs: false,
@@ -161,7 +166,7 @@ platform :android do
       aab: aab,
       track: options.fetch(:track, "production"),
       release_status: options.fetch(:release_status, "draft"),
-      metadata_path: "./metadata/android",
+      metadata_path: File.join(METADATA, "android"),
       skip_upload_metadata: true,
       skip_upload_images: true,
       skip_upload_screenshots: true,
